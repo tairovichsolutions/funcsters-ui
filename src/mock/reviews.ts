@@ -1,0 +1,285 @@
+export const firstRow = [
+  {
+    name: "Parker Ortolani",
+    username: "Jan 4 2023 • Doc Ricardo",
+    body: "Really impressed with how simple and intuitive everything feels. I didn’t have to read a single help doc to understand what to do next. It feels like the product has been designed around how I naturally think.",
+    img: "https://avatar.vercel.sh/user1",
+  },
+  {
+    name: "Jill",
+    username: "Jan 6 2023 • Doc Ricardo",
+    body: "The onboarding flow was super smooth and easy to follow. Each step felt intentional, with just enough context to keep me confident. I was able to go from signup to first success in just a few minutes.",
+    img: "https://avatar.vercel.sh/user2",
+  },
+  {
+    name: "John",
+    username: "Jan 8 2023 • Doc Ricardo",
+    body: "Clean UI, great performance, and thoughtful small details everywhere. You can tell a lot of care went into the microcopy and layout decisions. Nothing feels cluttered or unnecessary on the screen.",
+    img: "https://avatar.vercel.sh/user3",
+  },
+  {
+    name: "Ayesha",
+    username: "Jan 10 2023 • Doc Ricardo",
+    body: "I love how everything feels fast and responsive even on low-end devices. Even with multiple tabs open, the experience stayed smooth. This makes it something I can rely on day-to-day without frustration.",
+    img: "https://avatar.vercel.sh/user4",
+  },
+  {
+    name: "Michael",
+    username: "Jan 12 2023 • Doc Ricardo",
+    body: "Exactly the kind of product experience I wish more apps had. It feels professional without being cold, and polished without being overdesigned. I’m genuinely excited to keep using it.",
+    img: "https://avatar.vercel.sh/user5",
+  },
+  {
+    name: "Sara",
+    username: "Jan 14 2023 • Doc Ricardo",
+    body: "The flow is clear, the copy is friendly, and nothing feels confusing. Even when I tried something new, the interface gently guided me in the right direction. It’s a great balance of power and simplicity.",
+    img: "https://avatar.vercel.sh/user6",
+  },
+  {
+    name: "Omar",
+    username: "Jan 16 2023 • Doc Ricardo",
+    body: "Really happy with how quickly I could get from signup to value. There’s no unnecessary friction or long setup steps. It just lets you get to work and see results fast.",
+    img: "https://avatar.vercel.sh/user7",
+  },
+  {
+    name: "Emily",
+    username: "Jan 18 2023 • Doc Ricardo",
+    body: "Animations feel subtle but add a nice touch of polish to the UI. Nothing is too flashy or distracting, but everything feels alive. It makes the experience feel premium without slowing it down.",
+    img: "https://avatar.vercel.sh/user8",
+  },
+  {
+    name: "Noah",
+    username: "Jan 20 2023 • Doc Ricardo",
+    body: "Everything feels modern without being overcomplicated. I never feel like I’m hunting for basic actions. The most important things are always right where I expect them to be.",
+    img: "https://avatar.vercel.sh/user9",
+  },
+  {
+    name: "Zara",
+    username: "Jan 22 2023 • Doc Ricardo",
+    body: "The layout adapts perfectly on mobile and desktop. I can switch between devices without losing my sense of where things are. It’s clearly been designed with responsiveness in mind from day one.",
+    img: "https://avatar.vercel.sh/user10",
+  },
+  {
+    name: "Ali",
+    username: "Jan 24 2023 • Doc Ricardo",
+    body: "The attention to spacing, typography and hierarchy really shows. Every section breathes, and my eyes naturally move to the right place. It feels like a design system, not a random collection of screens.",
+    img: "https://avatar.vercel.sh/user11",
+  },
+  {
+    name: "Mina",
+    username: "Jan 26 2023 • Doc Ricardo",
+    body: "I like how every section has a clear purpose and call to action. There are no dead ends or confusing states. It always feels like the product is gently nudging me toward the next meaningful step.",
+    img: "https://avatar.vercel.sh/user12",
+  },
+  {
+    name: "Daniel",
+    username: "Jan 28 2023 • Doc Ricardo",
+    body: "Dark mode looks clean and balanced, nothing feels too noisy or low-contrast. Colors are chosen carefully so content still feels readable and sharp. It’s something I actually enjoy staring at for hours.",
+    img: "https://avatar.vercel.sh/user13",
+  },
+  {
+    name: "Leah",
+    username: "Jan 30 2023 • Doc Ricardo",
+    body: "It feels like something built by people who actually care about UX. From the smallest icons to the biggest headers, everything feels consistent. You don’t see this level of detail in most tools.",
+    img: "https://avatar.vercel.sh/user14",
+  },
+  {
+    name: "Hamza",
+    username: "Feb 1 2023 • Doc Ricardo",
+    body: "Small microinteractions make the experience feel premium. Hover states, transitions and feedback all feel purposeful. It’s the kind of polish that makes you want to keep exploring the product.",
+    img: "https://avatar.vercel.sh/user15",
+  },
+];
+
+export const secondRow = [
+  {
+    name: "Sofia",
+    username: "Feb 3 2023 • Doc Ricardo",
+    body: "The copy is clear, friendly, and helps me understand each step. I never feel like I’m reading corporate jargon or filler text. It really feels like the product is talking to me, not at me.",
+    img: "https://avatar.vercel.sh/user16",
+  },
+  {
+    name: "Ibrahim",
+    username: "Feb 5 2023 • Doc Ricardo",
+    body: "Super impressed with how fast everything loads and responds. Even complex actions feel almost instant. That kind of speed makes it easy to stay focused and get things done.",
+    img: "https://avatar.vercel.sh/user17",
+  },
+  {
+    name: "Chloe",
+    username: "Feb 7 2023 • Doc Ricardo",
+    body: "I like how the layout guides my eye without feeling forced. Primary actions are always prioritized but never aggressive. It feels like the interface quietly supports me instead of shouting for attention.",
+    img: "https://avatar.vercel.sh/user18",
+  },
+  {
+    name: "Lucas",
+    username: "Feb 9 2023 • Doc Ricardo",
+    body: "The design feels consistent across all sections and components. Buttons, cards, headings and inputs all follow the same visual language. It creates a sense of trust and reliability as I use it.",
+    img: "https://avatar.vercel.sh/user19",
+  },
+  {
+    name: "Fatima",
+    username: "Feb 11 2023 • Doc Ricardo",
+    body: "The color palette is modern and easy on the eyes. Nothing feels too saturated or washed out. It’s the kind of interface I don’t mind working in for long stretches of time.",
+    img: "https://avatar.vercel.sh/user20",
+  },
+  {
+    name: "Ryan",
+    username: "Feb 13 2023 • Doc Ricardo",
+    body: "I didn’t have to think much—things just worked how I expected. That kind of invisible UX is rare. It feels like they’ve removed all the friction I’m used to from other tools.",
+    img: "https://avatar.vercel.sh/user21",
+  },
+  {
+    name: "Zainab",
+    username: "Feb 15 2023 • Doc Ricardo",
+    body: "The structure is clear; I always know where I am and what’s next. Navigation is obvious without being overly labeled. It makes the whole experience feel calm and predictable in a good way.",
+    img: "https://avatar.vercel.sh/user22",
+  },
+  {
+    name: "David",
+    username: "Feb 17 2023 • Doc Ricardo",
+    body: "Feels like a polished product, not a rough MVP. Nothing feels half-baked or temporary. It genuinely feels ready for real-world teams and real workflows.",
+    img: "https://avatar.vercel.sh/user23",
+  },
+  {
+    name: "Hannah",
+    username: "Feb 19 2023 • Doc Ricardo",
+    body: "Really like the way cards and sections are spaced and grouped. Related information is always kept together, which makes scanning super fast. It’s easy to get a high-level view without losing details.",
+    img: "https://avatar.vercel.sh/user24",
+  },
+  {
+    name: "Owen",
+    username: "Feb 21 2023 • Doc Ricardo",
+    body: "Nothing feels overwhelming, even though there’s a lot of content. The hierarchy and spacing make the interface feel light. It’s rare to see dense features presented in such a relaxed way.",
+    img: "https://avatar.vercel.sh/user25",
+  },
+  {
+    name: "Nadia",
+    username: "Feb 23 2023 • Doc Ricardo",
+    body: "The typography choices make everything very readable. Font sizes, weights and line heights feel carefully tuned. Even in longer sections of text, my eyes don’t get tired.",
+    img: "https://avatar.vercel.sh/user26",
+  },
+  {
+    name: "Ethan",
+    username: "Feb 25 2023 • Doc Ricardo",
+    body: "Interactions feel smooth and natural, with no janky transitions. Buttons respond instantly and feedback feels snappy. It adds up to an experience that feels considered and well engineered.",
+    img: "https://avatar.vercel.sh/user27",
+  },
+  {
+    name: "Amelia",
+    username: "Feb 27 2023 • Doc Ricardo",
+    body: "It gives a very professional and trustworthy first impression. From the hero section to the final CTA, it feels like it belongs in a serious production environment. I’d be comfortable sharing it with clients.",
+    img: "https://avatar.vercel.sh/user28",
+  },
+  {
+    name: "Yusuf",
+    username: "Mar 1 2023 • Doc Ricardo",
+    body: "Love how the layout still feels balanced on ultra-wide screens. Many products forget about larger displays, but this one doesn’t. Nothing stretches awkwardly or leaves massive empty spaces.",
+    img: "https://avatar.vercel.sh/user29",
+  },
+  {
+    name: "Olivia",
+    username: "Mar 3 2023 • Doc Ricardo",
+    body: "Feels like a lot of thought went into every layout decision. Each component has a clear purpose and place. It’s the kind of UI that makes you want to explore just to see what else is there.",
+    img: "https://avatar.vercel.sh/user30",
+  },
+];
+
+export const thirdRow = [
+  {
+    name: "Leo",
+    username: "Mar 5 2023 • Doc Ricardo",
+    body: "The experience is smooth from hero section to the very bottom. There are no awkward jumps or sudden style changes. It feels like one continuous, well-crafted narrative.",
+    img: "https://avatar.vercel.sh/user31",
+  },
+  {
+    name: "Maya",
+    username: "Mar 7 2023 • Doc Ricardo",
+    body: "I love how clearly the benefits are communicated on each section. There’s no guessing what I’m supposed to get out of a feature. The messaging is tight, focused and easy to remember.",
+    img: "https://avatar.vercel.sh/user32",
+  },
+  {
+    name: "Arham",
+    username: "Mar 9 2023 • Doc Ricardo",
+    body: "Everything feels cohesive, like one system instead of random parts. Patterns repeat in a way that feels intentional. After a while, I just instinctively know how new things will work.",
+    img: "https://avatar.vercel.sh/user33",
+  },
+  {
+    name: "Grace",
+    username: "Mar 11 2023 • Doc Ricardo",
+    body: "The layout never feels cramped, even on smaller screens. Elements resize intelligently instead of just shrinking. It makes the mobile experience feel just as premium as desktop.",
+    img: "https://avatar.vercel.sh/user34",
+  },
+  {
+    name: "Bilal",
+    username: "Mar 13 2023 • Doc Ricardo",
+    body: "I like the balance between visuals and text, nothing feels heavy. Icons and illustrations support the content instead of replacing it. It’s a nice mix of form and function.",
+    img: "https://avatar.vercel.sh/user35",
+  },
+  {
+    name: "Nora",
+    username: "Mar 15 2023 • Doc Ricardo",
+    body: "Navigation is straightforward; I never feel lost or stuck. I can always see where I came from and where I can go next. That sense of orientation makes long sessions feel effortless.",
+    img: "https://avatar.vercel.sh/user36",
+  },
+  {
+    name: "Henry",
+    username: "Mar 17 2023 • Doc Ricardo",
+    body: "The design feels premium but still very approachable. It’s polished enough for enterprise but friendly enough for small teams. That’s a rare balance to get right.",
+    img: "https://avatar.vercel.sh/user37",
+  },
+  {
+    name: "Amina",
+    username: "Mar 19 2023 • Doc Ricardo",
+    body: "Really appreciate the small microcopy hints in the UI. Tooltips and helper text show up exactly when I need them. It feels like there’s a quiet guide built into the experience.",
+    img: "https://avatar.vercel.sh/user38",
+  },
+  {
+    name: "Jacob",
+    username: "Mar 21 2023 • Doc Ricardo",
+    body: "Hero, features, and reviews all flow together really nicely. The story feels consistent as I scroll. By the time I reach the bottom, I clearly understand what the product offers.",
+    img: "https://avatar.vercel.sh/user39",
+  },
+  {
+    name: "Layla",
+    username: "Mar 23 2023 • Doc Ricardo",
+    body: "The responsive behavior is smooth; no weird jumps or broken layouts. Components gracefully resize and reflow. It feels like the product was built mobile-first and then enhanced for larger screens.",
+    img: "https://avatar.vercel.sh/user40",
+  },
+  {
+    name: "Sam",
+    username: "Mar 25 2023 • Doc Ricardo",
+    body: "Overall it just feels like a very well-thought-out product. There’s a visible design system behind everything. That level of structure makes me confident it will scale as more features are added.",
+    img: "https://avatar.vercel.sh/user41",
+  },
+  {
+    name: "Huda",
+    username: "Mar 27 2023 • Doc Ricardo",
+    body: "Every section feels intentional and not just thrown in. There’s a clear reason for every block of content. Nothing feels like filler or something that was added just to look busy.",
+    img: "https://avatar.vercel.sh/user42",
+  },
+  {
+    name: "Jason",
+    username: "Mar 29 2023 • Doc Ricardo",
+    body: "I like that the design feels fresh but not distracting. It has its own personality without getting in the way of the work. It’s the kind of UI that ages well over time.",
+    img: "https://avatar.vercel.sh/user43",
+  },
+  {
+    name: "Aaliyah",
+    username: "Mar 31 2023 • Doc Ricardo",
+    body: "Flows well from top to bottom, with a clear story. Each section builds on the one before it. By the end, you feel informed and ready to take action without any confusion.",
+    img: "https://avatar.vercel.sh/user44",
+  },
+  {
+    name: "Khalid",
+    username: "Apr 2 2023 • Doc Ricardo",
+    body: "If this is the beta, I’m excited to see where it goes next. The foundation already feels solid and thoughtful. I can easily imagine more advanced features fitting right into this design system.",
+    img: "https://avatar.vercel.sh/user45",
+  },
+];
+
+export const SomeTopAvatar = [
+  "https://avatar.vercel.sh/user2",
+  "https://avatar.vercel.sh/user16",
+  "https://avatar.vercel.sh/user18",
+  "https://avatar.vercel.sh/user28",
+];

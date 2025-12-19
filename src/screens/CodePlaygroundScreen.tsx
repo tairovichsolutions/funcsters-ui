@@ -1,0 +1,236 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
+import {
+  CodeEditorHeader,
+  TestResultsPanel,
+} from "@/containers/CodePlayground";
+import toast from "react-hot-toast";
+import { useTheme } from "next-themes";
+import { useParams } from "next/navigation";
+import { useRunCode } from "@/mutations/useRunCode";
+import { useSubmitCode } from "@/mutations/useSubmitCode";
+import { RunCodeApiResponse } from "@/types/run-code-type";
+import { MonacoCodeEditer } from "@/components/ui/monaco-editor";
+import { useEditorSettings } from "@/context/EditorSettingsContext";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { useLanguageImplementations } from "@/context/languageImplementationsContext";
+import { SolutionSubmittedModal } from "@/containers/CodePlayground/SolutionSubmittedModal";
+
+const LOCAL_STORAGE_KEY = "funcsters-code-snippets";
+
+type Snippet = {
+  code: string;
+  languageId: number;
+  challengeId: number;
+};
+
+const readSnippets = (): Snippet[] => {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as Snippet[]) : [];
+  } catch {
+    return [];
+  }
+};
+
+const getSavedCode = (
+  languageId: number | null,
+  challengeId: number
+): string | null => {
+  if (!languageId || !challengeId) return null;
+  const snippets = readSnippets();
+  const found = snippets.find(
+    (s) => s.languageId === languageId && s.challengeId === challengeId
+  );
+  return found?.code ?? null;
+};
+
+const saveSnippetOnRun = (
+  languageId: number | null,
+  challengeId: number,
+  code: string
+) => {
+  if (!languageId || !challengeId || typeof window === "undefined") return;
+
+  const snippets = readSnippets();
+  const idx = snippets.findIndex(
+    (s) => s.languageId === languageId && s.challengeId === challengeId
+  );
+
+  if (idx === -1) {
+    snippets.push({ languageId, challengeId, code });
+  } else {
+    snippets[idx] = { ...snippets[idx], code };
+  }
+
+  window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(snippets));
+};
+
+export const CodePlaygroundScreen = memo(() => {
+  const { id } = useParams();
+  const challengeId = Number(id);
+  const { resolvedTheme } = useTheme();
+  const [code, setCode] = useState("");
+  const [results, setResults] = useState<RunCodeApiResponse | null>(null);
+  const [earnedXp, setEarnedXp] = useState<number | null>(null);
+  const [submitModalOpen, setSubmitModalOpen] = useState(false);
+  const editorRef = useRef<any | null>(null);
+  const { settings, setTheme } = useEditorSettings();
+  const {
+    xpCount,
+    languageId,
+    starterCode,
+    selectedLanguage,
+    updateUserProgress,
+  } = useLanguageImplementations();
+  const { mutateAsync: runCode, isPending } = useRunCode();
+  const { mutateAsync: submitCode, isPending: submitPending } = useSubmitCode();
+
+  useEffect(() => {
+    if (!resolvedTheme) return;
+    setTheme(resolvedTheme === "dark" ? "vs-dark" : "light");
+  }, [resolvedTheme]);
+
+  useEffect(() => {
+    if (!languageId || Number.isNaN(challengeId)) return;
+
+    const saved = getSavedCode(languageId, challengeId);
+    if (saved !== null) {
+      setCode(saved);
+    } else if (starterCode) {
+      setCode(starterCode);
+    } else {
+      setCode("");
+    }
+  }, [languageId, challengeId, starterCode]);
+
+  const handleCodeChange = useCallback((value?: string) => {
+    setCode(value ?? "");
+  }, []);
+
+  const handleFormatCode = useCallback(() => {
+    const editor = editorRef.current;
+    const action = editor?.getAction?.("editor.action.formatDocument");
+    action?.run();
+  }, []);
+
+  useEffect(() => {
+    setResults(null);
+  }, [languageId]);
+
+  const handleRunCode = useCallback(async () => {
+    if (!languageId || Number.isNaN(challengeId)) return;
+
+    try {
+      const payload = {
+        userCode: code,
+        languageId,
+        challengeId,
+      };
+
+      saveSnippetOnRun(languageId, challengeId, code);
+
+      const res = (await runCode(payload)) as { data: RunCodeApiResponse };
+      setResults(res.data);
+    } catch (err: any) {
+      setResults(null);
+      toast.error(err?.message || "Something went wrong while running code");
+    }
+  }, [code, languageId, challengeId, runCode]);
+
+  const handleSubmitCode = useCallback(async () => {
+    if (!languageId || Number.isNaN(challengeId)) return;
+
+    try {
+      const payload = {
+        userCode: code,
+        languageId,
+        challengeId,
+      };
+
+      setEarnedXp(xpCount);
+      const res = await submitCode(payload);
+
+      if (res?.status !== 200) {
+        toast.error("Something went wrong while submitting");
+        return;
+      }
+
+      const failed = res?.data?.data?.data?.testRunSummary?.failed ?? 0;
+
+      if (failed === 0) {
+        setSubmitModalOpen(true);
+        setResults(null);
+        setResults(res.data);
+        updateUserProgress?.(languageId, "COMPLETED");
+      } else {
+        setResults(null);
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Unexpected error while submitting");
+    }
+  }, [code, languageId, challengeId, submitCode, updateUserProgress, xpCount]);
+
+  return (
+    <div className="h-full w-full shrink-0">
+      <PanelGroup direction="vertical" className="gap-1.5 h-full">
+        <Panel minSize={40} defaultSize={65}>
+          <div className="border border-border-soft rounded-xl overflow-hidden h-full w-full flex flex-col bg-background">
+            <div className="px-4 flex items-center justify-between border-b border-border-soft h-16 overflow-hidden">
+              <CodeEditorHeader
+                code={code}
+                isPending={isPending}
+                handleRunCode={handleRunCode}
+                submitCodePending={submitPending}
+                handleSubmitCode={handleSubmitCode}
+                handleFormatCode={handleFormatCode}
+                allTestPass={results?.data?.data?.testRunSummary?.passed >= 1}
+              />
+
+              {submitModalOpen && (
+                <SolutionSubmittedModal
+                  open={submitModalOpen}
+                  onClose={() => setSubmitModalOpen(false)}
+                  xpCount={earnedXp}
+                />
+              )}
+            </div>
+
+            <div className="flex-1 min-h-0">
+              <MonacoCodeEditer
+                value={code}
+                onChange={handleCodeChange}
+                editorRef={editorRef}
+                theme={settings.theme}
+                className="w-full h-full"
+                tabSize={settings.tabSize}
+                language={selectedLanguage}
+                fontSize={settings.fontSize}
+                wordWrap={settings.wordWrap}
+                onRunShortcut={handleRunCode}
+                keyBinding={settings.keyBinding}
+                onSubmitShortcut={handleSubmitCode}
+                autoComplete={settings.autoComplete}
+              />
+            </div>
+          </div>
+        </Panel>
+
+        <PanelResizeHandle className="w-full rounded-full h-2 cursor-col-resize bg-transparent hover:bg-primary/40 data-resize-handle-active:bg-primary/60 transition-colors duration-150" />
+
+        <Panel minSize={10} defaultSize={35}>
+          <div className="w-full h-full">
+            <TestResultsPanel results={results?.data?.data} />
+          </div>
+        </Panel>
+      </PanelGroup>
+    </div>
+  );
+});
