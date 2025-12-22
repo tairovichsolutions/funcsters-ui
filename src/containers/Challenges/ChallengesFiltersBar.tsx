@@ -93,7 +93,6 @@ export const ChallengesFiltersBar = React.memo(
                 className="md:w-36!"
                 label="Difficulty"
                 tags={Difficulty as any}
-                multiple={false}
                 value={filters.difficulty}
                 onChange={setDifficulty}
               />
@@ -102,7 +101,6 @@ export const ChallengesFiltersBar = React.memo(
                 className="md:w-36!"
                 label="Tags"
                 tags={tagOptions}
-                multiple={false}
                 value={filters.tags}
                 onChange={setTags}
               />
@@ -112,7 +110,6 @@ export const ChallengesFiltersBar = React.memo(
                   className="md:w-36!"
                   label="Status"
                   tags={Status as any}
-                  multiple={false}
                   value={filters.status}
                   onChange={setStatus}
                 />
