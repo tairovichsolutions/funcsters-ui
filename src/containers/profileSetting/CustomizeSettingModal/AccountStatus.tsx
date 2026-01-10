@@ -83,13 +83,13 @@ export const AccountStatus: React.FC<AccountStatusProps> = ({
       </div>
 
       <div className="flex flex-col gap-3">
-        <Content
+        {/* <Content
           label="Reset Account"
           desc="Once you do, all your completed challenges, achievements, and earned points will be permanently lost and cannot be recovered."
           buttonLabel="Reset your account"
           icon={Assets.Svgs.ResetAccount}
           onActionClick={onResetAccountClick}
-        />
+        /> */}
         <Content
           label="Delete Account"
           desc="This action will permanently remove all your data, progress, and achievements from Funcsters, and you won’t be able to recover them later."

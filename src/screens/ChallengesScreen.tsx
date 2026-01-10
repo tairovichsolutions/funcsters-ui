@@ -45,14 +45,16 @@ export const ChallengesScreen: React.FC = () => {
 
   return (
     <div className="py-4 flex flex-col gap-5">
-      {isAuthenticated && (
-        <GreetingArea
-          username={userData?.data?.user?.username}
-          profileLoading={profileLoading}
-        />
-      )}
+      <GreetingArea
+        isAuthenticated={isAuthenticated}
+        username={userData?.data?.user?.username}
+        profileLoading={profileLoading}
+      />
 
-      <MatricsAndActivityChart isAuthenticated={isAuthenticated} />
+      <MatricsAndActivityChart
+        isAuthenticated={isAuthenticated}
+        profileLoading={profileLoading}
+      />
 
       <div className="challenges-container rounded-lg flex flex-col">
         <ChallengesFiltersBar

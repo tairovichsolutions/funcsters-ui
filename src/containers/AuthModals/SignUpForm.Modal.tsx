@@ -3,7 +3,6 @@
 "use client";
 import React from "react";
 import { useFormik } from "formik";
-import toast from "react-hot-toast";
 import { useTheme } from "next-themes";
 import { Input } from "@/components/Input";
 import { Logo } from "@/components/ui/logo";
@@ -16,7 +15,7 @@ import { useAuthModal } from "@/providers/AuthModalsProvider";
 import { RegistrationLayout } from "@/layouts/RegistrationLayout";
 
 export const SignUpFormModal = () => {
-  const { openModal } = useAuthModal();
+  const { openModal, closeModal } = useAuthModal();
   const router = useRouter();
 
   const initialValues = React.useMemo(
@@ -34,12 +33,11 @@ export const SignUpFormModal = () => {
     try {
       const res = await rigesterfc(values);
       if (res?.status === 200 && res?.data?.user) {
-        openModal("signUpSuccessfully");
-        toast.success("SignUp Successfully");
+        closeModal();
         router.refresh();
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Login Faild");
+      console.error("SignUp Faild:", error?.response?.data?.message);
     }
   };
 

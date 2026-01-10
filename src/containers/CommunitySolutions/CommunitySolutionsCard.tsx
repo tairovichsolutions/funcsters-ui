@@ -2,7 +2,6 @@
 "use client";
 
 import React from "react";
-import toast from "react-hot-toast";
 import { Trash2 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Iconify } from "@/components";
@@ -77,12 +76,9 @@ export const CommunitySolutionsCard = React.memo(
           visible: value,
         };
         await togglefc(payload);
-        toast.success(
-          value ? "Solution is now visible!" : "Solution is hidden."
-        );
       } catch (error) {
         setChecked(previous);
-        toast.error("Failed to update visibility");
+        console.error("Failed to update visibility:", error);
       }
     };
 
@@ -93,9 +89,8 @@ export const CommunitySolutionsCard = React.memo(
           languageId: Number(languageId),
         };
         await deleteMySolutionfc(payload);
-        toast.success("Solution deleted successfully!");
       } catch (error) {
-        toast.error("Failed to delete solution");
+        console.log("Solution deleted Error:", error);
       }
     };
 
