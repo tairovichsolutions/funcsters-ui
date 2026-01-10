@@ -7,25 +7,37 @@ import { ActivityCalendarCard } from "./ActivityCalendarCard";
 import { ChallengeProgressCard } from "./ChallengeProgressCard";
 import { MatricsNotAccess } from "@/components/MatricsNotAccess";
 import React from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface MatricsAndActivityChartProps {
   isAuthenticated: boolean;
+  profileLoading: boolean;
 }
 
 export const MatricsAndActivityChart = React.memo(
-  ({ isAuthenticated }: MatricsAndActivityChartProps) => {
-    const { data: metricsData } = useMetrics();
+  ({ isAuthenticated, profileLoading }: MatricsAndActivityChartProps) => {
+    const { data: metricsData, isLoading } = useMetrics();
 
     return (
       <div className="grid md:grid-cols-2 xl:grid-cols-4 grid-cols-1 gap-4 relative">
-        {!isAuthenticated && <MatricsNotAccess />}
-
-        <ChallengeProgressCard
-          completedChallenges={metricsData?.completedChallenges}
-        />
-        <ActivityCalendarCard />
-        <StreakStatsCard streakData={metricsData?.streak} />
-        <XpPointsCard xpData={metricsData?.xpPoints} />
+        {isLoading && profileLoading ? (
+          <>
+            <Skeleton className="relative h-[225px] bg-gray-200 dark:bg-gray-800 overflow-hidden rounded-md p-2"></Skeleton>
+            <Skeleton className="relative h-[225px] bg-gray-200 dark:bg-gray-800 overflow-hidden rounded-md p-2"></Skeleton>
+            <Skeleton className="relative h-[225px] bg-gray-200 dark:bg-gray-800 overflow-hidden rounded-md p-2"></Skeleton>
+            <Skeleton className="relative h-[225px] bg-gray-200 dark:bg-gray-800 overflow-hidden rounded-md p-2"></Skeleton>
+          </>
+        ) : (
+          <>
+            {!isAuthenticated && <MatricsNotAccess />}
+            <ChallengeProgressCard
+              completedChallenges={metricsData?.completedChallenges}
+            />
+            <ActivityCalendarCard />
+            <StreakStatsCard streakData={metricsData?.streak} />
+            <XpPointsCard xpData={metricsData?.xpPoints} />
+          </>
+        )}
       </div>
     );
   }

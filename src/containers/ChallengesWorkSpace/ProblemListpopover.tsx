@@ -1,23 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { PopoverClose } from "@radix-ui/react-popover";
-
+import * as React from "react";
 import { Button } from "@/components";
 import { Input } from "@/components/Input";
-import { TagSelector } from "@/components/TagSelector";
+import type { ChallengesTypes } from "@/types";
+import { useDebounce } from "@/hooks/useDebounce";
+import { Navigation } from "@/constants/navigation";
 import { Separator } from "@/components/ui/separator";
+import { PopoverClose } from "@radix-ui/react-popover";
+import { TagSelector } from "@/components/TagSelector";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import FilterPills from "@/containers/Challenges/FilterPills";
 import { DifficultyChip } from "@/components/ui/difficulty-chip";
 import { DataNotAvailable } from "@/components/ui/data-not-available";
-import FilterPills from "@/containers/Challenges/FilterPills";
 import { ProblemListSkeleton } from "@/skeletons/ProblemListSkeleton";
-import { Navigation } from "@/constants/navigation";
 import { Difficulty, Status } from "@/screens/ChallengesScreen.constants";
-import { useDebounce } from "@/hooks/useDebounce";
-import type { ChallengesTypes } from "@/types";
 
 const PAGE_SIZE = 10;
 
@@ -28,9 +27,9 @@ type ApiTag = {
 
 type FiltersState = {
   search: string;
-  difficulty: string[];
-  status: string[];
   tags: string[];
+  status: string[];
+  difficulty: string[];
 };
 
 type RemoveFilterFn = (key: keyof FiltersState, value?: string) => void;
@@ -54,15 +53,15 @@ interface ProblemListpopoverProps {
 export const ProblemListpopover = React.memo(
   ({
     data,
-    filters,
     remove,
+    setTags,
+    filters,
     clearAll,
+    setStatus,
+    setSearch,
     isLoading,
     tagOptions,
     tagLabelMap,
-    setSearch,
-    setTags,
-    setStatus,
     setDifficulty,
   }: ProblemListpopoverProps) => {
     const [page, setPage] = React.useState(1);
@@ -121,7 +120,6 @@ export const ProblemListpopover = React.memo(
 
     return (
       <div className="flex flex-col w-full">
-        {/* Header: search + filters + pagination buttons */}
         <div className="p-4 border-b border-[#0000001A] dark:border-gray-600 sticky top-0 z-10 bg-background">
           <Input
             value={searchTerm}
@@ -135,7 +133,6 @@ export const ProblemListpopover = React.memo(
             <div className="grid grid-cols-3 gap-2 flex-1">
               <TagSelector
                 label="Difficulty"
-                multiple={false}
                 tags={Difficulty as any}
                 value={filters.difficulty}
                 className="rounded-md text-xs! py-1.5!"
@@ -144,7 +141,6 @@ export const ProblemListpopover = React.memo(
 
               <TagSelector
                 label="Status"
-                multiple={false}
                 tags={Status as any}
                 value={filters.status}
                 className="rounded-md text-xs! py-1.5!"
@@ -153,7 +149,6 @@ export const ProblemListpopover = React.memo(
 
               <TagSelector
                 label="Tags"
-                multiple={false}
                 tags={tagOptions}
                 value={filters.tags}
                 className="rounded-md text-xs! py-1.5!"
@@ -218,7 +213,6 @@ export const ProblemListpopover = React.memo(
           )}
         </div>
 
-        {/* Body: list items */}
         <div className="w-full px-4 py-2 max-h-[70vh] overflow-y-auto custom-scrollbar">
           {isLoading ? (
             <>

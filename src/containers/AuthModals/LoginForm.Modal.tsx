@@ -4,7 +4,6 @@
 
 import React from "react";
 import { useFormik } from "formik";
-import toast from "react-hot-toast";
 import { useTheme } from "next-themes";
 import { Input } from "@/components/Input";
 import { Assets } from "@/constants/assets";
@@ -13,7 +12,6 @@ import { Logo } from "@/components/ui/logo";
 import { useLogin } from "@/mutations/useLogin";
 import { Button } from "@/components/ui/button";
 import { LoginSchema } from "./LoginForm.schema";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useAuthModal } from "@/providers/AuthModalsProvider";
 import { RegistrationLayout } from "@/layouts/RegistrationLayout";
 
@@ -27,11 +25,11 @@ export const LoginFormModal = () => {
   const dark = theme === "dark";
   const router = useRouter();
   const { mutateAsync: loginfc, isPending } = useLogin();
-  const { openModal } = useAuthModal();
+  const { openModal, closeModal } = useAuthModal();
   const initialValues = React.useMemo(
     () => ({
-      email: "",
-      password: "",
+      email: "anas1234@gmail.com",
+      password: "Anas1234!",
     }),
     []
   );
@@ -40,14 +38,13 @@ export const LoginFormModal = () => {
     try {
       const res = await loginfc(values);
       if (res?.status === 200 && res?.data?.user) {
-        openModal("loginSuccessfully");
-        toast.success("Login Successfully");
+        closeModal();
         router.refresh();
       } else {
-        console.error("Unexpected response:", res);
+        console.error("Unexpected Login response:", res);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Login Failed!");
+      console.error("Login Failed :", error);
     }
   };
 
@@ -91,8 +88,8 @@ export const LoginFormModal = () => {
               error={errors.password}
               onChange={handleChange}
             />
-            <div className="flex justify-between items-center">
-              <Checkbox label="Remember me " />
+            <div className="flex justify-end items-center">
+              {/* <Checkbox label="Remember me " /> */}
               <button
                 type="button"
                 onClick={() => openModal("forgotPassword")}

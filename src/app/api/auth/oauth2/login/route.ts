@@ -37,7 +37,7 @@ export async function POST(request: Request) {
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 365,
+      maxAge: 60 * 60 * 24 * 4,
     });
 
     cookieStore.set("userId", String(json?.data?.id), {
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
       httpOnly: false,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 365,
+      maxAge: 60 * 60 * 24 * 4,
     });
 
     return NextResponse.json({ data: json.data }, { status: 200 });

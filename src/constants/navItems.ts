@@ -13,7 +13,7 @@ export const NavItems: NavItemProps[] = [
     name: "Challenges",
     href: Navigation.Challenges,
   },
-  { id: "1", name: "Crash Course", href: Navigation.CrashCourse },
+  // { id: "1", name: "Crash Course", href: Navigation.CrashCourse },
 ];
 
 export const ChallengesItems: NavItemProps[] = [

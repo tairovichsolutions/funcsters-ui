@@ -23,7 +23,7 @@ export const ForgotPasswordFormModal = () => {
     []
   );
   const onSubmit = () => {
-    openModal("emailSend");
+    openModal("resetPassword");
   };
 
   const { values, errors, handleChange, handleSubmit } = useFormik({
