@@ -100,7 +100,7 @@ export const ChallengesListSection = React.memo(
     return (
       <div className="lg:p-4 p-3 flex flex-col gap-4">
         {isLoading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
             {Array.from({ length: 10 }).map((_, index) => (
               <ChallengeCardSkeleton key={index} />
             ))}
@@ -110,7 +110,7 @@ export const ChallengesListSection = React.memo(
         {!isLoading && totalItems > 0 && (
           <>
             {currentView === "card" ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 w-full">
                 {paginatedItems.map((item) => (
                   <ChallengeCardView {...item} key={item.id} />
                 ))}

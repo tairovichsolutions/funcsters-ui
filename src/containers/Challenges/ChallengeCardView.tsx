@@ -17,7 +17,7 @@ export const ChallengeCardView = ({
 }: ChallengesTypes) => {
   return (
     <Link href={Navigation.ChallengesDetail(String(id))}>
-      <div className="challenges-card-class hover:bg-gray-50 dark:hover:bg-gray-700/15 hover:scale-[1.02] hover:shadow-xs  transition-all duration-300 h-40 w-full overflow-hidden gap-2 flex flex-col justify-between">
+      <div className="challenges-card-class  bg-white dark:bg-[#FFFFFF0D]! dark:hover:bg-gray-700/15 hover:scale-[1.02] hover:shadow-xs  transition-all duration-300 h-40 w-full  gap-2 flex flex-col justify-between">
         <div className=" space-y-2">
           <div className=" flex gap-2  justify-between items-center">
             <h1 className=" font-semibold text-base lg:text-[19px] line-clamp-1">
@@ -41,7 +41,11 @@ export const ChallengeCardView = ({
           </div>
 
           {userProgress && (
-            <StatusChip className="truncate" status={userProgress} />
+            <StatusChip
+              withText={false}
+              className="truncate"
+              status={userProgress}
+            />
           )}
         </div>
       </div>

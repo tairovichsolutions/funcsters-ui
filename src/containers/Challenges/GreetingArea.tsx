@@ -12,8 +12,8 @@ export const GreetingArea = React.memo(
       <div>
         {profileLoading ? (
           <div>
-            <Skeleton className=" bg-gray-200 dark:bg-gray-800 w-[40%]  h-12 " />
-            <Skeleton className=" bg-gray-200 dark:bg-gray-800 w-[25%] h-4 mt-2" />
+            <Skeleton className=" bg-white dark:bg-gray-800 w-[40%]  h-10 " />
+            <Skeleton className=" bg-white dark:bg-gray-800 w-[25%] h-4 mt-2" />
           </div>
         ) : isAuthenticated ? (
           <>

@@ -48,6 +48,7 @@ export const Assets = {
     SolutionSubmittedDark: "/images/solution-submitted-dark.png",
     ChallengeProgressImage: "/images/ChallengeProgressImage.png",
     ChallengesWorkSpaceImage: "/images/challenges-work-space-image.png",
+    killerCode: "/images/killercode.png",
   },
 
   Svgs: {

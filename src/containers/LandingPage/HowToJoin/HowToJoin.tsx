@@ -97,24 +97,28 @@ export const HowToJoin = () => {
         </TextFadeAnimation>
       </div>
 
-      <AnimateFade direction="up">
-        <div className="w-full mt-20 lg:flex hidden">
-          <div className="  font-magseva flex items-center w-full ">
-            <div className="3xl:gap-[26px]! space-y-4! lg:space-y-3 w-[50%] h-full  self-start! flex flex-col items-center justify-center  ">
-              {HowToJoinSteps.map((step, idx) => (
+      <div className="w-full mt-20 lg:flex hidden self-center">
+        <div className="  font-magseva flex items-center w-full ">
+          <div className="3xl:gap-[26px]! space-y-4! lg:space-y-3 w-[50%] h-full  self-start! flex flex-col items-center justify-center  ">
+            {HowToJoinSteps.map((step, idx) => (
+              <AnimateFade key={step.number} delay={0} direction="right">
                 <StepItem
-                  key={step.number}
                   title={step.title}
                   number={step.number}
                   description={step.description}
                   isActive={idx === activeStepIndex}
                   onClick={() => handleStepClick(idx)}
                 />
-              ))}
-            </div>
+              </AnimateFade>
+            ))}
+          </div>
 
-            <div className="  flex  w-[50%] justify-center items-center">
-              <AnimatePresence mode="popLayout">
+          <div className="  flex  w-[50%] justify-center items-center ">
+            <AnimatePresence mode="popLayout">
+              <AnimateFade
+                direction="left"
+                className=" flex justify-center items-center"
+              >
                 <motion.img
                   key={activeStepIndex}
                   alt={"how_to_join_steps_img"}
@@ -128,11 +132,11 @@ export const HowToJoin = () => {
                     ease: [0.22, 1, 0.36, 1],
                   }}
                 />
-              </AnimatePresence>
-            </div>
+              </AnimateFade>
+            </AnimatePresence>
           </div>
         </div>
-      </AnimateFade>
+      </div>
 
       <div className="w-full lg:hidden flex flex-col overflow-hidden mt-5">
         {HowToJoinSteps.map((step, index) => (

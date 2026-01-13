@@ -22,10 +22,22 @@ export const MatricsAndActivityChart = React.memo(
       <div className="grid md:grid-cols-2 xl:grid-cols-4 grid-cols-1 gap-4 relative">
         {isLoading && profileLoading ? (
           <>
-            <Skeleton className="relative h-[225px] bg-gray-200 dark:bg-gray-800 overflow-hidden rounded-md p-2"></Skeleton>
-            <Skeleton className="relative h-[225px] bg-gray-200 dark:bg-gray-800 overflow-hidden rounded-md p-2"></Skeleton>
-            <Skeleton className="relative h-[225px] bg-gray-200 dark:bg-gray-800 overflow-hidden rounded-md p-2"></Skeleton>
-            <Skeleton className="relative h-[225px] bg-gray-200 dark:bg-gray-800 overflow-hidden rounded-md p-2"></Skeleton>
+            <Skeleton className="relative h-[225px] bg-white dark:bg-gray-800 overflow-hidden rounded-md p-2">
+              <Skeleton className=" bg-gray-100 dark:bg-gray-700/30 h-14 w-16" />
+              <Skeleton className=" bg-gray-100 dark:bg-gray-700/30 h-5 w-20 mt-2" />
+            </Skeleton>
+            <Skeleton className="relative h-[225px] bg-white dark:bg-gray-800 overflow-hidden rounded-md p-2">
+              <Skeleton className=" bg-gray-100 dark:bg-gray-700/30 h-14 w-16" />
+              <Skeleton className=" bg-gray-100 dark:bg-gray-700/30 h-5 w-20 mt-2" />
+            </Skeleton>
+            <Skeleton className="relative h-[225px] bg-white dark:bg-gray-800 overflow-hidden rounded-md p-2">
+              <Skeleton className=" bg-gray-100 dark:bg-gray-700/30 h-14 w-16" />
+              <Skeleton className=" bg-gray-100 dark:bg-gray-700/30 h-5 w-20 mt-2" />
+            </Skeleton>
+            <Skeleton className="relative h-[225px] bg-white dark:bg-gray-800 overflow-hidden rounded-md p-2">
+              <Skeleton className=" bg-gray-100 dark:bg-gray-700/30 h-14 w-16" />
+              <Skeleton className=" bg-gray-100 dark:bg-gray-700/30 h-5 w-20 mt-2" />
+            </Skeleton>
           </>
         ) : (
           <>

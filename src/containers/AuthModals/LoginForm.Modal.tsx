@@ -28,8 +28,8 @@ export const LoginFormModal = () => {
   const { openModal, closeModal } = useAuthModal();
   const initialValues = React.useMemo(
     () => ({
-      email: "anas1234@gmail.com",
-      password: "Anas1234!",
+      email: "",
+      password: "",
     }),
     []
   );

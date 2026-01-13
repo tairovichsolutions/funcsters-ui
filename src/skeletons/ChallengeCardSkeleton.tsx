@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const ChallengeCardSkeleton = () => {
   return (
-    <div className="challenges-card-class space-y-4">
+    <div className="challenges-card-class bg-white dark:bg-[#FFFFFF0D] space-y-4">
       <div className="flex justify-between items-center gap-3">
         <Skeleton className="h-5 lg:h-[22px] w-[55%] rounded-md" />
         <Skeleton className="h-6 w-20 rounded-md" />

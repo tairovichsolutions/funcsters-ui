@@ -14,7 +14,7 @@ const THEME: Record<DifficultyLevelTypes, string> = {
   EASY: "border-[#008D0F33] bg-[#5DBD2D1A] text-[#5DBD2D]",
   MEDIUM: "border-[#FFA60033] bg-[#FFA6001A] text-[#FFA600]",
   HARD: "border-[#D73D3D33] bg-[#D73D3D1A] text-[#D73D3D]",
-  EXPERT: "border-[#00509233] bg-[#0050921A] text-[#005092]",
+  EXPERT: "border-[#6B4EFF33] bg-[#6B4EFF1A] text-[#6B4EFF]",
 };
 
 const LABELS: Record<DifficultyLevelTypes, string> = {

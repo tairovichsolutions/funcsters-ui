@@ -28,7 +28,7 @@ export const StepItem: React.FC<StepItemProps> = ({
       } ${className}
     `}
   >
-    <div className="flex font-satoshi items-center justify-center text-3xl md:text-6xl 3xl:text-[52.61px] font-bold">
+    <div className="flex font-satoshi items-center  min-w-20 overflow-hidden justify-center text-3xl md:text-6xl 3xl:text-[52.61px] font-bold">
       {number}
     </div>
     <div className="space-y-1 font-imbMono!">

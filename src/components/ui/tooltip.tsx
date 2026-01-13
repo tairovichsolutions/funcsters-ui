@@ -42,7 +42,7 @@ export const Tooltip = ({
 
   return (
     <>
-      <span data-tooltip-id={tooltipId} className="cursor-pointer!">
+      <span data-tooltip-id={tooltipId} className="cursor-pointer! p-0!">
         {children}
       </span>
 

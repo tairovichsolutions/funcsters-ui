@@ -36,7 +36,11 @@ export const Hero = () => {
           <Bold className=" font-semibold"> level up</Bold> — one solution at a
           time.
         </TextFadeAnimation>
-
+        <div>
+          <TextFadeAnimation direction="left" className="flex justify-center">
+            <ArrowButton>Start upgrading your coding skill</ArrowButton>
+          </TextFadeAnimation>
+        </div>
         <AnimateFade
           delay={0.4}
           className="mt-4 flex items-center justify-center"
@@ -47,12 +51,6 @@ export const Hero = () => {
             className="object-contain max-h-[625.966px] 3xl:max-h-[750px] "
           />
         </AnimateFade>
-
-        <div className=" mt-5">
-          <TextFadeAnimation direction="left" className="flex justify-center">
-            <ArrowButton>Start upgrading your coding skill</ArrowButton>
-          </TextFadeAnimation>
-        </div>
       </div>
     </main>
   );
