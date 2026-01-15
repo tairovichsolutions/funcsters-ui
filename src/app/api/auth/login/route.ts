@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message }, { status });
     }
 
-    cookieStore.set("token", data.token, {
+    cookieStore.set("token", data.accessToken, {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
