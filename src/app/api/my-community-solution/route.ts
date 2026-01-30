@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
   const { searchParams } = new URL(request.url);
   const challengeId = searchParams.get("challengeId");
   const languageId = searchParams.get("languageId");
@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   if (!challengeId || !languageId) {
     return NextResponse.json(
       { message: "Missing challengeId or languageId" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -23,10 +23,10 @@ export async function GET(request: Request) {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         cache: "no-store",
-      }
+      },
     );
     const data = await res.json();
 
@@ -46,7 +46,7 @@ export async function GET(request: Request) {
   } catch (error: any) {
     return NextResponse.json(
       { message: error?.message || "Unable to reach auth service" },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }

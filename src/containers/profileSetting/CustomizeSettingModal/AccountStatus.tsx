@@ -1,23 +1,24 @@
 import React from "react";
+import { cn } from "@/lib";
 import { Assets } from "@/constants/assets";
 import { Button } from "@/components/ui/button";
 import { Iconify } from "@/components/ui/iconify";
 import { SvgColor } from "@/components/ui/svg-color";
+import { useAuthModal } from "@/providers/AuthModalsProvider";
 import type { ConnectionItem } from "./AccountStatus.constant";
-import { useProfileSettingModal } from "@/providers/ProfileSettingModalsProvider";
 
 interface ContentProps {
   icon: string;
-  label: string;
   desc: string;
+  label: string;
   buttonLabel: string;
   onActionClick: () => void;
 }
 
 const Content: React.FC<ContentProps> = ({
   icon,
-  label,
   desc,
+  label,
   buttonLabel,
   onActionClick,
 }) => {
@@ -33,7 +34,11 @@ const Content: React.FC<ContentProps> = ({
         {desc}
       </p>
       <div className="flex justify-end">
-        <Button onClick={onActionClick} variant="destructive">
+        <Button
+          onClick={onActionClick}
+          variant="destructive"
+          className=" bg-[#D7263D33]! font-semibold! dark:bg-[#D7263D]! dark:text-white! hover:bg-[#D7263D53]! text-[#D7263D]!"
+        >
           {buttonLabel}
         </Button>
       </div>
@@ -50,16 +55,14 @@ export const AccountStatus: React.FC<AccountStatusProps> = ({
   connections,
   onConnectionClick,
 }) => {
-  const { openModal: openSettingModal } = useProfileSettingModal();
+  const { openModal: openAuthModal } = useAuthModal();
 
-  const onDeleteAccountClick = () => {
-    openSettingModal("deleteAccountConfirmation");
-  };
-  const onResetAccountClick = () => {
-    openSettingModal("resetAccount");
-  };
   return (
-    <div className="flex flex-col gap-4  px-3">
+    <div className="flex flex-col gap-6 ">
+      <div className=" space-y-1">
+        <h2 className=" font-semibold text-xl">Account Status</h2>
+        <p className=" text-xs">Edit Your Account Status </p>
+      </div>
       <div className="flex flex-col gap-3">
         {connections.map((item) => (
           <div
@@ -74,6 +77,12 @@ export const AccountStatus: React.FC<AccountStatusProps> = ({
             </div>
             <Button
               onClick={() => onConnectionClick(item.id)}
+              className={cn(
+                "font-semibold!",
+                item.connected
+                  ? "bg-[#D7263D33]! dark:bg-[#D7263D]! dark:text-white! hover:bg-[#D7263D53]! text-[#D7263D]!"
+                  : null
+              )}
               variant={item.connected ? "destructive" : "default"}
             >
               {item.connected ? "Disconnect" : "Connect"}
@@ -83,19 +92,12 @@ export const AccountStatus: React.FC<AccountStatusProps> = ({
       </div>
 
       <div className="flex flex-col gap-3">
-        {/* <Content
-          label="Reset Account"
-          desc="Once you do, all your completed challenges, achievements, and earned points will be permanently lost and cannot be recovered."
-          buttonLabel="Reset your account"
-          icon={Assets.Svgs.ResetAccount}
-          onActionClick={onResetAccountClick}
-        /> */}
         <Content
           label="Delete Account"
           desc="This action will permanently remove all your data, progress, and achievements from Funcsters, and you won’t be able to recover them later."
           buttonLabel="Delete your account"
           icon={Assets.Svgs.DeleteAccount}
-          onActionClick={onDeleteAccountClick}
+          onActionClick={() => openAuthModal("deleteAccount")}
         />
       </div>
     </div>

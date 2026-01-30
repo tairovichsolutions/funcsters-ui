@@ -1,9 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import { Assets } from "@/constants/assets";
 import { Button } from "@/components/ui/button";
-import { SelectBox } from "@/components/ui/select-box";
-import { DeleteAccountResons } from "./DeleteAccountConfirmation.constants";
 import { useProfileSettingModal } from "@/providers/ProfileSettingModalsProvider";
+import { Input } from "@/components";
 
 export const DeleteAccountConfirmationModal = () => {
   const { closeModal } = useProfileSettingModal();
@@ -27,11 +26,7 @@ export const DeleteAccountConfirmationModal = () => {
       </div>
 
       <div className="w-full">
-        <SelectBox
-          placeholder="select the reason"
-          options={DeleteAccountResons}
-          label="Select a reason"
-        />
+        <Input label="Reason" placeholder="Enter your reason" />
       </div>
       <div className=" grid grid-cols-2 items-center justify-center gap-4  w-full">
         <Button variant="outline" onClick={() => closeModal()}>

@@ -38,7 +38,7 @@ export const BentoCard = ({
         />
 
         <div className=" p-4 sm:p-5 md:p-7 xl:p-10 flex items-end bg-linear-to-t from-[#002646] to-transparent absolute -bottom-0.5 left-0 w-full md:h-80 3xl:h-[250px]!">
-          <p className="text-white text-sm sm:text-lg md:text-xl 3xl:text-[36px] pe-5 font-semibold mt-4">
+          <p className="text-white text-sm sm:text-lg md:text-xl 3xl:text-[36px]! pe-5 font-semibold mt-4">
             {title}
           </p>
         </div>

@@ -16,3 +16,10 @@ export const EDITOR_THEME_OPTIONS = [
   { value: "light", label: "Light (Visual Studio)" },
   { value: "vs-dark", label: "Dark (Visual Studio)" },
 ];
+
+export const VOTE_OPTIONS = [
+  { id: "top_rated", label: "Top Rated" },
+  { id: "most_genius", label: "Most Genius" },
+  { id: "most_solid", label: "Most Solid" },
+  { id: "newest", label: "Newest" },
+];

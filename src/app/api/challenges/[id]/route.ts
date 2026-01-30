@@ -3,29 +3,29 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  ctx: RouteContext<"/api/challenges/[id]">
+  ctx: RouteContext<"/api/challenges/[id]">,
 ) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
 
   const { id } = await ctx?.params;
 
   if (!id) {
     return NextResponse.json(
       { authenticated: false, message: "challenge Id is required." },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
   try {
-    const url = token
+    const url = accessToken
       ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/challenges/${id}`
       : `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/auth/challenges/${id}`;
     const res = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
       },
       cache: "no-store",
     });
@@ -43,12 +43,12 @@ export async function GET(
 
     return NextResponse.json(
       { message: "Challenges FetCh Successful.", data },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (e) {
     return NextResponse.json(
       { message: "Unable to reach auth service" },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }

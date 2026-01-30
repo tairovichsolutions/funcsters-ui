@@ -1,126 +1,147 @@
 "use client";
 
 import React, { useMemo } from "react";
+import { Pie, PieChart, ResponsiveContainer, Cell } from "recharts";
 import { Assets } from "@/constants/assets";
 import { MatricCard } from "@/components/ui/matric-card";
-export const description = "Challenge progress donut chart";
-import { LabelList, Pie, PieChart, ResponsiveContainer } from "recharts";
 import { StatsScorePoints } from "@/components/ui/stats-score-points";
 
 type ChallengeProgress = {
   easy?: number;
-  hard?: number;
-  total?: number;
-  expert?: number;
   medium?: number;
+  hard?: number;
+  expert?: number;
+  total?: number;
 };
 
 type ChallengeProgressCardProps = {
   completedChallenges?: ChallengeProgress;
 };
 
+type DifficultyKey = "easy" | "medium" | "hard" | "expert";
+
 type ChartSlice = {
-  name: "Easy" | "Medium" | "Hard" | "Expert";
-  key: keyof ChallengeProgress;
+  name: string;
+  key: DifficultyKey;
   value: number;
   displayValue: number;
   fill: string;
-  percentage: number;
+  stroke: string;
 };
 
 const MIN_SLICE_VALUE = 0.2;
 
+const DIFFICULTIES: Omit<ChartSlice, "value" | "displayValue">[] = [
+  { name: "Easy", key: "easy", fill: "#277102", stroke: "#ffffff4D" },
+  { name: "Medium", key: "medium", fill: "#FFA539", stroke: "#ffffff4D" },
+  { name: "Hard", key: "hard", fill: "#D73D3D", stroke: "#ffffff4D" },
+  { name: "Expert", key: "expert", fill: "#005092", stroke: "#ffffff4D" },
+];
+
+const EMPTY_SLICE: ChartSlice = {
+  name: "Empty",
+  key: "easy",
+  value: 0,
+  displayValue: 1,
+  fill: "#5492DC",
+  stroke: "ffffff4D",
+};
+
+const CustomLegend = ({ data }: { data: ChartSlice[] }) => (
+  <div className="grid grid-cols-2 gap-x-7 gap-y-2 text-white mt-2 ">
+    {data.map((item) => (
+      <div key={item.key} className="flex items-center gap-1.5">
+        <span
+          className="h-2.5 w-2.5 rounded-full"
+          style={{ backgroundColor: item.fill }}
+        />
+        <span className="font-imbMono text-xs">{item.name}</span>
+        <span className="ml-auto   font-semibold text-xs">{item.value}</span>
+      </div>
+    ))}
+  </div>
+);
+
 export const ChallengeProgressCard: React.FC<ChallengeProgressCardProps> =
   React.memo(({ completedChallenges }) => {
-    const rawChartData = useMemo(() => {
-      const base: Omit<ChartSlice, "value" | "displayValue" | "percentage">[] =
-        [
-          { name: "Easy", key: "easy", fill: "#277102" },
-          { name: "Medium", key: "medium", fill: "#FFA539" },
-          { name: "Hard", key: "hard", fill: "#D73D3D" },
-          { name: "Expert", key: "expert", fill: "#005092" },
-        ];
+    const slices = useMemo<ChartSlice[]>(() => {
+      return DIFFICULTIES.map((item) => {
+        const value = completedChallenges?.[item.key] ?? 0;
 
-      return base.map((item) => {
-        const rawValue = completedChallenges?.[item.key] ?? 0;
         return {
           ...item,
-          value: rawValue,
-          displayValue: rawValue === 0 ? MIN_SLICE_VALUE : rawValue,
-          percentage: 0,
+          value,
+          displayValue: value === 0 ? MIN_SLICE_VALUE : value,
         };
       });
     }, [completedChallenges]);
 
     const totalCompleted = useMemo(() => {
-      if (completedChallenges?.total != null) return completedChallenges.total;
-      return rawChartData.reduce((sum, slice) => sum + slice.value, 0);
-    }, [completedChallenges, rawChartData]);
+      return (
+        completedChallenges?.total ??
+        slices.reduce((sum, slice) => sum + slice.value, 0)
+      );
+    }, [completedChallenges, slices]);
 
-    const chartData: ChartSlice[] = useMemo(() => {
-      if (totalCompleted === 0) {
-        return rawChartData.map((item) => ({ ...item, percentage: 0 }));
-      }
+    const isEmpty = totalCompleted === 0;
 
-      return rawChartData.map((item) => ({
-        ...item,
-        percentage: Math.round((item.value / totalCompleted) * 100),
-      }));
-    }, [rawChartData, totalCompleted]);
+    const chartData = useMemo<ChartSlice[]>(() => {
+      return isEmpty ? [EMPTY_SLICE] : slices;
+    }, [isEmpty, slices]);
 
     return (
       <MatricCard
         imgSrc={Assets.Svgs.ChallengeProgressImage}
         className="bg-challenge-progress-card"
       >
-        <div className="flex h-full items-center justify-between gap-2">
+        <div className="flex h-full items-center justify-between gap-4">
           <div className="h-full">
-            <StatsScorePoints value={totalCompleted} label="Challenges" />
+            <StatsScorePoints value={totalCompleted} label="Completed" />
           </div>
-
-          <div className="z-20 h-32 w-32  shrink-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart style={{ pointerEvents: "none" }}>
+          <div className="flex h-full! w-64! flex-col items-center justify-center">
+            <ResponsiveContainer width="100%" height={"100%"}>
+              <PieChart className="[&_.recharts-layer]:outline-hidden [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-hidden">
                 <Pie
                   data={chartData}
-                  dataKey="displayValue"
-                  innerRadius={36}
-                  outerRadius={56}
-                  stroke="none"
-                  isAnimationActive
-                  labelLine={false}
-                  className="cursor-default"
-                  style={{ pointerEvents: "none" }}
+                  dataKey={isEmpty ? "displayValue" : "value"}
+                  innerRadius={isEmpty ? 55 : 45}
+                  outerRadius={isEmpty ? 85 : 80}
+                  startAngle={-270}
+                  endAngle={90}
+                  fill={isEmpty ? "#5492DC" : undefined}
+                  strokeWidth={1}
                 >
-                  <LabelList
-                    dataKey="percentage"
-                    position="inside"
-                    formatter={(val) => `${val}%`}
-                    stroke="none"
-                    fontSize={9}
-                    fill="#fff"
-                  />
+                  {chartData.map((entry, index) => (
+                    <Cell
+                      key={index}
+                      fill={entry.fill}
+                      stroke={isEmpty ? "#ffffff4D" : entry.stroke}
+                      style={{ outline: "none" }}
+                    />
+                  ))}
                 </Pie>
+                <text
+                  x="50%"
+                  y="45%"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="fill-white text-2xl font-bold"
+                >
+                  {totalCompleted}
+                </text>
+                <text
+                  x="50%"
+                  y="57%"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="fill-white text-xs font-light"
+                >
+                  {isEmpty ? "Start Solving!" : "Total"}
+                </text>
               </PieChart>
             </ResponsiveContainer>
-          </div>
 
-          <div className="flex max-h-full shrink-0 flex-col overflow-y-auto rounded-r-lg border-2 border-white text-xs">
-            {chartData.map((item) => (
-              <div
-                key={item.name}
-                className="flex h-full shrink-0 flex-col gap-1 py-1.5 pl-2 pr-4 leading-none text-white"
-                style={{ backgroundColor: item.fill }}
-              >
-                <h4 className="text-[11.5px] font-semibold text-white/55">
-                  {item.name}
-                </h4>
-                <h4 className="text-[10px] font-semibold leading-none">
-                  {item.value}
-                </h4>
-                <h4 className="text-[9px] leading-none">Completed</h4>
-              </div>
-            ))}
+            {totalCompleted > 0 && <CustomLegend data={slices} />}
           </div>
         </div>
       </MatricCard>

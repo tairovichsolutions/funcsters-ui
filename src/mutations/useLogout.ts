@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import { apiClient } from "@/lib/axiosClient";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useLogout = () => {
@@ -8,12 +8,12 @@ export const useLogout = () => {
 
   const logoutFn = async () => {
     const URL = "/api/auth/logout";
-    const resp = await axios.post(
+    const resp = await apiClient.post(
       URL,
       {},
       {
         withCredentials: true,
-      }
+      },
     );
 
     return { status: resp.status, data: resp.data };

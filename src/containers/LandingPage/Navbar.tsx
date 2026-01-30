@@ -41,10 +41,10 @@ export const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { id: 1, title: "Home", link: "" },
-    { id: 2, title: "Challenges", link: "" },
-    { id: 3, title: "Login", link: "" },
-    { id: 4, title: "Sign Up", link: "" },
+    { id: 1, title: "Home", link: "/" },
+    { id: 2, title: "Challenges", link: "/challenges" },
+    { id: 3, title: "Login", link: "/challenges?auth=login" },
+    { id: 4, title: "Sign Up", link: "/challenges?auth=signUp" },
   ];
 
   return (
@@ -54,7 +54,7 @@ export const Navbar = () => {
           "w-full pointer-events-auto transform transition-all duration-300 ",
           mode === "top" && "mt-0 px-0 translate-y-0 opacity-100",
           mode === "floating" &&
-            "mt-3 px-4 md:px-24 2xl:px-32 translate-y-0 opacity-100"
+          "mt-3 px-4 md:px-24 2xl:px-32 translate-y-0 opacity-100"
         )}
       >
         <nav
@@ -101,7 +101,7 @@ export const Navbar = () => {
           </div>
           <div className="lg:hidden flex ">
             <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
+              <PopoverTrigger asChild className="cursor-pointer">
                 <Menu size={28} color="#ffffff" />
               </PopoverTrigger>
               <PopoverContent
@@ -112,8 +112,12 @@ export const Navbar = () => {
                   {navLinks.map((link) => (
                     <div
                       key={link.id}
-                      onClick={(e) => (e.stopPropagation(), setOpen(false))}
-                      className="p-3 font-imbMono text-sm border-dashed border-b border-white/20! last:border-b-0 text-white"
+                      onClick={(e) => {
+                        e.stopPropagation(),
+                          router.push(link.link),
+                          setOpen(false)
+                      }}
+                      className="p-3 font-imbMono text-sm border-dashed border-b border-white/20! last:border-b-0 text-white cursor-pointer"
                     >
                       <h1>{link.title}</h1>
                     </div>

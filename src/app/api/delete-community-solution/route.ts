@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function DELETE(request: Request) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
 
-  if (!token) {
+  if (!accessToken) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
@@ -16,7 +16,7 @@ export async function DELETE(request: Request) {
   if (!challengeId || !languageId) {
     return NextResponse.json(
       { message: "Missing challengeId or languageId" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -27,7 +27,7 @@ export async function DELETE(request: Request) {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       cache: "no-store",
     });
@@ -48,12 +48,12 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json(
       { message: "Solution Deleted Successfully.", data },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (e) {
     return NextResponse.json(
       { message: "Unable to reach auth service" },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }

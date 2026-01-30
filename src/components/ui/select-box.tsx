@@ -15,27 +15,27 @@ import * as Select from "@radix-ui/react-select";
 export interface SelectOption {
   value: string;
   label: React.ReactNode;
-  startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
+  startIcon?: React.ReactNode;
 }
 
 export interface SelectBoxProps
   extends React.ComponentPropsWithoutRef<typeof Select.Root> {
   error?: string;
   value?: string;
+  label?: string;
   hasMore?: boolean;
   loading?: boolean;
   className?: string;
   labelClass?: string;
   placeholder?: string;
+  onRetry?: () => void;
   defaultValue?: string;
   emptyMessage?: string;
   contantClass?: string;
   loadMoreLabel?: string;
   loadingMessage?: string;
-  label?: string;
   options: SelectOption[];
-  onRetry?: () => void;
   onLoadMore?: () => void;
   onValueChange?: (value: string) => void;
 }
@@ -48,21 +48,21 @@ export const SelectBox = React.forwardRef<
     {
       error,
       value,
-      loading,
-      options,
       label,
       hasMore,
-      className,
-      labelClass,
       onRetry,
+      loading,
+      options,
+      className,
       onLoadMore,
-      onValueChange,
+      labelClass,
       contantClass,
       defaultValue,
+      onValueChange,
       placeholder = "Select...",
-      loadingMessage = "Loading...",
       emptyMessage = "No options",
       loadMoreLabel = "Load more",
+      loadingMessage = "Loading...",
       ...props
     },
     ref

@@ -1,10 +1,10 @@
+"use client";
 import { ReactNode } from "react";
 import { DashboardHeader } from "@/containers/Dashboard/DashboardHeader";
 
 interface LayoutProps {
   children: ReactNode;
 }
-
 const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="flex h-screen flex-col">

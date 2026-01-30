@@ -3,14 +3,14 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
   const payload = await request.json();
 
   if (!payload) {
     return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
   }
 
-  if (!token) {
+  if (!accessToken) {
     return NextResponse.json({ message: "Unothorize" }, { status: 400 });
   }
   try {
@@ -20,11 +20,11 @@ export async function POST(request: Request) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify(payload),
         cache: "no-store",
-      }
+      },
     );
 
     const data = await res.json();
@@ -42,12 +42,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       { message: "Code Running Successfull", data },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (e) {
     return NextResponse.json(
       { message: "Unable to reach auth service" },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }

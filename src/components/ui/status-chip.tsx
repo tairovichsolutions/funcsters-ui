@@ -5,25 +5,27 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Assets } from "@/constants/assets";
 import { ChipSizeTypes, UserProgressTypes } from "@/types";
+import { Tooltip } from "./tooltip";
 
 export interface StatusChipProps extends React.HTMLAttributes<HTMLSpanElement> {
   label?: string;
   withIcon?: boolean;
+  withText?: boolean;
   size?: ChipSizeTypes;
   status: UserProgressTypes;
 }
 
 const SIZE: Record<ChipSizeTypes, string> = {
-  xs: "text-[11px] px-[14px] py-[5.6px]",
-  sm: "text-xs px-[9px] py-[6px]",
-  md: "text-sm px-[18px] py-[7px]",
-  lg: "text-base px-[18px] py-[7px]",
+  xs: "text-[11px]",
+  sm: "text-xs",
+  md: "text-sm",
+  lg: "text-base",
 };
 
 const THEME: Record<UserProgressTypes, string> = {
-  COMPLETED: "text-[#008D0F] bg-[#008D0F1A]",
-  TODO: "text-[#0055FF]",
-  IN_PROGRESS: "text-[#FFA600]",
+  COMPLETED: "text-[#008D0F] ",
+  TODO: "text-[#0055FF] ",
+  IN_PROGRESS: "text-[#FFA600] ",
 } as const;
 
 const LABELS: Record<UserProgressTypes, string> = {
@@ -38,27 +40,40 @@ const ICONS: Record<UserProgressTypes, string> = {
   IN_PROGRESS: Assets.Svgs.InProgress,
 } as const;
 
+const TOOLTIP_BG: Record<UserProgressTypes, string> = {
+  COMPLETED: "bg-[#008D0F]! text-white!",
+  TODO: "bg-[#0055FF]! text-white!",
+  IN_PROGRESS: "bg-[#FFA600]! text-white!",
+} as const;
+
 export const StatusChip = React.memo(
   ({
     status,
     size = "sm",
     withIcon = true,
+    withText = true,
     label,
     className,
     ...rest
   }: StatusChipProps) => {
     const iconSrc = ICONS[status];
+    const text = label ?? LABELS[status];
 
     const iconSize =
-      size === "lg" ? "size-[18px]" : size === "md" ? "size-4" : "size-4";
+      size === "lg"
+        ? ` ${withText ? "size-[28px]" : "size-[18px]"}`
+        : size === "md"
+        ? `${withText ? "size-4" : "size-4.5"}`
+        : `${withText ? "size-4" : "size-4.5"}`;
 
-    return (
+    const chip = (
       <span
         role="status"
-        aria-label={`Status: ${label ?? LABELS[status]}`}
+        aria-label={`Status: ${text}`}
         className={cn(
-          "inline-flex shrink-0  rounded-md py-2 items-center leading-none! h-fit gap-1 font-semibold select-none transition-colors",
+          "inline-flex shrink-0  items-center font-semibold gap-1 leading-none select-none ",
           SIZE[size],
+
           THEME[status],
           className
         )}
@@ -66,15 +81,27 @@ export const StatusChip = React.memo(
       >
         {withIcon && (
           <Image
-            alt={iconSrc}
+            alt={text}
             height={20}
             width={20}
             src={iconSrc}
             className={cn(iconSize, "shrink-0 object-contain")}
           />
         )}
-        <span>{label ?? LABELS[status]}</span>
+        {withText && <span>{text}</span>}
       </span>
+    );
+
+    if (withText) return chip;
+
+    return (
+      <Tooltip
+        place="top"
+        bgColorClass={cn("font-semibold!  rounded-md!", TOOLTIP_BG[status])}
+        content={text}
+      >
+        {chip}
+      </Tooltip>
     );
   }
 );

@@ -1,5 +1,6 @@
 import { cn } from "@/lib";
 import { Icon } from "@iconify/react";
+import React from "react";
 
 interface IconifyProps {
   iconName: string | undefined;
@@ -7,18 +8,15 @@ interface IconifyProps {
   strokeWidth?: number;
 }
 
-export const Iconify = ({
-  iconName,
-  className,
-  strokeWidth,
-  ...rests
-}: IconifyProps) => {
-  return (
-    <Icon
-      strokeWidth={strokeWidth}
-      {...rests}
-      icon={iconName ?? "mdi:alert-circle-outline"}
-      className={cn("size-5", className)}
-    />
-  );
-};
+export const Iconify = React.memo(
+  ({ iconName, className, strokeWidth, ...rests }: IconifyProps) => {
+    return (
+      <Icon
+        strokeWidth={strokeWidth}
+        {...rests}
+        icon={iconName ?? "mdi:alert-circle-outline"}
+        className={cn("size-5", className)}
+      />
+    );
+  }
+);

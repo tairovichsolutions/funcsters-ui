@@ -65,7 +65,7 @@ export const DashboardHeader = () => {
           <ProfileAvatar userData={userData?.data?.user} />
         ) : (
           <>
-            <Button onClick={() => openModal("signUp")}>Sing Up</Button>
+            <Button onClick={() => openModal("signUp")}>Sign Up</Button>
             <Button onClick={() => openModal("login")} variant={"outline"}>
               Login
             </Button>

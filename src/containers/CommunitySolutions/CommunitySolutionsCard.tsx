@@ -153,21 +153,32 @@ export const CommunitySolutionsCard = React.memo(
           </div>
 
           {mySolution ? (
-            <Tooltip
-              place="top-end"
-              className="font-semibold rounded-lg! px-4!"
-              content={tooltipText}
-            >
-              <Switch
-                textSize="sm"
-                uiSize="lg"
-                disabled={toggleMySolutionPending}
-                checked={checked}
-                onCheckedChange={handleToggle}
-                onText={"Hide"}
-                offText={"View"}
-              />
-            </Tooltip>
+            <div className=" flex gap-1.5 items-center">
+              <Tooltip
+                place="top-end"
+                className="font-semibold rounded-lg! px-4!"
+                content={tooltipText}
+              >
+                <Switch
+                  textSize="sm"
+                  uiSize="lg"
+                  disabled={toggleMySolutionPending}
+                  checked={checked}
+                  onCheckedChange={handleToggle}
+                  onText={"Hide"}
+                  offText={"View"}
+                />
+              </Tooltip>
+
+              <Button
+                onClick={() => setDeleteModalOpen(true)}
+                variant={"ghost"}
+                className=" text-[#EE3939]! p-1.5! size-fit! hover:bg-[#EE39391A]!"
+                size="icon"
+              >
+                <Trash2 className=" size-4.5!" />
+              </Button>
+            </div>
           ) : (
             <div className=" mr-2">
               {languageConfig?.iconName && (
@@ -200,25 +211,13 @@ export const CommunitySolutionsCard = React.memo(
         </Scrollable>
 
         <div className="mt-3  px-1 flex items-center justify-between">
-          <div className="flex gap-2 items-center flex-wrap">
-            <CommunitySolutionsVote
-              languageId={Number(languageId)}
-              challengeId={Number(id)}
-              solutionId={solutionId}
-              voteData={data?.votes}
-            />
-          </div>
-          {mySolution && (
-            <Button
-              onClick={() => setDeleteModalOpen(true)}
-              variant={"outline"}
-              startIcon={<Trash2 className="size-3" />}
-              className="border-[#EE3939] text-[#EE3939] hover:text-[#EE3939] gap-1 leading-none bg-[#EE39391A] hover:bg-[#EE39391A] font-semibold"
-              size="chip"
-            >
-              Delete
-            </Button>
-          )}
+          <CommunitySolutionsVote
+          mySolution={mySolution}
+            languageId={Number(languageId)}
+            challengeId={Number(id)}
+            solutionId={solutionId}
+            voteData={data?.votes}
+          />
 
           {deleteModalOpen && (
             <DeleteModal

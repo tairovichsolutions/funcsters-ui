@@ -1,10 +1,8 @@
 "use client";
 import { Modal } from "@/components/ui/modal";
-import { ResetAccountModal } from "./resetAccount.Modal";
 import { useProfileSettingModal } from "@/providers/ProfileSettingModalsProvider";
-import { DeleteAccountConfirmationModal } from "./DeleteAccountConfirmation.Modal";
-import { ChangePasswordSuccessfullyModal } from "./ChangePasswordSuccessfully.Modal";
 import { CustomizeSettingModal } from "./CustomizeSettingModal/CustomizeSetting.Modal";
+import { DeleteAccountConfirmationModal } from "./DeleteAccountConfirmation.Modal";
 
 export const ProfileSettingModal = () => {
   const { activeModal, closeModal } = useProfileSettingModal();
@@ -13,21 +11,20 @@ export const ProfileSettingModal = () => {
 
   return (
     <Modal
+      size="md"
       open={!!activeModal}
       onClose={closeModal}
-      size="md"
-      title={showHeader ? "Settings" : ""}
       showClose={showHeader}
-      className="h-[700px]"
+      className="h-[600px] min-w-[800px]! "
     >
       {activeModal === "setting" && <CustomizeSettingModal />}
       {activeModal === "deleteAccountConfirmation" && (
         <DeleteAccountConfirmationModal />
       )}
-      {activeModal === "resetAccount" && <ResetAccountModal />}
-      {activeModal === "ChangePasswordSuccessfullyModal" && (
+      {/* {activeModal === "resetAccount" && <ResetAccountModal />} */}
+      {/* {activeModal === "ChangePasswordSuccessfullyModal" && (
         <ChangePasswordSuccessfullyModal />
-      )}
+      )} */}
     </Modal>
   );
 };

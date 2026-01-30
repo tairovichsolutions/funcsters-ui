@@ -1,7 +1,6 @@
 "use client";
 import { BentoCard } from "./BentoCard";
 import { ArrowButton, FocusText } from "@/components";
-import { AnimateFade } from "@/components/ui/animate-fade";
 import { Bold } from "@/components/ui/bold-text";
 import { TextFadeAnimation } from "@/components/ui/text-fade-animation";
 
@@ -64,7 +63,7 @@ export const Bento = () => {
             colSpan=" col-span-12 md:col-span-6 lg:col-span-7"
             imageSrc="/images/challenge.png"
             imageAlt="bento4"
-            title="Real-World Preparation forCareer Success!"
+            title="Real-World Preparation for Career Success!"
           />
         </div>
       </div>

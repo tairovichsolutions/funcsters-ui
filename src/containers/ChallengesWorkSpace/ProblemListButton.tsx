@@ -13,10 +13,11 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { Navigation } from "@/constants/navigation";
 import { useRouter, useParams } from "next/navigation";
 import { ProblemListpopover } from "./ProblemListpopover";
-import { useAllChallenges } from "@/queries/useAllChallenges";
 import { ChevronLeft, ChevronRight, Loader } from "lucide-react";
 import { useChallengesFilters } from "@/hooks/useChallengesFilters";
 import { useTagOptions } from "@/hooks/useTagOptions";
+import { useInfiniteChallenges } from "@/queries/useAllChallenges";
+import { ChallengesTypes } from "@/types";
 
 export const ProblemListButton: React.FC = () => {
   const router = useRouter();
@@ -36,32 +37,35 @@ export const ProblemListButton: React.FC = () => {
   } = useChallengesFilters();
 
   const {
-    data: challengeRes,
+    data,
     isLoading,
     isFetching,
-  } = useAllChallenges(queryParams);
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteChallenges(queryParams);
 
-  const challengeData = React.useMemo(() => {
-    if (!Array.isArray(challengeRes)) return [];
-    return challengeRes;
-  }, [challengeRes]);
+  const allChallenges = React.useMemo(() => {
+    const pages = data?.pages ?? [];
+    return pages.flatMap((p) => p.challenges) as ChallengesTypes[];
+  }, [data]);
 
   const isLoadingList = isLoading || isFetching;
 
   const { prevChallenge, nextChallenge } = React.useMemo(() => {
-    const index = challengeData?.findIndex(
+    const index = allChallenges?.findIndex(
       (item: { id: number }) => item?.id === currentChallengeId
     );
 
-    const prev = index > 0 ? challengeData[index - 1] : null;
+    const prev = index > 0 ? allChallenges[index - 1] : null;
 
     const next =
-      index >= 0 && index < challengeData?.length - 1
-        ? challengeData[index + 1]
+      index >= 0 && index < allChallenges?.length - 1
+        ? allChallenges[index + 1]
         : null;
 
     return { prevChallenge: prev, nextChallenge: next };
-  }, [challengeData, currentChallengeId]);
+  }, [allChallenges, currentChallengeId]);
 
   const handleNavigate = (challengeId: number | null) => {
     if (challengeId == null) return;
@@ -96,13 +100,17 @@ export const ProblemListButton: React.FC = () => {
             filters={filters}
             setTags={setTags}
             clearAll={clearAll}
-            data={challengeData}
+            data={allChallenges}
             setSearch={setSearch}
             setStatus={setStatus}
             tagOptions={tagOptions}
             tagLabelMap={tagLabelMap}
             isLoading={isLoadingList}
             setDifficulty={setDifficulty}
+            allChallenges={allChallenges}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={Boolean(hasNextPage)}
+            isFetchingNextPage={isFetchingNextPage}
           />
         </PopoverContent>
       </Popover>

@@ -38,11 +38,8 @@ export const FAQAccordion: React.FC<FAQAccordionProps> = ({
       onValueChange={handleValueChange}
     >
       {items.map((item) => (
-        <TextFadeAnimation direction="left">
-          <div
-            key={item.id}
-            className=" bg-linear-to-tl from-[#ffffff]/40 via-transparent to-[#ffffff]/40  p-px rounded-3xl"
-          >
+        <TextFadeAnimation key={item.id} direction="left">
+          <div className=" bg-linear-to-tl from-[#ffffff]/40 via-transparent to-[#ffffff]/40  p-px rounded-3xl">
             <div className=" bg-[#0d1a26] p-0 rounded-3xl">
               <AccordionItem
                 value={item.id}

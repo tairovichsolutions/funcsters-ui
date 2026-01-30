@@ -5,12 +5,12 @@ import { Faqs } from "@/containers/LandingPage/Faqs/Faqs";
 import { Bento } from "@/containers/LandingPage/Bento/Bento";
 import { KillerCoder } from "../containers/LandingPage/KillerCoder";
 import { HowToJoin } from "@/containers/LandingPage/HowToJoin/HowToJoin";
-import { Programinglanguages } from "@/containers/LandingPage/ProgrammingLanguages/programinglanguages";
 import { WhyDevelopersChoose } from "@/containers/LandingPage/WhyDeveloperChoose/WhyDevelopersChoose";
+import { Programinglanguages } from "@/containers/LandingPage/ProgrammingLanguages/programinglanguages";
 
 export const LandingPageScreen = () => {
   return (
-    <div className="w-full h-full text-white">
+    <div className="w-full h-full text-white overflow-x-hidden">
       <Navbar />
       <Hero />
       <Bento />

@@ -110,8 +110,8 @@ export const Slider = () => {
                 key={`${item.index}-${idx}`}
                 className={`flex shrink-0 p-3 md:p-7 items-center justify-center transition-all duration-500 cursor-pointer ${
                   isCenter
-                    ? "bg-white shadow-[0_0_108.681px_0_rgba(255,255,255,0.5)]! shadow-white/20"
-                    : "bg-white"
+                    ? "bg-[#35A4FF] shadow-[0_0_108.681px_0_rgba(255,255,255,0.5)]! shadow-[#35A4FF]/20"
+                    : "bg-[#35A4FF]"
                 }`}
                 style={{
                   width: `${size}px`,

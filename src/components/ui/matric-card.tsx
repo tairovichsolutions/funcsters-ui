@@ -11,8 +11,8 @@ export const MatricCard = React.memo(
     return (
       <div
         className={cn(
-          "relative h-[225px] overflow-hidden rounded-md p-2 bg-challenge-progress-card",
-          className
+          "relative h-[225px] 3xl:h-60 overflow-hidden rounded-md p-2 bg-challenge-progress-card",
+          className,
         )}
       >
         {children}
@@ -22,5 +22,5 @@ export const MatricCard = React.memo(
         </div>
       </div>
     );
-  }
+  },
 );

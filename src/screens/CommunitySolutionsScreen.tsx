@@ -7,12 +7,18 @@ import {
 } from "@/containers/CommunitySolutions";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { AlertBanner, UnlockSolutionCard } from "@/components";
-import { useCommunitySolutions } from "@/queries/useCommunitySolutions";
+import { AlertBanner, TagSelector, UnlockSolutionCard } from "@/components";
+import {
+  SortKey,
+  useCommunitySolutions,
+} from "@/queries/useCommunitySolutions";
 import { useMyCommunitySolutions } from "@/queries/useMyCommunitySolutions";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
 import { CommunitySolutionCardSkeleton } from "@/skeletons/CommunitySolutionCardSkeleton";
 import { useChallengeById } from "@/queries/useChallengeById";
+import { VOTE_OPTIONS } from "@/constants/selectOptions";
+
+import { ScrollRestoration } from "next-scroll-restoration";
 
 type UserProgress = "TODO" | "IN_PROGRESS" | "COMPLETED";
 
@@ -26,9 +32,11 @@ type LanguageImplementation = {
 
 export const CommunitySolutionsScreen = React.memo(() => {
   const [unlockedByLang, setUnlockedByLang] = useState<Record<number, boolean>>(
-    {}
+    {},
   );
   const [openUnlockModal, setOpenUnlockModal] = useState(false);
+
+  const [selectedFilter, setSelectedFilter] = useState<SortKey>("top_rated");
 
   const { id } = useParams<{ id: string }>();
   const challengeId = id;
@@ -55,13 +63,18 @@ export const CommunitySolutionsScreen = React.memo(() => {
     !!languageId && (hasViewedSolution || isCompleted || isUnlockedThisSession);
 
   const { data: allSolutionData, isLoading: allSolutionLoading } =
-    useCommunitySolutions(challengeId, languageId as number, canViewSolutions);
+    useCommunitySolutions(
+      challengeId,
+      languageId as number,
+      canViewSolutions,
+      selectedFilter,
+    );
 
   const { data: mySolutionData, isLoading: mySolutionLoading } =
     useMyCommunitySolutions(
       challengeId,
       languageId as number,
-      canViewSolutions
+      canViewSolutions,
     );
 
   const handleUnlockSolution = () => {
@@ -95,8 +108,15 @@ export const CommunitySolutionsScreen = React.memo(() => {
     setOpenUnlockModal(true);
   }, [challengeLoading, languageId, currentLangImpl, canViewSolutions]);
 
+  const selectedLabel =
+    VOTE_OPTIONS.find((x) => x.id === selectedFilter)?.label ?? "Most Votes";
+
   return (
-    <div className="space-y-6 w-full h-full">
+    <div
+      className="space-y-4 w-full h-full "
+      data-scroll-restoration-id="container"
+    >
+      <ScrollRestoration />
       {openUnlockModal && (
         <UnlockSolutionCard
           language={selectedLanguage}
@@ -113,7 +133,25 @@ export const CommunitySolutionsScreen = React.memo(() => {
         <AlertBanner />
       )}
 
-      {allSolutionLoading && canViewSolutions ? (
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-[#005092] ">
+          Community Solution
+        </h3>
+
+        <TagSelector
+          label={selectedLabel}
+          tags={VOTE_OPTIONS}
+          className={"text-xs! bg-[#0000000D]! border-none! shadow-none!"}
+          multiple={false}
+          value={[selectedFilter]}
+          onChange={(selected) => {
+            const next = (selected?.[0] as SortKey) ?? "top_rated";
+            setSelectedFilter(next);
+          }}
+        />
+      </div>
+
+      {allSolutionLoading ? (
         <div className="space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
             <CommunitySolutionCardSkeleton key={i} />
@@ -121,9 +159,7 @@ export const CommunitySolutionsScreen = React.memo(() => {
         </div>
       ) : (
         <AllCommunitySolution
-          allSolutionData={
-            canViewSolutions ? allSolutionData?.data?.community : []
-          }
+          allSolutionData={allSolutionData?.data?.community}
         />
       )}
     </div>

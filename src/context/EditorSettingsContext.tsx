@@ -3,7 +3,7 @@
 import * as React from "react";
 
 export type EditorTheme = "vs-dark" | "light" | "hc-black";
-export type EditorKeyBinding = "default" | "vscode" | "sublime" | "vim";
+export type EditorKeyBinding = "vscode" | "sublime" | "vim";
 
 export type EditorSettings = {
   theme: EditorTheme;
@@ -35,7 +35,7 @@ const DEFAULT_SETTINGS: EditorSettings = {
   tabSize: 2,
   wordWrap: "on",
   autoComplete: true,
-  keyBinding: "default",
+  keyBinding: "vscode",
 };
 
 function detectSystemTheme(): EditorTheme {
@@ -86,7 +86,7 @@ export function EditorSettingsProvider({
   children: React.ReactNode;
 }) {
   const [settings, setSettings] = React.useState<EditorSettings>(() =>
-    readSettingsFromStorage()
+    readSettingsFromStorage(),
   );
 
   React.useEffect(() => {
@@ -150,7 +150,7 @@ export function useEditorSettings(): EditorSettingsContextValue {
 
   if (!ctx) {
     throw new Error(
-      "useEditorSettings must be used inside <EditorSettingsProvider>"
+      "useEditorSettings must be used inside <EditorSettingsProvider>",
     );
   }
 

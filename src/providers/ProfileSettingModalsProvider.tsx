@@ -2,12 +2,14 @@
 import React, { createContext, useContext, useState } from "react";
 
 interface ProfileSettingModalContextType {
+  closeModal: () => void;
   activeModal: string | null;
   openModal: (name: string) => void;
-  closeModal: () => void;
 }
 
-const ModalContext = createContext<ProfileSettingModalContextType | undefined>(undefined);
+const ModalContext = createContext<ProfileSettingModalContextType | undefined>(
+  undefined
+);
 
 export const ProfileSetingModalsProvider = ({
   children,

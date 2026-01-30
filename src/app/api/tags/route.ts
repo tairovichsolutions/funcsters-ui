@@ -4,16 +4,16 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
   try {
-    const url = token
+    const url = accessToken
       ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/tags/active`
       : `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/auth/tags/active`;
     const res = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
       },
     });
 
@@ -23,7 +23,7 @@ export async function GET() {
   } catch (err: any) {
     return NextResponse.json(
       { message: err?.message || "Something went wrong" },
-      { status: err?.status || 500 }
+      { status: err?.status || 500 },
     );
   }
 }

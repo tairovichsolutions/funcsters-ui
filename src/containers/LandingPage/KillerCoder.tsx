@@ -25,10 +25,10 @@ export const KillerCoder = () => {
         </div>
 
         <AnimateFade>
-          <div className=" flex justify-center items-center mt-14 relative p-2 pb-0 md:bg-black rounded-t-3xl">
+          <div className=" flex justify-center items-center mt-14 relative  pb-0 rounded-t-3xl">
             <div className=" bg-[#008CFF] rounded-full blur-[80px] z-0  w-[65%] h-28  absolute left-1/2  -translate-x-1/2 top-5" />
             <img
-              src={Assets.Images.ChallengePlayground}
+              src={Assets.Images.killerCode}
               alt="challenge_playground"
               className=" z-20"
             />

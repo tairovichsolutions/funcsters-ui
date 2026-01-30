@@ -11,6 +11,7 @@ import { ResetPasswordFormModal } from "./ResetPasswordForm.modal";
 import { ForgotPasswordFormModal } from "./ForgotPasswordForm.Modal";
 import { SignUpSuccessfullyModal } from "./SignUpSuccessfully.Modal";
 import { LoginRequiredModal } from "@/components/LoginRequiredModal";
+import { DeleteAccountConfirmationModal } from "../profileSetting/DeleteAccountConfirmation.Modal";
 
 export const AuthModal = () => {
   const { activeModal, closeModal } = useAuthModal();
@@ -46,6 +47,10 @@ export const AuthModal = () => {
       modalSize = "md";
       break;
 
+    case "deleteAccount":
+      modalSize = "md";
+      break;
+
     case "loginRequiredModal":
       modalSize = "md";
       break;
@@ -73,6 +78,7 @@ export const AuthModal = () => {
       {activeModal === "forgotPassword" && <ForgotPasswordFormModal />}
       {activeModal === "loginSuccessfully" && <LoginSuccessfullyModal />}
       {activeModal === "signUpSuccessfully" && <SignUpSuccessfullyModal />}
+      {activeModal === "deleteAccount" && <DeleteAccountConfirmationModal />}
     </Modal>
   );
 };
