@@ -1,12 +1,12 @@
 "use client";
 
 import { QueryKey } from "@/constants/queryKey";
-import { axiosClient } from "@/lib/axiosClient";
+import { apiClient } from "@/lib/axiosClient";
 import { useQuery } from "@tanstack/react-query";
 
 export const useTags = () => {
   const fetcher = async () => {
-    const { data } = await axiosClient.get("/api/tags");
+    const { data } = await apiClient.get("/api/tags");
     return data;
   };
 

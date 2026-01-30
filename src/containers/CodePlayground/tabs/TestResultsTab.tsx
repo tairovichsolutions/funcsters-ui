@@ -9,6 +9,7 @@ import {
 import { TestCase } from "@/types";
 import { KeyValueBox } from "./KeyValueBox";
 import { CheckCircle2, XCircle } from "lucide-react";
+import { InputKeyValues } from "./InputKeyValues";
 
 export const TestResultsTab = React.memo(({ tests }: { tests: TestCase[] }) => {
   return (
@@ -45,7 +46,9 @@ export const TestResultsTab = React.memo(({ tests }: { tests: TestCase[] }) => {
 
             <AccordionContent className="px-3  text-sm grid gap-3">
               <div className=" bg-[#FFFFFF4D] dark:bg-[#FFFFFF1A]  p-3 space-y-2">
-                <KeyValueBox label="Input" value={`Arr: ${test?.input?.arr}`} />
+                {/* <KeyValueBox label="Input" value={` ${test?.input?.arr}`} /> */}
+
+                <InputKeyValues input={test?.input} />
                 <KeyValueBox label="Expected Output" value={test?.expected} />
 
                 {test?.actual && (

@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 import { cn } from "@/lib";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Assets } from "@/constants/assets";
 import { SocialLoginButtons } from "@/containers/AuthModals/SocialLoginButtons";
+import { usePathname } from "next/navigation";
 
 interface RegistrationLayoutType {
   image?: string;
@@ -18,6 +19,15 @@ export const RegistrationLayout = ({
   children,
   className,
 }: RegistrationLayoutType) => {
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!pathname) return;
+
+    console.log("pathname", pathname);
+    localStorage.setItem("redirectUrl", pathname);
+  }, [pathname]);
+
   return (
     <div className={cn("h-full grid grid-cols-2 w-full!", className)}>
       <motion.div
@@ -28,7 +38,7 @@ export const RegistrationLayout = ({
         transition={{ type: "spring", stiffness: 250, damping: 25 }}
         className={cn(
           "flex flex-col justify-center ",
-          reverse ? "order-2" : " order-1 shadow-2xl"
+          reverse ? "order-2" : " order-1 shadow-2xl",
         )}
       >
         <div className={cn("flex p-6", reverse ? "order-2" : "order-1 ")}>
@@ -44,7 +54,7 @@ export const RegistrationLayout = ({
         transition={{ type: "spring", stiffness: 250, damping: 25 }}
         className={cn(
           "px-6 flex flex-col justify-center py-10",
-          reverse ? "order-1 shadow-2xl" : "order-2"
+          reverse ? "order-1 shadow-2xl" : "order-2",
         )}
       >
         <img

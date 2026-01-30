@@ -2,9 +2,9 @@
 
 "use client";
 
-import React from "react";
 import { useFormik } from "formik";
 import { useTheme } from "next-themes";
+import React, { useState } from "react";
 import { Input } from "@/components/Input";
 import { Assets } from "@/constants/assets";
 import { useRouter } from "next/navigation";
@@ -15,12 +15,13 @@ import { LoginSchema } from "./LoginForm.schema";
 import { useAuthModal } from "@/providers/AuthModalsProvider";
 import { RegistrationLayout } from "@/layouts/RegistrationLayout";
 
-interface loginType {
+export interface loginType {
   email: string;
   password: string;
 }
 
 export const LoginFormModal = () => {
+  const [error, setError] = useState(null);
   const { theme } = useTheme();
   const dark = theme === "dark";
   const router = useRouter();
@@ -31,7 +32,7 @@ export const LoginFormModal = () => {
       email: "",
       password: "",
     }),
-    []
+    [],
   );
 
   const onSubmit = async (values: loginType) => {
@@ -44,6 +45,7 @@ export const LoginFormModal = () => {
         console.error("Unexpected Login response:", res);
       }
     } catch (error: any) {
+      setError(error?.response?.data?.message || "Login Failed!");
       console.error("Login Failed :", error);
     }
   };
@@ -73,27 +75,33 @@ export const LoginFormModal = () => {
           <div className="flex flex-col gap-5">
             <Input
               name="email"
-              placeholder="Type here"
               label="Email"
               value={values.email}
               error={errors.email}
               onChange={handleChange}
+              placeholder="Type here"
             />
             <Input
-              name="password"
-              placeholder="Type here"
-              label="Password"
               isPassword
+              name="password"
+              label="Password"
+              placeholder="Type here"
               value={values.password}
               error={errors.password}
               onChange={handleChange}
             />
-            <div className="flex justify-end items-center">
-              {/* <Checkbox label="Remember me " /> */}
+            <div className="flex justify-between gap-2 items-center">
+              <div className=" overflow-hidden text-nowrap ">
+                {error && (
+                  <p className="text-destructive truncate  font-semibold text-[13px]">
+                    {error}
+                  </p>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={() => openModal("forgotPassword")}
-                className="text-destructive font-normal text-xs underline cursor-pointer"
+                className="text-destructive shrink-0 text-nowrap! font-normal text-xs underline cursor-pointer"
               >
                 Forgot Password?
               </button>

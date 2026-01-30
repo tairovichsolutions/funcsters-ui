@@ -4,7 +4,10 @@ import MDEditor from "@uiw/react-md-editor";
 export const MDMarkdown = ({ source }: { source: string }) => {
   const { resolvedTheme } = useTheme();
   return (
-    <div data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}>
+    <div
+      data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
+      className="no-copy"
+    >
       <MDEditor.Markdown
         source={source}
         style={{ whiteSpace: "pre-wrap" }}

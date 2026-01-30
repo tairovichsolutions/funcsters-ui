@@ -50,20 +50,20 @@ export const ChallengesDetailScreen = () => {
   }
 
   const currentLangImpl = challengesDetailData?.languageImplementations?.find(
-    (lang: any) => lang?.languageId === languageId
+    (lang: any) => lang?.languageId === languageId,
   );
 
   const completedLanguagesCount =
     challengesDetailData?.languageImplementations?.filter(
-      (lang: any) => lang?.userProgress === "COMPLETED"
+      (lang: any) => lang?.userProgress === "COMPLETED",
     )?.length || 0;
 
   const xpTooltipMessage =
     currentLangImpl?.viewedSolution === true
       ? "You opened the solution, so you earn 0 XP for this attempt."
       : completedLanguagesCount >= 1
-      ? `You already solved this challenge in ${completedLanguagesCount} language, so you earn ${xpCount} XP.`
-      : `Complete this challenge to earn ${xpCount} XP.`;
+        ? `You already solved this challenge in ${completedLanguagesCount} language, so you earn ${xpCount} XP.`
+        : `Complete this challenge to earn ${xpCount} XP.`;
   return (
     <div>
       <div className="flex w-full flex-wrap items-center justify-between gap-6">
@@ -97,7 +97,7 @@ export const ChallengesDetailScreen = () => {
         </div>
       </div>
 
-      <div className="mt-5 space-y-7 pb-5">
+      <div className="mt-5 space-y-7 pb-5 ">
         <MDMarkdown source={challengesDetailData?.instructions} />
         <div className="flex gap-2">
           {challengesDetailData?.tags?.map((tag: string, i: number) => (

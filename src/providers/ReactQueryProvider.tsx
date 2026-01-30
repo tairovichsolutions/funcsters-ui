@@ -3,7 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import React, { useState } from "react";
-
+import "@/lib/axiosInterceptors";
 interface ReactQueryProvider {
   children: React.ReactNode;
 }

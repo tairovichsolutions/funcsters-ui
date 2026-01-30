@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/dashboard/metrics`,
@@ -11,10 +11,10 @@ export async function GET() {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         cache: "no-store",
-      }
+      },
     );
     const data = await res.json();
     if (!res.ok) {
@@ -30,12 +30,12 @@ export async function GET() {
 
     return NextResponse.json(
       { message: "Metrics FetCh Successful.", data },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (e) {
     return NextResponse.json(
       { message: "Unable to reach auth service" },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }

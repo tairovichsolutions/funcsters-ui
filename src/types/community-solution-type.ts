@@ -18,11 +18,9 @@ export type SolutionInfoType = {
 };
 
 export type CommunityVotesType = {
-  clean: number;
-  clever: number;
-  shortest: number;
-  efficient: number;
-  bestPractices: number;
+  genius: number;
+  solid: number;
+  meh: number;
   currentUserVote: string | null;
 };
 

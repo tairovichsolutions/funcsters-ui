@@ -4,9 +4,9 @@ import { redirect } from "next/navigation";
 
 const Page = async () => {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
 
-  if (!token) {
+  if (!accessToken) {
     return redirect(`/challenges`);
   }
 

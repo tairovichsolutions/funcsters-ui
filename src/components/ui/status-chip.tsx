@@ -40,7 +40,6 @@ const ICONS: Record<UserProgressTypes, string> = {
   IN_PROGRESS: Assets.Svgs.InProgress,
 } as const;
 
-// solid tooltip bg (readable)
 const TOOLTIP_BG: Record<UserProgressTypes, string> = {
   COMPLETED: "bg-[#008D0F]! text-white!",
   TODO: "bg-[#0055FF]! text-white!",
@@ -98,7 +97,7 @@ export const StatusChip = React.memo(
     return (
       <Tooltip
         place="top"
-        bgColorClass={cn("font-semibold!", TOOLTIP_BG[status])}
+        bgColorClass={cn("font-semibold!  rounded-md!", TOOLTIP_BG[status])}
         content={text}
       >
         {chip}

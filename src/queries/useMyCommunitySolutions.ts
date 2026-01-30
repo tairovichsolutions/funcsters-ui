@@ -1,18 +1,18 @@
 "use client";
 
-import axios from "axios";
 import { QueryKey } from "@/constants/queryKey";
 import { useQuery } from "@tanstack/react-query";
 import { getCookie } from "cookies-next";
+import { apiClient } from "@/lib/axiosClient";
 
 export const useMyCommunitySolutions = (
   challengeId: string | number,
   languageId: string | number,
-  enabledFlag: boolean
+  enabledFlag: boolean,
 ) => {
   const userId = getCookie("userId");
   const fetchSolutions = async () => {
-    const { data } = await axios.get(`/api/my-community-solution`, {
+    const { data } = await apiClient.get(`/api/my-community-solution`, {
       params: { challengeId, languageId },
     });
     return data;

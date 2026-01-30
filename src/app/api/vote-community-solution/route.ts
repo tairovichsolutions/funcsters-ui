@@ -4,9 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
 
-  if (!token) {
+  if (!accessToken) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
@@ -23,14 +23,14 @@ export async function POST(request: NextRequest) {
       {
         message: `Missing challengeId languageId solutionId required parameters`,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/community/${Number(
-        challengeId
+        challengeId,
       )}/solutions/${Number(solutionId)}/vote?languageId=${Number(languageId)}`,
 
       {
@@ -38,10 +38,10 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({ voteType: vote }),
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         cache: "no-store",
-      }
+      },
     );
     const data = await res.json();
 
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       { message: error?.message || "Unable to reach auth service" },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }

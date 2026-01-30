@@ -24,10 +24,16 @@ export const ChallengeTableView: React.FC<ChallengeTableViewProps> = ({
   const hasItems = items && items.length > 0;
 
   return (
-    <div className="overflow-hidden rounded-md border border-[#E6E8EB] dark:border-[#FFFFFF4D]">
+    <div className="overflow-hidden ">
       <Table>
-        <TableHeader>
-          <TableRow>
+        <TableHeader className="bg-white! dark:bg-[#FFFFFF0D]!  overflow-hidden">
+          <TableRow
+            className=" border-b-0! 
+            hover:bg-transparent
+          [&_th]:bg-white [&_th]:dark:bg-[#FFFFFF0D]
+           [&_th:first-child]:rounded-l-lg 
+           [&_th:last-child]:rounded-r-lg"
+          >
             <TableHead className="w-[260px]">Title</TableHead>
             <TableHead className="w-[320px]">summary</TableHead>
             <TableHead className="w-[120px]">Difficulty</TableHead>
@@ -42,7 +48,15 @@ export const ChallengeTableView: React.FC<ChallengeTableViewProps> = ({
               const tags = (item?.tags ?? []) as TagChipVariantType[];
 
               return (
-                <TableRow key={item?.id}>
+                <TableRow
+                  key={item?.id}
+                  className="border-b-0 
+                    even:[&_td]:bg-white! even:dark:[&_td]:bg-[#FFFFFF0D]! 
+                    even:[&_td:first-child]:rounded-l-lg 
+                    even:[&_td:last-child]:rounded-r-lg 
+                    not-even:[&_td:first-child]:rounded-l-lg 
+                    not-even:[&_td:last-child]:rounded-r-lg"
+                >
                   <TableCell className="font-medium w-1/6  truncate">
                     <Link
                       className=" hover:underline"

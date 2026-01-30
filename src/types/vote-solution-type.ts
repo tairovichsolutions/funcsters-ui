@@ -1,17 +1,10 @@
-export type VoteType =
-  | "CLEAN"
-  | "CLEVER"
-  | "SHORTEST"
-  | "EFFICIENT"
-  | "BEST_PRACTICES";
+export type VoteType = "GENIUS" | "SOLID" | "MEH";
 
 export interface VoteDataTypes {
-  clean?: number;
-  clever?: number;
-  shortest?: number;
-  efficient?: number;
-  bestPractices?: number;
-  userVote?: VoteType | null;
+  genius?: number;
+  solid?: number;
+  meh?: number;
+  currentUserVote: string | null;
 }
 
 export interface CommunitySolutionsVoteTypes {

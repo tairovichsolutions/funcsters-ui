@@ -66,12 +66,10 @@ export const HowToJoin = () => {
   const handleStepClick = (idx: number) => {
     setActiveStepIndex(idx);
 
-    // Clear existing interval
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
 
-    // Restart interval with extended timeout (5 seconds)
     intervalRef.current = setInterval(() => {
       setActiveStepIndex((prev) =>
         prev === HowToJoinSteps.length - 1 ? 0 : prev + 1

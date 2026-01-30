@@ -20,7 +20,7 @@ export const CodeSkeleton = () => {
 
   const code = `function can_earn_bonus(your_tile, friend_tile) {
   if (your_tile >= friend_tile) {
-    return false // can't move backward or stay in place
+    return false 
   }
   const difference = friend_tile - your_tile
   if (difference >= 1 && difference <= 6) {

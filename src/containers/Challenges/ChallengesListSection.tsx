@@ -1,18 +1,14 @@
 "use client";
 
-import {
-  useRouter,
-  usePathname,
-  useSearchParams,
-  ReadonlyURLSearchParams,
-} from "next/navigation";
 import * as React from "react";
 import type { ChallengesTypes } from "@/types";
-import { Pagination } from "@/components/Pagination";
+import { useInView } from "react-intersection-observer";
+
 import { ChallengeCardView } from "@/containers/Challenges";
 import { ChallengeCardSkeleton } from "@/skeletons/ChallengeCardSkeleton";
 import { ChallengeTableView } from "@/containers/Challenges/ChallengeTableView";
 import { DataNotAvailable } from "@/components/ui/data-not-available";
+import { SyncLoader } from "react-spinners";
 
 type ViewMode = "card" | "list";
 
@@ -20,87 +16,41 @@ type ChallengesListSectionProps = {
   isLoading: boolean;
   currentView: ViewMode;
   allChallenges: ChallengesTypes[];
+
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
 };
 
-const DEFAULT_PAGE_SIZE = 12;
-
-function usePageFromSearchParams(sp: ReadonlyURLSearchParams): number {
-  const raw = sp.get("page");
-  const parsed = raw ? Number(raw) : 1;
-  if (!Number.isFinite(parsed) || parsed < 1) return 1;
-  return parsed;
-}
-
-function usePageSizeFromSearchParams(sp: ReadonlyURLSearchParams): number {
-  const raw = sp.get("pageSize");
-  const parsed = raw ? Number(raw) : DEFAULT_PAGE_SIZE;
-  if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_PAGE_SIZE;
-  return parsed;
-}
-
 export const ChallengesListSection = React.memo(
-  ({ isLoading, currentView, allChallenges }: ChallengesListSectionProps) => {
-    const router = useRouter();
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
+  ({
+    isLoading,
+    currentView,
+    allChallenges,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  }: ChallengesListSectionProps) => {
+    const { ref, inView } = useInView({
+      root: null,
+      threshold: 0,
+      rootMargin: "500px",
+    });
 
-    const BASE_PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
+    React.useEffect(() => {
+      if (!inView) return;
+      if (!hasNextPage) return;
+      if (isLoading || isFetchingNextPage) return;
 
-    const pageFromUrl = usePageFromSearchParams(searchParams);
-    const pageSizeFromUrl = usePageSizeFromSearchParams(searchParams);
+      fetchNextPage();
+    }, [inView, hasNextPage, isLoading, isFetchingNextPage, fetchNextPage]);
 
     const totalItems = allChallenges.length;
 
-    const { currentPage, pageSize, paginatedItems } = React.useMemo(() => {
-      const pageSizeSafe = pageSizeFromUrl || DEFAULT_PAGE_SIZE;
-      const totalPages =
-        pageSizeSafe > 0
-          ? Math.max(1, Math.ceil(totalItems / pageSizeSafe))
-          : 1;
-      const safePage =
-        pageFromUrl > totalPages ? totalPages : Math.max(1, pageFromUrl);
-      const startIndex = (safePage - 1) * pageSizeSafe;
-      const endIndex = startIndex + pageSizeSafe;
-
-      return {
-        currentPage: safePage,
-        pageSize: pageSizeSafe,
-        paginatedItems: allChallenges.slice(startIndex, endIndex),
-      };
-    }, [allChallenges, totalItems, pageFromUrl, pageSizeFromUrl]);
-
-    const pageSizeOptions = React.useMemo<number[]>(() => {
-      if (totalItems <= 0) return [...BASE_PAGE_SIZE_OPTIONS];
-      const opts = BASE_PAGE_SIZE_OPTIONS.filter((opt) => opt <= totalItems);
-      if (opts.length === 0) {
-        return [totalItems];
-      }
-      return opts;
-    }, [totalItems]);
-
-    const handlePageSizeChange = React.useCallback(
-      (nextSize: number) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("pageSize", String(nextSize));
-        params.set("page", "1");
-        router.replace(`${pathname}?${params.toString()}`, { scroll: true });
-      },
-      [pathname, router, searchParams]
-    );
-
-    const handlePageChange = React.useCallback(
-      (nextPage: number) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("page", String(nextPage));
-        router.replace(`${pathname}?${params.toString()}`, { scroll: true });
-      },
-      [pathname, router, searchParams]
-    );
-
     return (
-      <div className="lg:p-4 p-3 flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
         {isLoading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4  gap-5">
             {Array.from({ length: 10 }).map((_, index) => (
               <ChallengeCardSkeleton key={index} />
             ))}
@@ -110,24 +60,22 @@ export const ChallengesListSection = React.memo(
         {!isLoading && totalItems > 0 && (
           <>
             {currentView === "card" ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 w-full">
-                {paginatedItems.map((item) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4  gap-5 w-full">
+                {allChallenges.map((item) => (
                   <ChallengeCardView {...item} key={item.id} />
                 ))}
               </div>
             ) : (
-              <ChallengeTableView items={paginatedItems} />
+              <ChallengeTableView items={allChallenges} />
             )}
 
-            <Pagination
-              totalItems={totalItems}
-              page={currentPage}
-              pageSize={pageSize}
-              pageSizeOptions={pageSizeOptions}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-              disabled={isLoading}
-            />
+            {isFetchingNextPage && (
+              <div className="flex justify-center items-center py-10">
+                <SyncLoader speedMultiplier={0.8} size={10} color="#018CFF" />
+              </div>
+            )}
+
+            <div ref={ref} />
           </>
         )}
 

@@ -20,7 +20,7 @@ export const ChallengesSubNav = () => {
   const handleClick = (
     e: React.MouseEvent<HTMLButtonElement>,
     href: string,
-    itemName: string
+    itemName: string,
   ) => {
     const isProtected = protectedTabNames.includes(itemName);
 
@@ -30,7 +30,15 @@ export const ChallengesSubNav = () => {
       return;
     }
 
-    router.push(href);
+    const isCommunity = itemName === "Community Solutions";
+
+    console.log("isCommunity", isCommunity);
+
+    if (isCommunity) {
+      router.push(href, { scroll: false });
+    } else {
+      router.push(href);
+    }
   };
 
   return (
@@ -49,7 +57,7 @@ export const ChallengesSubNav = () => {
               "relative text-[#737B83] dark:text-[#91989D] px-2 w-full justify-center flex items-center gap-2 cursor-pointer text-xs py-2 rounded-[7.99px]! transition-colors duration-200",
               isActive
                 ? "text-white! font-semibold"
-                : "hover:bg-[#008CFF]/10 font-medium"
+                : "hover:bg-[#008CFF]/10 font-medium",
             )}
           >
             <AnimatePresence>

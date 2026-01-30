@@ -3,12 +3,13 @@ import React from "react";
 import { useFormik } from "formik";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/ui/button";
+import { useAuthModal } from "@/providers/AuthModalsProvider";
 import { ChangePasswordSchema } from "./ChangePassword.schema";
 import { useProfileSettingModal } from "@/providers/ProfileSettingModalsProvider";
 
 export const ChangePassword = () => {
   const { openModal: openSettingModal, closeModal } = useProfileSettingModal();
-
+  const { openModal: openAuthModal } = useAuthModal();
   const initialValues = React.useMemo(
     () => ({
       newPassword: "",
@@ -30,17 +31,34 @@ export const ChangePassword = () => {
     validationSchema: ChangePasswordSchema,
   });
   return (
-    <form onSubmit={handleSubmit} className=" h-full">
-      <div className="flex flex-col items-center  h-full  gap-5 px-3 py-2 ">
-        <Input
-          isPassword
-          name="currentPassword"
-          onChange={handleChange}
-          label="Current Password"
-          value={values.currentPassword}
-          error={errors.currentPassword}
-          placeholder="Enter current password"
-        />
+    <form onSubmit={handleSubmit} className=" h-full flex flex-col space-y-5">
+      <div className=" space-y-1">
+        <h2 className=" font-semibold text-xl">Change Password</h2>
+        <p className=" text-xs">Edit Your Password </p>
+      </div>
+
+      <div className="flex flex-col items-center  h-full  gap-5 ">
+        <div className=" w-full">
+          <Input
+            isPassword
+            name="currentPassword"
+            onChange={handleChange}
+            label="Current Password"
+            value={values.currentPassword}
+            error={errors.currentPassword}
+            placeholder="Enter current password"
+          />
+
+          <div className=" flex  justify-end mt-3">
+            <button
+              type="button"
+              onClick={() => openAuthModal("forgotPassword")}
+              className="text-destructive font-normal text-[13px]  cursor-pointer"
+            >
+              Forgot Password?
+            </button>
+          </div>
+        </div>
         <Input
           isPassword
           name="newPassword"

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { QueryKey } from "@/constants/queryKey";
+import { apiClient } from "@/lib/axiosClient";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 
 export const useUpdateProfile = () => {
   const client = useQueryClient();
   const updateProfilefc = async (payload: any) => {
     const URL = "/api/auth/update-profile";
-    const { status, data } = await axios.patch(URL, payload, {
+    const { status, data } = await apiClient.patch(URL, payload, {
       headers: {
         "Content-Type": "application/json",
       },

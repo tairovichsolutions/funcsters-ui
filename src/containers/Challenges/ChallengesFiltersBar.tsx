@@ -54,7 +54,7 @@ export const ChallengesFiltersBar = React.memo(
 
     const { tagOptions, tagLabelMap } = useTagOptions();
     const [searchInput, setSearchInput] = React.useState(filters.search || "");
-    const debouncedSearch = useDebounce(searchInput, 700);
+    const debouncedSearch = useDebounce(searchInput, 100);
 
     React.useEffect(() => {
       setSearchInput(filters.search || "");
@@ -73,11 +73,11 @@ export const ChallengesFiltersBar = React.memo(
     }, [currentView, pathname, router, searchParams]);
 
     return (
-      <div className="lg:p-4 p-3 border-b border-base-border flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         <div className="flex lg:flex-row flex-col justify-between items-center gap-4">
           <Input
             placeholder="Search challenges..."
-            inputClass="bg-transparent! border-searchInputBorder! px-3! lg:w-full xl:w-[500px]! w-full"
+            inputClass="bg-white! dark:bg-[#FFFFFF0D]! border-searchInputBorder! px-3! lg:w-full xl:w-[500px]! w-full"
             aria-label="Search challenges"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target?.value ?? "")}
@@ -90,7 +90,7 @@ export const ChallengesFiltersBar = React.memo(
           <div className="flex flex-wrap justify-between lg:flex-nowrap lg:justify-end items-center gap-2 w-full">
             <div className="flex gap-2">
               <TagSelector
-                className="md:w-36!"
+                className="md:w-36! bg-white! dark:bg-[#FFFFFF0D]!"
                 label="Difficulty"
                 tags={Difficulty as any}
                 value={filters.difficulty}
@@ -98,7 +98,7 @@ export const ChallengesFiltersBar = React.memo(
               />
 
               <TagSelector
-                className="md:w-36!"
+                className="md:w-36! bg-white! dark:bg-[#FFFFFF0D]!"
                 label="Tags"
                 tags={tagOptions}
                 value={filters.tags}
@@ -107,7 +107,7 @@ export const ChallengesFiltersBar = React.memo(
 
               {isAuthenticated && (
                 <TagSelector
-                  className="md:w-36!"
+                  className="md:w-36! bg-white! dark:bg-[#FFFFFF0D]!"
                   label="Status"
                   tags={Status as any}
                   value={filters.status}

@@ -3,13 +3,13 @@
 import * as React from "react";
 import type { ChallengesTypes } from "@/types";
 import { useSearchParams } from "next/navigation";
-import { useAllChallenges } from "@/queries/useAllChallenges";
 import { useGetUserProfile } from "@/queries/useGetUserProfile";
 import { GreetingArea } from "@/containers/Challenges/GreetingArea";
 import { useChallengesFilters } from "@/hooks/useChallengesFilters";
 import { ChallengesFiltersBar } from "@/containers/Challenges/ChallengesFiltersBar";
 import { ChallengesListSection } from "@/containers/Challenges/ChallengesListSection";
 import { MatricsAndActivityChart } from "@/containers/Challenges/MatricsAndActivityChart";
+import { useInfiniteChallenges } from "@/queries/useAllChallenges";
 
 export const ChallengesScreen: React.FC = () => {
   const searchParams = useSearchParams();
@@ -26,10 +26,13 @@ export const ChallengesScreen: React.FC = () => {
   } = useChallengesFilters();
 
   const {
-    data: allChallengesData,
+    data,
     isLoading,
     isFetching,
-  } = useAllChallenges(queryParams);
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteChallenges(queryParams);
 
   const { data: userData, isLoading: profileLoading } = useGetUserProfile();
   const isAuthenticated = Boolean(userData?.data?.authenticated);
@@ -38,10 +41,10 @@ export const ChallengesScreen: React.FC = () => {
     return searchParams.get("view") === "list" ? "list" : "card";
   }, [searchParams]);
 
-  const allChallenges = React.useMemo(
-    () => (allChallengesData ?? []) as ChallengesTypes[],
-    [allChallengesData]
-  );
+  const allChallenges = React.useMemo(() => {
+    const pages = data?.pages ?? [];
+    return pages.flatMap((p) => p.challenges) as ChallengesTypes[];
+  }, [data]);
 
   return (
     <div className="py-4 flex flex-col gap-5">
@@ -56,7 +59,7 @@ export const ChallengesScreen: React.FC = () => {
         profileLoading={profileLoading}
       />
 
-      <div className="challenges-container rounded-lg flex flex-col">
+      <div className=" flex flex-col gap-5 mt-3">
         <ChallengesFiltersBar
           isFetching={isFetching}
           isAuthenticated={isAuthenticated}
@@ -74,6 +77,9 @@ export const ChallengesScreen: React.FC = () => {
           isLoading={isLoading}
           currentView={currentView}
           allChallenges={allChallenges}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={Boolean(hasNextPage)}
+          isFetchingNextPage={isFetchingNextPage}
         />
       </div>
     </div>

@@ -24,7 +24,7 @@ const textSizeMap: Record<TextSize, string> = {
 const withTextTrackMap: Record<UISize, string> = {
   sm: "min-w-[42px] h-4",
   md: "min-w-[47px] h-5",
-  lg: "min-w-[52px] h-[21px] ",
+  lg: "min-w-[54px] h-[21px] ",
 };
 
 const noTextTrackMap: Record<UISize, string> = {
@@ -36,7 +36,7 @@ const noTextTrackMap: Record<UISize, string> = {
 const withTextThumbMap: Record<UISize, string> = {
   sm: "h-[10px] w-[10px] data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-[calc(100%-0.80rem)]",
   md: "h-[12px] w-[12px] data-[state=checked]:translate-x-6 data-[state=unchecked]:translate-x-[calc(100%-0.95rem)]",
-  lg: "h-[14px] w-[14px] data-[state=checked]:translate-x-[1.7rem] data-[state=unchecked]:translate-x-[calc(100%-1rem)]",
+  lg: "h-[14px] w-[14px] data-[state=checked]:translate-x-[1.92rem] data-[state=unchecked]:translate-x-[calc(100%-1rem)]",
 };
 
 const noTextThumbMap: Record<UISize, string> = {

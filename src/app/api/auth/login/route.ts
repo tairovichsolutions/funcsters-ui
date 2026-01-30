@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -15,26 +16,40 @@ export async function POST(request: Request) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
         cache: "no-store",
-      }
+      },
     );
+
     const data = await res.json();
+
     if (!res.ok) {
-      const status = data?.error?.statusCode ?? res.status ?? 500;
-      const message =
-        (Array.isArray(data?.error?.message)
-          ? data.error?.message?.[0]
-          : data?.error?.message) ||
-        data?.error?.details?.[0]?.message ||
-        "Login failed";
-      return NextResponse.json({ message }, { status });
+      return NextResponse.json(
+        { message: data.message || "Login failed" },
+        { status: res.status },
+      );
     }
 
-    cookieStore.set("token", data.token, {
+    const cookiesFormApi = res.headers.getSetCookie();
+
+    const cookieObj: any = {};
+
+    const cookie2dArr = cookiesFormApi[0]?.split("; ").map((c) => c.split("="));
+
+    cookie2dArr.map((a) => {
+      if (
+        cookieObj[`${a[0]}`] === "Secure" ||
+        cookieObj[`${a[0]}`] === "HttpOnly"
+      ) {
+        cookieObj[`${a[0]}`] = true;
+      } else {
+        cookieObj[`${a[0]}`] = a[1];
+      }
+    });
+
+    cookieStore.set("accessToken", data?.accessToken, {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 4,
     });
 
     cookieStore.set("userId", String(data.id), {
@@ -42,17 +57,25 @@ export async function POST(request: Request) {
       httpOnly: false,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 4,
+    });
+
+    cookieStore.set("refreshToken", String(cookieObj.refreshToken), {
+      path: cookieObj.Path,
+      httpOnly: true,
+      sameSite: "lax",
+      secure: true,
+      maxAge: cookieObj["Max-Age"],
+      expires: cookieObj.Expires,
     });
 
     return NextResponse.json(
       { message: "Login Successful.", user: data },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (e) {
     return NextResponse.json(
       { message: "Unable to reach auth service" },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }

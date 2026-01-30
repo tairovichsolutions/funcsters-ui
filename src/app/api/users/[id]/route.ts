@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { axiosClient } from "@/lib/axiosClient";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -11,25 +10,31 @@ export async function GET(req: Request, ctx: RouteContext<"/api/users/[id]">) {
     if (!id) {
       return NextResponse.json(
         { authenticated: false, message: "user Id is required." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    const token = (await cookieStore).get("token")?.value;
+    const accessToken = (await cookieStore).get("accessToken")?.value;
 
-    if (!token) {
+    if (!accessToken) {
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }
 
-    const { status, data } = await axiosClient.get(`/v1/users/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/users/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        cache: "no-store",
       },
-      withCredentials: true,
-    });
+    );
 
-    if (status !== 200) {
+    const data = await res.json();
+
+    if (!res.ok) {
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }
 
@@ -40,7 +45,7 @@ export async function GET(req: Request, ctx: RouteContext<"/api/users/[id]">) {
         authenticated: false,
         message: error?.message || "Something went wrong",
       },
-      { status: error?.status || 500 }
+      { status: error?.status || 500 },
     );
   }
 }

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import { useTheme } from "next-themes";
 import { Input } from "@/components/Input";
@@ -14,8 +14,17 @@ import { useRigester } from "@/mutations/useRegister";
 import { useAuthModal } from "@/providers/AuthModalsProvider";
 import { RegistrationLayout } from "@/layouts/RegistrationLayout";
 
+export interface signUpType {
+  email: string;
+  username: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export const SignUpFormModal = () => {
   const { openModal, closeModal } = useAuthModal();
+
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   const initialValues = React.useMemo(
@@ -25,11 +34,11 @@ export const SignUpFormModal = () => {
       password: "",
       confirmPassword: "",
     }),
-    []
+    [],
   );
 
   const { mutateAsync: rigesterfc, isPending } = useRigester();
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: signUpType) => {
     try {
       const res = await rigesterfc(values);
       if (res?.status === 200 && res?.data?.user) {
@@ -37,6 +46,7 @@ export const SignUpFormModal = () => {
         router.refresh();
       }
     } catch (error: any) {
+      setError(error?.response?.data?.message || "SignUp Failed!");
       console.error("SignUp Faild:", error?.response?.data?.message);
     }
   };
@@ -60,12 +70,12 @@ export const SignUpFormModal = () => {
     >
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col justify-center gap-7 w-full h-full "
+        className="flex flex-col justify-center gap-3 w-full h-full "
       >
         <Logo />
         <div className="flex flex-col gap-6 ">
           <h2 className=" font-extrabold text-2xl">Create Account!</h2>
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-4">
             <Input
               name="username"
               placeholder="Type here"
@@ -101,6 +111,11 @@ export const SignUpFormModal = () => {
               error={errors.confirmPassword}
               onChange={handleChange}
             />
+            {error && (
+              <p className="text-destructive truncate  font-semibold text-[13px]">
+                {error}
+              </p>
+            )}
 
             <Button loading={isPending} type="submit">
               Create Account

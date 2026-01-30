@@ -3,24 +3,24 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   request: Request,
-  ctx: RouteContext<"/api/auth/profile-avatar/[id]">
+  ctx: RouteContext<"/api/auth/profile-avatar/[id]">,
 ) {
   const { id } = await ctx?.params;
 
   if (!id) {
     return NextResponse.json(
       { message: "User id is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
 
-  if (!token) {
+  if (!accessToken) {
     return NextResponse.json(
-      { message: "Unauthorized: missing token" },
-      { status: 401 }
+      { message: "Unauthorized: missing accessToken" },
+      { status: 401 },
     );
   }
 
@@ -32,11 +32,11 @@ export async function POST(
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: formData,
         cache: "no-store",
-      }
+      },
     );
 
     const data = await res.json();
@@ -56,12 +56,12 @@ export async function POST(
 
     return NextResponse.json(
       { message: "Profile Avatar Update Successful.", user: data },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (e) {
     return NextResponse.json(
       { message: "Unable to reach auth service" },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }

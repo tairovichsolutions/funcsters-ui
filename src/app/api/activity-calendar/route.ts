@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
 
   const { searchParams } = new URL(request.url);
   const month = searchParams.get("month");
@@ -17,10 +17,10 @@ export async function GET(request: Request) {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         cache: "no-store",
-      }
+      },
     );
     const data = await res.json();
 
@@ -38,12 +38,12 @@ export async function GET(request: Request) {
 
     return NextResponse.json(
       { message: "Activity calendar fetched successfully.", data },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err: any) {
     return NextResponse.json(
       { message: err?.message || "Unable to reach activity calendar service" },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }

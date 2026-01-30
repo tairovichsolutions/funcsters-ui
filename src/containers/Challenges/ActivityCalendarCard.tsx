@@ -279,7 +279,7 @@ export const ActivityCalendarCard: React.FC = () => {
                   );
 
                   let containerClasses =
-                    "flex h-[26px] items-center justify-center text-[12px]";
+                    "flex h-[26px] w-full items-center justify-center text-[12px]";
 
                   if (inStreak) {
                     containerClasses += " bg-[#FFCE5139]";
@@ -299,7 +299,7 @@ export const ActivityCalendarCard: React.FC = () => {
                         content={tooltipContent}
                         place="top"
                       >
-                        <div className={containerClasses + " px-1"}>
+                        <div className={containerClasses}>
                           <div
                             className={[
                               "flex size-[22px] shrink-0 items-center justify-center rounded-full text-[13px] font-semibold",

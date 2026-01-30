@@ -15,6 +15,7 @@ interface LayoutProps {
   children: ReactNode;
 }
 
+
 const Layout = ({ children }: LayoutProps) => {
   const { id } = useParams();
   const { data } = useChallengeById(String(id));
@@ -23,12 +24,12 @@ const Layout = ({ children }: LayoutProps) => {
   const list = useMemo(() => data?.data?.languageImplementations || [], [data]);
 
   const currentLangImpl = list?.find(
-    (lang: any) => lang.languageId === languageId
+    (lang: any) => lang.languageId === languageId,
   );
 
   const completedCount = list?.filter(
     (impl: any) =>
-      impl?.userProgress === "COMPLETED" && impl?.viewedSolution === false
+      impl?.userProgress === "COMPLETED" && impl?.viewedSolution === false,
   ).length;
 
   let displayXp = data?.data?.xp ?? 0;
@@ -67,9 +68,12 @@ const Layout = ({ children }: LayoutProps) => {
               <div className="px-4 flex justify-center items-center w-full h-16 border-b border-border-soft">
                 <ChallengesSubNav />
               </div>
-              <div className="flex-1 overflow-y-auto px-4 py-4 overflow-hidden custom-scrollbar">
+              <main
+                className="flex-1 overflow-y-auto px-4 py-4 overflow-hidden custom-scrollbar"
+                data-scroll-restoration-id="main"
+              >
                 {children}
-              </div>
+              </main>
             </div>
           </Panel>
 

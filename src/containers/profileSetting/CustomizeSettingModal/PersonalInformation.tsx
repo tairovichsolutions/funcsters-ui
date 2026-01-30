@@ -64,7 +64,7 @@ export const PersonalInformation = () => {
       country: userData?.country || "",
       occupation: userData?.occupation || "",
     }),
-    [userData]
+    [userData],
   );
   const onSubmit = async (values: PersonalInformationFormValues) => {
     if (!userData?.id) return;
@@ -76,7 +76,7 @@ export const PersonalInformation = () => {
     const flagUrl = `https://flagcdn.com/24x18/${countryCode}.png`;
 
     try {
-      const profileRes = await updateProfilefc({
+      await updateProfilefc({
         ...values,
         countryFlag: flagUrl,
         isUserNameChange: isUserNameChange,
@@ -84,17 +84,17 @@ export const PersonalInformation = () => {
       if (avatarFile) {
         await uploadAvatar({ id: userData.id, file: avatarFile });
       }
-      if (profileRes?.status === 200) {
-        toast.success(profileRes?.data?.message ?? "Profile updated");
-      } else {
-        toast.success("Profile updated");
-      }
+      // if (profileRes?.status === 200) {
+      //   toast.success(profileRes?.data?.message ?? "Profile updated");
+      // } else {
+      //   toast.success("Profile updated");
+      // }
       setAvatarFile(null);
       closeModal();
     } catch (err: any) {
       toast.error(
         err?.response?.data?.message ||
-          "Failed to update profile. Please try again."
+          "Failed to update profile. Please try again.",
       );
     }
   };
@@ -128,18 +128,25 @@ export const PersonalInformation = () => {
   const isAnySaving = isProfileSaving || isAvatarSaving;
 
   return (
-    <div className="flex flex-col items-center h-full gap-5">
-      <ProfileAvatarUploader
-        username={userData?.username}
-        avatarUrl={userData?.avatarUrl ?? null}
-        pendingFile={avatarFile}
-        onChange={handleAvatarChange}
-        loading={isAnySaving || isProfileLoading}
-      />
+    <div className="flex flex-col  h-full gap-5">
+      <div className=" space-y-1">
+        <h2 className=" font-semibold text-xl">Personal Information</h2>
+        <p className=" text-xs">Edit Your personal Information </p>
+      </div>
+      <div className=" flex justify-center items-center">
+        <ProfileAvatarUploader
+          username={userData?.username}
+          avatarUrl={userData?.avatarUrl ?? null}
+          pendingFile={avatarFile}
+          onChange={handleAvatarChange}
+          loading={isAnySaving || isProfileLoading}
+        />
+      </div>
 
       <form onSubmit={handleSubmit} className="h-full w-full">
         <div className="flex flex-col items-center justify-center gap-5 px-3 h-full">
           <Input
+            // disabled
             name="username"
             value={values.username}
             label="Username"
@@ -163,7 +170,7 @@ export const PersonalInformation = () => {
                 "! border border-input-border shadow-none!   ",
                 values.country
                   ? "bg-primary/10! text-secondary! dark:text-white! "
-                  : "bg-input-background!"
+                  : "bg-input-background!",
               )}
               name="country"
               label="Country"

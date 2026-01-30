@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 
 export async function PATCH(request: Request) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
 
-  if (!token) {
+  if (!accessToken) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
@@ -18,7 +18,7 @@ export async function PATCH(request: Request) {
       {
         message: `Missing challengeId languageId required parameters`,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -29,10 +29,10 @@ export async function PATCH(request: Request) {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         cache: "no-store",
-      }
+      },
     );
     const data = await res.json();
 
@@ -52,7 +52,7 @@ export async function PATCH(request: Request) {
   } catch (error: any) {
     return NextResponse.json(
       { message: error?.message || "Unable to reach auth service" },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }

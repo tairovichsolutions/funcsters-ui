@@ -1,23 +1,20 @@
-import axios from "axios";
-import { QueryKey } from "@/constants/queryKey";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { apiClient } from "@/lib/axiosClient";
 
 interface payloadType {
+  vote: string;
   challengeId: string | number;
   languageId: string | number;
   solutionId: string | number;
-  vote: string;
 }
 
 export const useVoteCommunitySolution = () => {
-  const client = useQueryClient();
-
   const voteSolutionfc = async (payload: payloadType) => {
     const URL = `/api/vote-community-solution?challengeId=${payload.challengeId}&languageId=${payload.languageId}&solutionId=${payload.solutionId}`;
 
     const body = { vote: payload?.vote };
 
-    const { status, data } = await axios.post(URL, body, {
+    const { status, data } = await apiClient.post(URL, body, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -28,8 +25,5 @@ export const useVoteCommunitySolution = () => {
 
   return useMutation({
     mutationFn: voteSolutionfc,
-    onSuccess: () => {
-      client.refetchQueries({ queryKey: [QueryKey.GetAllCommunitySolutions] });
-    },
   });
 };

@@ -3,11 +3,11 @@
 import { cookies } from "next/headers";
 
 export async function getUser() {
-  const cookieStore = await cookies(); // no await
+  const cookieStore = await cookies();
   const userId = cookieStore.get("userId")?.value;
-  const token = cookieStore.get("token")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
 
-  if (!userId || !token) {
+  if (!userId || !accessToken) {
     return {
       success: true,
       authenticated: false,
@@ -18,13 +18,13 @@ export async function getUser() {
   const res = await fetch(
     `${process.env.FUNCSTER_BACKEND_URL}/v1/users/${userId}`,
     {
-      headers: token
+      headers: accessToken
         ? {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${accessToken}`,
           }
         : undefined,
       cache: "no-store",
-    }
+    },
   );
 
   if (!res.ok) {

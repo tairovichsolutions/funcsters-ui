@@ -1,10 +1,10 @@
 import { QueryKey } from "@/constants/queryKey";
+import { apiClient } from "@/lib/axiosClient";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 
 interface DeletePayload {
-  challengeId: string | number;
   languageId: string | number;
+  challengeId: string | number;
 }
 
 export const useDeleteMySolution = () => {
@@ -15,7 +15,8 @@ export const useDeleteMySolution = () => {
     languageId,
   }: DeletePayload) => {
     const URL = `/api/delete-community-solution?challengeId=${challengeId}&languageId=${languageId}`;
-    const { status, data } = await axios.delete(URL, {
+
+    const { status, data } = await apiClient.delete(URL, {
       headers: {
         "Content-Type": "application/json",
       },

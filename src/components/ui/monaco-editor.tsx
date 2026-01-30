@@ -24,7 +24,6 @@ function useMonacoShortcuts(params: {
     let submitKeybinding: number | null = null;
 
     switch (keyBinding) {
-      case "default":
       case "vscode":
         runKeybinding = monaco.KeyMod.CtrlCmd | monaco.KeyCode.Comma;
         submitKeybinding = monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter;
@@ -101,7 +100,7 @@ export const MonacoCodeEditer = React.memo(
     onSubmitShortcut,
     theme = "vs-dark",
     autoComplete = true,
-    keyBinding = "default",
+    keyBinding = "vscode",
     language = "javascript",
   }: Props) => {
     const internalEditorRef = React.useRef<any | null>(null);

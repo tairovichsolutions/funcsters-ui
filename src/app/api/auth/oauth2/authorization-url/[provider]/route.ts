@@ -2,47 +2,41 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  ctx: RouteContext<"/api/auth/oauth2/authorization-url/[provider]">
+  ctx: RouteContext<"/api/auth/oauth2/authorization-url/[provider]">,
 ) {
   const { provider } = await ctx?.params;
 
   if (!provider) {
     return NextResponse.json(
       { authenticated: false, message: "Provider  is required." },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/auth/ouath2/authorization-url/${provider}`,
+  const url = `https://api.funcsters.io/oauth2/authorization/${provider}`;
 
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        cache: "no-store",
-      }
-    );
-    const data = await res.json();
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+    });
+    const data = res;
+
     if (!res.ok) {
-      const status = data?.error?.statusCode ?? res.status ?? 500;
-      const message =
-        (Array.isArray(data?.error?.message)
-          ? data.error?.message?.[0]
-          : data?.error?.message) ||
-        data?.error?.details?.[0]?.message ||
-        "Authorization Url fecth failed";
+      const status = res.status ?? 500;
+      const message = "Authorization Url fetch failed";
       return NextResponse.json({ message }, { status });
     }
 
     return NextResponse.json(
-      { message: "Authorization Url FetCh Successful.", data },
-      { status: 200 }
+      { message: "Authorization Url fetch Successful.", data },
+      { status: 200 },
     );
   } catch (e) {
     return NextResponse.json(
       { message: "Unable to reach auth service" },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }
