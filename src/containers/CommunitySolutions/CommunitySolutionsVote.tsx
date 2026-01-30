@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import { SvgColor } from "@/components";
 import React, { useState } from "react";
 import { VOTE_CONFIG } from "@/constants/voteConfig";
-import { useRerenderCount } from "@/hooks/useRerenderCount";
 import { VoteDataTypes, VoteType } from "@/types/vote-solution-type";
 import { useVoteCommunitySolution } from "@/mutations/useVoteCommunitySolution";
 
@@ -32,12 +31,10 @@ export const CommunitySolutionsVote = React.memo(
     solutionId,
     voteData,
   }: CommunitySolutionsVoteProps) => {
-    useRerenderCount("vote");
-
     const { mutateAsync: voteSolutionfc, isPending } =
       useVoteCommunitySolution();
     const [activeVote, setActiveVote] = useState<VoteType | null>(
-      toVoteType(voteData?.currentUserVote ?? null)
+      toVoteType(voteData?.currentUserVote ?? null),
     );
 
     const [voteCounts, setVoteCounts] = useState(() => ({
@@ -106,7 +103,7 @@ export const CommunitySolutionsVote = React.memo(
                     "group flex items-center gap-1.5  rounded-md  cursor-pointer",
                     "border border-transparent",
                     "transition-transform duration-300 ease-out",
-                    "hover:scale-[1.02]"
+                    "hover:scale-[1.02]",
                   )}
                 >
                   <SvgColor
@@ -118,7 +115,7 @@ export const CommunitySolutionsVote = React.memo(
                     <h5
                       className={cn(
                         "text-xs font-semibold",
-                        isActive && textClass
+                        isActive && textClass,
                       )}
                     >
                       {label}
@@ -126,7 +123,7 @@ export const CommunitySolutionsVote = React.memo(
 
                     <h6
                       className={cn(
-                        "text-[11px] leading-none transition-colors duration-300"
+                        "text-[11px] leading-none transition-colors duration-300",
                       )}
                     >
                       {isActive ? (
@@ -141,7 +138,7 @@ export const CommunitySolutionsVote = React.memo(
                   </div>
                 </button>
               );
-            }
+            },
           )}
         </div>
 
@@ -152,7 +149,7 @@ export const CommunitySolutionsVote = React.memo(
                 <div
                   key={item.key}
                   className={cn(
-                    "border-2 bg-background z-10 shrink-0 size-8 flex justify-center items-center border-[#ece3e39d] dark:border-[#97a9b64b] hover:scale-110 cursor-pointer p-1 rounded-full transition-all"
+                    "border-2 bg-background z-10 shrink-0 size-8 flex justify-center items-center border-[#ece3e39d] dark:border-[#97a9b64b] hover:scale-110 cursor-pointer p-1 rounded-full transition-all",
                   )}
                 >
                   <SvgColor
@@ -174,5 +171,5 @@ export const CommunitySolutionsVote = React.memo(
         </div>
       </div>
     );
-  }
+  },
 );

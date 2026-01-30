@@ -31,9 +31,6 @@ export const ChallengesSubNav = () => {
     }
 
     const isCommunity = itemName === "Community Solutions";
-
-    console.log("isCommunity", isCommunity);
-
     if (isCommunity) {
       router.push(href, { scroll: false });
     } else {

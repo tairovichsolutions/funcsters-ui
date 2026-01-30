@@ -49,7 +49,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ data: json.data }, { status: 200 });
   } catch (e) {
-    console.log(e);
     return NextResponse.json(
       { message: "Unable to start  login" },
       { status: 500 },
