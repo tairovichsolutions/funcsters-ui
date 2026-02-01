@@ -50,7 +50,7 @@ export const ChallengesListSection = React.memo(
     return (
       <div className="flex flex-col gap-4">
         {isLoading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4  gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4  gap-5">
             {Array.from({ length: 10 }).map((_, index) => (
               <ChallengeCardSkeleton key={index} />
             ))}
@@ -60,7 +60,7 @@ export const ChallengesListSection = React.memo(
         {!isLoading && totalItems > 0 && (
           <>
             {currentView === "card" ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4  gap-5 w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4  gap-5 w-full">
                 {allChallenges.map((item) => (
                   <ChallengeCardView {...item} key={item.id} />
                 ))}
@@ -82,5 +82,5 @@ export const ChallengesListSection = React.memo(
         {!isLoading && totalItems === 0 && <DataNotAvailable />}
       </div>
     );
-  }
+  },
 );
