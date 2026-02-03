@@ -14,7 +14,6 @@ import {
   a11yDark,
   a11yLight,
 } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { Scrollable } from "@/components/ui/scrollable";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { LANGUAGE_ICON_MAP } from "@/constants/Language";
 import { DeleteModal } from "@/components/ui/DeleteModal";
@@ -193,7 +192,7 @@ export const CommunitySolutionsCard = React.memo(
           )}
         </div>
 
-        <Scrollable className="mt-3 w-full h-[220px] border border-[#E5E7EB] rounded-md bg-[#0050920D] dark:border-none dark:bg-[#FFFFFF0D] p-3 font-mono text-xs text-gray-800">
+        <div className="mt-3 w-full max-h-[430px] overflow-y-auto custom-scrollbar border border-[#E5E7EB] rounded-md bg-[#0050920D] dark:border-none dark:bg-[#FFFFFF0D] p-3 font-mono text-xs text-gray-800">
           <SyntaxHighlighter
             language="javascript"
             style={isDarkMode ? a11yDark : a11yLight}
@@ -208,7 +207,7 @@ export const CommunitySolutionsCard = React.memo(
           >
             {solutionInfo?.code || ""}
           </SyntaxHighlighter>
-        </Scrollable>
+        </div>
 
         <div className="mt-3  px-1 flex items-center justify-between">
           <CommunitySolutionsVote

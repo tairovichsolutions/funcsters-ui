@@ -66,12 +66,20 @@ export const ChallengesDetailScreen = () => {
         : `Complete this challenge to earn ${xpCount} XP.`;
   return (
     <div>
-      <div className="flex w-full flex-wrap items-center justify-between gap-6">
-        <h1 className="line-clamp-1 text-[23px] font-extrabold  2xl:text-[26px]">
-          {challengesDetailData?.title}
-        </h1>
+      <div className="flex w-full  items-center justify-between gap-2 ">
+        <div className="  flex-1  min-w-0">
+          <Tooltip
+            childrenClass="justify-start"
+            content={challengesDetailData?.title}
+            className="bg-primary!  shadow-2xl text-sm!"
+          >
+            <h1 className="truncate  text-[23px] font-extrabold  2xl:text-[26px]">
+              {challengesDetailData?.title}
+            </h1>
+          </Tooltip>
+        </div>
 
-        <div className="flex w-fit flex-wrap items-center gap-2.5">
+        <div className="flex w-fit shrink-0 items-center gap-2.5">
           <DifficultyChip level={challengesDetailData?.difficulty} />
           {isAuthenticated ? (
             currentLangImpl?.userProgress !== "COMPLETED" ? (
@@ -99,7 +107,7 @@ export const ChallengesDetailScreen = () => {
 
       <div className="mt-5 space-y-7 pb-5 ">
         <MDMarkdown source={challengesDetailData?.instructions} />
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {challengesDetailData?.tags?.map((tag: string, i: number) => (
             <TagChip variant="blue" size="sm" key={i}>
               {tag}

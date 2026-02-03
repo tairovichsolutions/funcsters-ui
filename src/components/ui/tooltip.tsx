@@ -25,6 +25,7 @@ interface TooltipType {
   delayHide?: number;
   className?: string;
   bgColorClass?: string;
+  childrenClass?:string
 }
 
 export const Tooltip = React.memo(
@@ -32,6 +33,7 @@ export const Tooltip = React.memo(
     content,
     children,
     className,
+    childrenClass,
     place = "top",
     delayShow = 150,
     delayHide = 100,
@@ -45,7 +47,10 @@ export const Tooltip = React.memo(
       <>
         <span
           data-tooltip-id={tooltipId}
-          className="cursor-pointer! p-0! flex justify-center items-center"
+          className={cn(
+            `cursor-pointer! p-0! flex justify-center items-center`,
+            childrenClass,
+          )}
         >
           {children}
         </span>
@@ -59,12 +64,12 @@ export const Tooltip = React.memo(
           className={cn(
             `rounded-lg! text-[11px]! py-1.5! px-4 z-99999! `,
             bgColorClass,
-            className
+            className,
           )}
           openOnClick={trigger === "click"}
           render={() => <div>{content}</div>}
         />
       </>
     );
-  }
+  },
 );

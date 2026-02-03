@@ -126,8 +126,14 @@ function KeyIcon({ k }: { k: KeyIconType }) {
 }
 
 export const EditerSettingPopover = React.memo(() => {
-  const { settings, setTheme, setTabSize, setAutoComplete, setKeyBinding } =
-    useEditorSettings();
+  const {
+    settings,
+    setTheme,
+    setTabSize,
+    setThemeMode,
+    setAutoComplete,
+    setKeyBinding,
+  } = useEditorSettings();
 
   const isMac = React.useMemo(() => isMacOS(), []);
   const shortcuts = React.useMemo(
@@ -147,6 +153,18 @@ export const EditerSettingPopover = React.memo(() => {
             onCheckedChange={setAutoComplete}
           />
         </div>
+      </div>
+
+      <div className="bg-[#0050920D] p-3 rounded-md flex justify-between items-center">
+        <h4 className="text-[13px] font-semibold">Follow website theme</h4>
+        <Switch
+          textSize="sm"
+          uiSize="md"
+          checked={settings.themeMode === "system"}
+          onCheckedChange={(checked) =>
+            setThemeMode(checked ? "system" : "manual")
+          }
+        />
       </div>
 
       <div className="bg-[#0050920D] p-3 rounded-md space-y-3">
@@ -183,6 +201,7 @@ export const EditerSettingPopover = React.memo(() => {
             value={settings.theme}
             onValueChange={(v) => setTheme(v as EditorTheme)}
             options={EDITOR_THEME_OPTIONS}
+            disabled={settings.themeMode === "system"}
           />
         </div>
       </div>

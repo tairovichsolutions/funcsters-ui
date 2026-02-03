@@ -4,8 +4,10 @@ import * as React from "react";
 
 export type EditorTheme = "vs-dark" | "light" | "hc-black";
 export type EditorKeyBinding = "vscode" | "sublime" | "vim";
+export type EditorThemeMode = "system" | "manual";
 
 export type EditorSettings = {
+  themeMode: EditorThemeMode;
   theme: EditorTheme;
   fontSize: number;
   tabSize: number;
@@ -17,6 +19,7 @@ export type EditorSettings = {
 type EditorSettingsContextValue = {
   settings: EditorSettings;
   setTheme: (theme: EditorTheme) => void;
+  setThemeMode: (mode: EditorThemeMode) => void;
   setFontSize: (size: number) => void;
   increaseFontSize: () => void;
   decreaseFontSize: () => void;
@@ -31,6 +34,7 @@ const STORAGE_KEY = "editor:settings:v1";
 
 const DEFAULT_SETTINGS: EditorSettings = {
   theme: "light",
+  themeMode: "system",
   fontSize: 14,
   tabSize: 2,
   wordWrap: "on",
@@ -67,6 +71,7 @@ function readSettingsFromStorage(): EditorSettings {
     return {
       ...DEFAULT_SETTINGS,
       ...parsed,
+      themeMode: parsed.themeMode ?? "system",
       theme: (parsed.theme as EditorTheme | undefined) ?? detectSystemTheme(),
     };
   } catch {
@@ -98,8 +103,12 @@ export function EditorSettingsProvider({
 
   const value: EditorSettingsContextValue = {
     settings,
+
+    setThemeMode: (themeMode) => {
+      setSettings((prev) => ({ ...prev, themeMode }));
+    },
     setTheme: (theme) => {
-      setSettings((prev) => ({ ...prev, theme }));
+      setSettings((prev) => ({ ...prev, themeMode: "manual", theme }));
     },
     setFontSize: (size) => {
       const clamped = Math.max(10, Math.min(36, size));
