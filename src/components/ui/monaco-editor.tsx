@@ -120,6 +120,20 @@ export const MonacoCodeEditer = React.memo(
       monacoRef,
     });
 
+    React.useEffect(() => {
+      const monaco = monacoRef.current;
+      if (!monaco) return;
+
+      monaco.editor.defineTheme(DARK_THEME_NAME, {
+        base: "vs-dark",
+        inherit: true,
+        rules: [],
+        colors: { "editor.background": "#0D1A26" },
+      });
+
+      monaco.editor.setTheme(theme === "vs-dark" ? DARK_THEME_NAME : theme);
+    }, [theme]);
+
     return (
       <div className={cn("h-full w-full", className)}>
         <Editor
@@ -171,12 +185,12 @@ export const MonacoCodeEditer = React.memo(
               },
             });
 
-            if (theme === "vs-dark") {
-              monaco.editor.setTheme(DARK_THEME_NAME);
-            }
+            monaco.editor.setTheme(
+              theme === "vs-dark" ? DARK_THEME_NAME : theme,
+            );
           }}
         />
       </div>
     );
-  }
+  },
 );

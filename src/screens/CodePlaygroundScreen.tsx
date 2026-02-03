@@ -13,7 +13,7 @@ import { useRunCode } from "@/mutations/useRunCode";
 import { useSubmitCode } from "@/mutations/useSubmitCode";
 import { RunCodeApiResponse } from "@/types/run-code-type";
 import { MonacoCodeEditer } from "@/components/ui/monaco-editor";
-import { useEditorSettings } from "@/context/EditorSettingsContext";
+import { EditorTheme, useEditorSettings } from "@/context/EditorSettingsContext";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
@@ -81,7 +81,7 @@ export const CodePlaygroundScreen = memo(() => {
   const [earnedXp, setEarnedXp] = useState<number | null>(null);
   const [submitModalOpen, setSubmitModalOpen] = useState(false);
   const editorRef = useRef<any | null>(null);
-  const { settings, setTheme } = useEditorSettings();
+  const { settings } = useEditorSettings();
   const {
     xpCount,
     languageId,
@@ -92,10 +92,7 @@ export const CodePlaygroundScreen = memo(() => {
   const { mutateAsync: runCode, isPending } = useRunCode();
   const { mutateAsync: submitCode, isPending: submitPending } = useSubmitCode();
 
-  useEffect(() => {
-    if (!resolvedTheme) return;
-    setTheme(resolvedTheme === "dark" ? "vs-dark" : "light");
-  }, [resolvedTheme]);
+
 
   useEffect(() => {
     if (!languageId || Number.isNaN(challengeId)) return;
@@ -178,6 +175,13 @@ export const CodePlaygroundScreen = memo(() => {
     }
   }, [code, languageId, challengeId, submitCode, updateUserProgress, xpCount]);
 
+
+    const websiteTheme: EditorTheme =
+  resolvedTheme === "dark" ? "vs-dark" : "light";
+
+const editorTheme: EditorTheme =
+  settings.themeMode === "system" ? websiteTheme : settings.theme;
+
   return (
     <div className="h-full w-full shrink-0">
       <PanelGroup direction="vertical" className="gap-1.5 h-full">
@@ -208,7 +212,7 @@ export const CodePlaygroundScreen = memo(() => {
                 value={code}
                 onChange={handleCodeChange}
                 editorRef={editorRef}
-                theme={settings.theme}
+                theme={editorTheme}
                 className="w-full h-full"
                 tabSize={settings.tabSize}
                 language={selectedLanguage}

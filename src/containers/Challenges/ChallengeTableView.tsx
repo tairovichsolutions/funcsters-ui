@@ -59,7 +59,7 @@ export const ChallengeTableView: React.FC<ChallengeTableViewProps> = ({
                 >
                   <TableCell className="font-medium w-1/6  truncate">
                     <Link
-                      className=" hover:underline"
+                      className=" hover:underline block max-w-[200px] 2xl:max-w-[250px] 3xl:max-w-[300px] truncate"
                       href={Navigation.ChallengesDetail(String(item?.id))}
                     >
                       {item?.title}
@@ -80,12 +80,19 @@ export const ChallengeTableView: React.FC<ChallengeTableViewProps> = ({
                   </TableCell>
 
                   <TableCell className="3xl:pe-32 w-1/4">
-                    <div className="flex gap-2">
-                      {tags?.map((tag) => (
-                        <TagChip key={tag} variant="blue">
-                          {tag}
-                        </TagChip>
+                    <div className="flex gap-2 items-center">
+                      {tags?.slice(0, 3).map((tag: string) => (
+                        <TagChip key={tag}>{tag}</TagChip>
                       ))}
+
+                      {tags?.length > 3 && (
+                        <button
+                          className="inline-flex shrink-0 items-center rounded-sm font-semibold bg-[#F9FAFB] dark:bg-primary/20 border border-[#E5E7EB] dark:border-primary/20 px-2 py-1 text-xs"
+                          aria-label={`Show ${tags?.length - 3} more tags`}
+                        >
+                          +{tags?.length - 3}
+                        </button>
+                      )}
                     </div>
                   </TableCell>
 

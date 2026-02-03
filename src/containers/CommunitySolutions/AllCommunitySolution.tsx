@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import React, { Key } from "react";
 import { Assets } from "@/constants/assets";
 import { CommunitySolutionType } from "@/types";
-import React, { Key } from "react";
 import { CommunitySolutionsCard } from "./CommunitySolutionsCard";
 
 export const AllCommunitySolution = React.memo(
