@@ -14,6 +14,7 @@ import { DifficultyChip } from "@/components/ui/difficulty-chip";
 import { ChallengeDetailSkeleton } from "@/skeletons/ChallengeDetailSkeleton";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
 import { MDMarkdown } from "@/components/MDMarkdown";
+import { TitleWithTooltipIfTruncated } from "@/components/ui/TitleWithTooltip";
 
 export const ChallengesDetailScreen = () => {
   const { id } = useParams();
@@ -67,16 +68,8 @@ export const ChallengesDetailScreen = () => {
   return (
     <div>
       <div className="flex w-full  items-center justify-between gap-2 ">
-        <div className="  flex-1  min-w-0">
-          <Tooltip
-            childrenClass="justify-start"
-            content={challengesDetailData?.title}
-            className="bg-primary!  shadow-2xl text-sm!"
-          >
-            <h1 className="truncate  text-[23px] font-extrabold  2xl:text-[26px]">
-              {challengesDetailData?.title}
-            </h1>
-          </Tooltip>
+        <div className="flex-1 min-w-0">
+          <TitleWithTooltipIfTruncated title={challengesDetailData?.title} />
         </div>
 
         <div className="flex w-fit shrink-0 items-center gap-2.5">

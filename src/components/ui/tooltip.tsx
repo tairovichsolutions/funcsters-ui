@@ -3,9 +3,11 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+
 interface TooltipType {
   children: React.ReactNode;
   content: React.ReactNode;
+  enabled?: boolean;
   place?:
     | "top"
     | "top-start"
@@ -25,51 +27,56 @@ interface TooltipType {
   delayHide?: number;
   className?: string;
   bgColorClass?: string;
-  childrenClass?:string
+  childrenClass?: string;
 }
 
-export const Tooltip = React.memo(
-  ({
-    content,
-    children,
-    className,
-    childrenClass,
-    place = "top",
-    delayShow = 150,
-    delayHide = 100,
-    trigger = "hover",
-    variant = "light",
-    bgColorClass = " dark:!bg-gray-700 !bg-[#005092] !text-white ",
-  }: TooltipType) => {
-    const tooltipId = React.useId();
+export const Tooltip = React.memo(function Tooltip({
+  content,
+  children,
+  enabled = true,
+  className,
+  childrenClass,
+  place = "top",
+  delayShow = 150,
+  delayHide = 100,
+  trigger = "hover",
+  variant = "light",
+  bgColorClass = "dark:!bg-gray-700 !bg-[#005092] !text-white",
+}: TooltipType) {
+  const tooltipId = React.useId();
 
-    return (
-      <>
-        <span
-          data-tooltip-id={tooltipId}
-          className={cn(
-            `cursor-pointer! p-0! flex justify-center items-center`,
-            childrenClass,
-          )}
-        >
-          {children}
-        </span>
+  return (
+    <>
+      <span
+        {...(enabled ? { "data-tooltip-id": tooltipId } : {})}
+        className={cn(
+          "block min-w-0",
+          childrenClass,
+        )}
+      >
+        {children}
+      </span>
 
+      {enabled ? (
         <ReactTooltip
           place={place}
           id={tooltipId}
           variant={variant}
           delayShow={delayShow}
           delayHide={delayHide}
+          openOnClick={trigger === "click"}
           className={cn(
-            `rounded-lg! text-[11px]! py-1.5! px-4 z-99999! `,
+            "rounded-lg! text-[11px]! py-1.5! px-4 z-99999!",
             bgColorClass,
             className,
           )}
-          openOnClick={trigger === "click"}
-          render={() => <div>{content}</div>}
+          render={() => (
+            <div className="max-w-[350px] whitespace-normal ">
+              {content}
+            </div>
+          )}
         />
-      </>
-    );
-  },
-);
+      ) : null}
+    </>
+  );
+});

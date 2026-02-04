@@ -155,7 +155,7 @@ export const EditerSettingPopover = React.memo(() => {
         </div>
       </div>
 
-      <div className="bg-[#0050920D] p-3 rounded-md flex justify-between items-center">
+      {/* <div className="bg-[#0050920D] p-3 rounded-md flex justify-between items-center">
         <h4 className="text-[13px] font-semibold">Follow website theme</h4>
         <Switch
           textSize="sm"
@@ -165,7 +165,7 @@ export const EditerSettingPopover = React.memo(() => {
             setThemeMode(checked ? "system" : "manual")
           }
         />
-      </div>
+      </div> */}
 
       <div className="bg-[#0050920D] p-3 rounded-md space-y-3">
         <div className="flex flex-col gap-1">
@@ -201,7 +201,7 @@ export const EditerSettingPopover = React.memo(() => {
             value={settings.theme}
             onValueChange={(v) => setTheme(v as EditorTheme)}
             options={EDITOR_THEME_OPTIONS}
-            disabled={settings.themeMode === "system"}
+            // disabled={settings.themeMode === "system"}
           />
         </div>
       </div>

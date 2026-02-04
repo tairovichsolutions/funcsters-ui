@@ -1,4 +1,3 @@
-// lib/auth/refreshToken.ts
 import axios from "axios";
 
 let isRefreshing = false;
@@ -10,7 +9,7 @@ const processQueue = (token: string) => {
 };
 
 const refreshHttp = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_FUNCSTER_BACKEND_URL, // client-safe env var
+  baseURL: process.env.NEXT_PUBLIC_FUNCSTER_BACKEND_URL, 
   withCredentials: true,
 });
 
@@ -23,8 +22,6 @@ export const refreshAccessToken = async (): Promise<string> => {
 
   try {
     const { data } = await refreshHttp.post("/api/auth/refresh-token", {});
-    // If you store access token in a cookie, ideally set it server-side (httpOnly).
-    // If you're storing it client-side, setCookie here (but NOT httpOnly).
     processQueue(data.accessToken);
     return data.accessToken;
   } catch (error) {
