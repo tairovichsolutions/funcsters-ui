@@ -9,6 +9,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { MatricCard } from "@/components/ui/matric-card";
 import { StatsScorePoints } from "@/components/ui/stats-score-points";
 import { useActivityCalendar } from "@/queries/useActivityCalendar";
+import { useTheme } from "next-themes";
 
 type CalendarCell = {
   date: Date | null;
@@ -20,7 +21,7 @@ const formatMonthKey = (d: Date) =>
 
 const formatDateKey = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
+    d.getDate(),
   ).padStart(2, "0")}`;
 
 const monthKey = (monthStr: string) => {
@@ -30,7 +31,7 @@ const monthKey = (monthStr: string) => {
 
 export const ActivityCalendarCard: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = React.useState<string | undefined>(
-    undefined
+    undefined,
   );
 
   const { data: activityCalendarData } = useActivityCalendar(selectedMonth);
@@ -59,11 +60,11 @@ export const ActivityCalendarCard: React.FC = () => {
 
   const registeredMonthStr = React.useMemo(
     () => (registeredDate ? registeredDate.slice(0, 7) : undefined),
-    [registeredDate]
+    [registeredDate],
   );
   const todayMonthStr = React.useMemo(
     () => (today ? today.slice(0, 7) : undefined),
-    [today]
+    [today],
   );
 
   const canGoPrev = React.useMemo(() => {
@@ -92,7 +93,7 @@ export const ActivityCalendarCard: React.FC = () => {
 
   const totalActivity = React.useMemo(
     () => days.reduce((sum, d) => sum + d.count, 0),
-    [days]
+    [days],
   );
 
   const year = currentMonthDate.getFullYear();
@@ -198,9 +199,16 @@ export const ActivityCalendarCard: React.FC = () => {
 
   const weekDayLabels = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
+  const { resolvedTheme } = useTheme();
+
+  const isDark = resolvedTheme === "dark";
   return (
     <MatricCard
-      imgSrc={Assets.Svgs.ActivityCalendarImage}
+      imgSrc={
+        isDark
+          ? Assets.Svgs.ActivityCalendarDarkImage
+          : Assets.Svgs.ActivityCalendarImage
+      }
       className="bg-activity-calendar-card flex! gap-3 3xl:gap-10!  justify-between"
     >
       <StatsScorePoints value={totalActivity} label="Activities" />
