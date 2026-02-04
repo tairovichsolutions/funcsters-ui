@@ -13,7 +13,10 @@ import { useRunCode } from "@/mutations/useRunCode";
 import { useSubmitCode } from "@/mutations/useSubmitCode";
 import { RunCodeApiResponse } from "@/types/run-code-type";
 import { MonacoCodeEditer } from "@/components/ui/monaco-editor";
-import { EditorTheme, useEditorSettings } from "@/context/EditorSettingsContext";
+import {
+  EditorTheme,
+  useEditorSettings,
+} from "@/context/EditorSettingsContext";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
@@ -41,12 +44,12 @@ const readSnippets = (): Snippet[] => {
 
 const getSavedCode = (
   languageId: number | null,
-  challengeId: number
+  challengeId: number,
 ): string | null => {
   if (!languageId || !challengeId) return null;
   const snippets = readSnippets();
   const found = snippets.find(
-    (s) => s.languageId === languageId && s.challengeId === challengeId
+    (s) => s.languageId === languageId && s.challengeId === challengeId,
   );
   return found?.code ?? null;
 };
@@ -54,13 +57,13 @@ const getSavedCode = (
 const saveSnippetOnRun = (
   languageId: number | null,
   challengeId: number,
-  code: string
+  code: string,
 ) => {
   if (!languageId || !challengeId || typeof window === "undefined") return;
 
   const snippets = readSnippets();
   const idx = snippets.findIndex(
-    (s) => s.languageId === languageId && s.challengeId === challengeId
+    (s) => s.languageId === languageId && s.challengeId === challengeId,
   );
 
   if (idx === -1) {
@@ -91,8 +94,6 @@ export const CodePlaygroundScreen = memo(() => {
   } = useLanguageImplementations();
   const { mutateAsync: runCode, isPending } = useRunCode();
   const { mutateAsync: submitCode, isPending: submitPending } = useSubmitCode();
-
-
 
   useEffect(() => {
     if (!languageId || Number.isNaN(challengeId)) return;
@@ -175,16 +176,15 @@ export const CodePlaygroundScreen = memo(() => {
     }
   }, [code, languageId, challengeId, submitCode, updateUserProgress, xpCount]);
 
+  const websiteTheme: EditorTheme =
+    resolvedTheme === "dark" ? "vs-dark" : "light";
 
-    const websiteTheme: EditorTheme =
-  resolvedTheme === "dark" ? "vs-dark" : "light";
-
-const editorTheme: EditorTheme =
-  settings.themeMode === "system" ? websiteTheme : settings.theme;
+  const editorTheme: EditorTheme =
+    settings.themeMode === "system" ? websiteTheme : settings.theme;
 
   return (
     <div className="h-full w-full shrink-0">
-      <PanelGroup direction="vertical" className="gap-1.5 h-full">
+      <PanelGroup direction="vertical" className="gap-1.5 w-full h-full">
         <Panel minSize={40} defaultSize={65}>
           <div className="border border-border-soft rounded-xl overflow-hidden h-full w-full flex flex-col bg-background">
             <div className="px-4 flex items-center justify-between border-b border-border-soft h-16 overflow-hidden">
@@ -227,7 +227,7 @@ const editorTheme: EditorTheme =
           </div>
         </Panel>
 
-        <PanelResizeHandle className="w-full rounded-full h-2 cursor-col-resize bg-transparent hover:bg-primary/40 data-resize-handle-active:bg-primary/60 transition-colors duration-150" />
+        <PanelResizeHandle className="w-full rounded-full shrink-0 h-[7px] cursor-col-resize bg-transparent hover:bg-primary/40 data-resize-handle-active:bg-primary/60 transition-colors duration-150" />
 
         <Panel minSize={10} defaultSize={35}>
           <div className="w-full h-full">

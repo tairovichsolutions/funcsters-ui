@@ -28,153 +28,163 @@ const buildCountsFromVoteData = (voteData?: VoteDataTypes): VoteCounts => ({
   MEH: voteData?.meh ?? 0,
 });
 
-export const CommunitySolutionsVote = React.memo(function CommunitySolutionsVote({
-  languageId,
-  challengeId,
-  mySolution,
-  solutionId,
-  voteData,
-}: CommunitySolutionsVoteProps) {
-  const { mutateAsync: voteSolution, isPending } = useVoteCommunitySolution();
+export const CommunitySolutionsVote = React.memo(
+  function CommunitySolutionsVote({
+    languageId,
+    challengeId,
+    mySolution,
+    solutionId,
+    voteData,
+  }: CommunitySolutionsVoteProps) {
+    const { mutateAsync: voteSolution, isPending } = useVoteCommunitySolution();
 
-  const [activeVote, setActiveVote] = useState<VoteType | null>(
-    toVoteType(voteData?.currentUserVote ?? null),
-  );
+    const [activeVote, setActiveVote] = useState<VoteType | null>(
+      toVoteType(voteData?.currentUserVote ?? null),
+    );
 
-  const [voteCounts, setVoteCounts] = useState<VoteCounts>(() =>
-    buildCountsFromVoteData(voteData),
-  );
+    const [voteCounts, setVoteCounts] = useState<VoteCounts>(() =>
+      buildCountsFromVoteData(voteData),
+    );
 
-  useEffect(() => {
-    setActiveVote(toVoteType(voteData?.currentUserVote ?? null));
-    setVoteCounts(buildCountsFromVoteData(voteData));
-  }, [voteData]);
+    useEffect(() => {
+      setActiveVote(toVoteType(voteData?.currentUserVote ?? null));
+      setVoteCounts(buildCountsFromVoteData(voteData));
+    }, [voteData]);
 
-  const totalReactions = useMemo(
-    () => voteCounts.GENIUS + voteCounts.SOLID + voteCounts.MEH,
-    [voteCounts],
-  );
+    const totalReactions = useMemo(
+      () => voteCounts.GENIUS + voteCounts.SOLID + voteCounts.MEH,
+      [voteCounts],
+    );
 
-  const handleVoteClick = async (vote: VoteType) => {
-    if (isPending || mySolution) return;
+    const handleVoteClick = async (vote: VoteType) => {
+      if (isPending || mySolution) return;
 
-    const prevVote = activeVote;
-    const prevCounts = { ...voteCounts };
+      const prevVote = activeVote;
+      const prevCounts = { ...voteCounts };
 
-    const removeSame = prevVote === vote;
-    const nextVote = removeSame ? null : vote;
+      const removeSame = prevVote === vote;
+      const nextVote = removeSame ? null : vote;
 
-    setActiveVote(nextVote);
-    setVoteCounts((prev) => {
-      const updated = { ...prev };
+      setActiveVote(nextVote);
+      setVoteCounts((prev) => {
+        const updated = { ...prev };
 
-      if (removeSame) {
-        updated[vote] = Math.max(0, updated[vote] - 1);
-      } else {
-        if (prevVote) updated[prevVote] = Math.max(0, updated[prevVote] - 1);
-        updated[vote] = (updated[vote] ?? 0) + 1;
-      }
+        if (removeSame) {
+          updated[vote] = Math.max(0, updated[vote] - 1);
+        } else {
+          if (prevVote) updated[prevVote] = Math.max(0, updated[prevVote] - 1);
+          updated[vote] = (updated[vote] ?? 0) + 1;
+        }
 
-      return updated;
-    });
-
-    try {
-      const { data } = await voteSolution({
-        languageId,
-        challengeId,
-        solutionId,
-        vote,
+        return updated;
       });
 
-      if (!data?.data?.success) throw new Error(data?.data?.message);
-    } catch (err) {
-      console.error(err);
-      setActiveVote(prevVote);
-      setVoteCounts(prevCounts);
-      toast.error("Vote failed");
-    }
-  };
+      try {
+        const { data } = await voteSolution({
+          languageId,
+          challengeId,
+          solutionId,
+          vote,
+        });
 
-  return (
-    <div className="flex justify-between w-full items-center my-1.5">
-      <div className="flex items-center gap-5">
-        {VOTE_CONFIG.map(
-          ({ key, textClass, label, imgSrc, activeImgSrc, bgColor }) => {
-            const isActive = activeVote === key;
-            const count = voteCounts[key] ?? 0;
+        if (!data?.data?.success) throw new Error(data?.data?.message);
+      } catch (err) {
+        console.error(err);
+        setActiveVote(prevVote);
+        setVoteCounts(prevCounts);
+        toast.error("Vote failed");
+      }
+    };
 
-            const othersCount = Math.max(0, count - 1);
+    return (
+      <div className="flex justify-between w-full items-center my-1.5">
+        <div className="flex items-center gap-5">
+          {VOTE_CONFIG.map(
+            ({ key, textClass, label, imgSrc, activeImgSrc, bgColor }) => {
+              const isActive = activeVote === key;
+              const count = voteCounts[key] ?? 0;
 
-            return (
-              <button
-                key={key}
-                type="button"
-                disabled={isPending || mySolution}
-                onClick={() => handleVoteClick(key)}
+              const othersCount = Math.max(0, count - 1);
+
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  disabled={isPending || mySolution}
+                  onClick={() => handleVoteClick(key)}
+                  className={cn(
+                    "group flex items-center gap-1.5 rounded-md cursor-pointer",
+                    "border border-transparent",
+                    !mySolution &&
+                      "transition-transform duration-300 ease-out hover:scale-[1.02]",
+                  )}
+                  aria-pressed={isActive}
+                >
+                  <SvgColor
+                    src={isActive ? activeImgSrc : imgSrc}
+                    className={cn("size-[23px]", isActive && bgColor)}
+                  />
+
+                  <div className="flex flex-col items-start space-y-0.5">
+                    <h5
+                      className={cn(
+                        "text-xs font-semibold",
+                        isActive && textClass,
+                      )}
+                    >
+                      {label}
+                    </h5>
+
+                    <h6 className="text-[11px] leading-none transition-colors duration-300">
+                      {isActive ? (
+                        <>
+                          <span className="font-semibold">You</span>
+                          {othersCount > 0 ? (
+                            <>
+                              {" "}
+                              & {othersCount} other
+                              {othersCount === 1 ? "" : "s"}
+                            </>
+                          ) : null}
+                        </>
+                      ) : (
+                        count
+                      )}
+                    </h6>
+                  </div>
+                </button>
+              );
+            },
+          )}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="flex -space-x-3">
+            {VOTE_CONFIG.map((item) => (
+              <div
+                key={item.key}
                 className={cn(
-                  "group flex items-center gap-1.5 rounded-md cursor-pointer",
-                  "border border-transparent",
-                  "transition-transform duration-300 ease-out",
-                  "hover:scale-[1.02]",
+                  "border-2 bg-background z-10 shrink-0 size-8 flex justify-center items-center",
+                  "border-[#ece3e39d] dark:border-[#97a9b64b]",
+                  "hover:scale-110 cursor-pointer p-1 rounded-full transition-all",
                 )}
-                aria-pressed={isActive}
               >
                 <SvgColor
-                  src={isActive ? activeImgSrc : imgSrc}
-                  className={cn("size-[23px]", isActive && bgColor)}
+                  src={item.activeImgSrc}
+                  className={cn("size-[19px]!", item.bgColor)}
                 />
+              </div>
+            ))}
+          </div>
 
-                <div className="flex flex-col items-start space-y-0.5">
-                  <h5 className={cn("text-xs font-semibold", isActive && textClass)}>
-                    {label}
-                  </h5>
-
-                  <h6 className="text-[11px] leading-none transition-colors duration-300">
-                    {isActive ? (
-                      <>
-                        <span className="font-semibold">You</span>
-                        {othersCount > 0 ? (
-                          <>
-                            {" "}
-                            & {othersCount} other{othersCount === 1 ? "" : "s"}
-                          </>
-                        ) : null}
-                      </>
-                    ) : (
-                      count
-                    )}
-                  </h6>
-                </div>
-              </button>
-            );
-          },
-        )}
-      </div>
-
-      <div className="flex items-center gap-3">
-        <div className="flex -space-x-3">
-          {VOTE_CONFIG.map((item) => (
-            <div
-              key={item.key}
-              className={cn(
-                "border-2 bg-background z-10 shrink-0 size-8 flex justify-center items-center",
-                "border-[#ece3e39d] dark:border-[#97a9b64b]",
-                "hover:scale-110 cursor-pointer p-1 rounded-full transition-all",
-              )}
-            >
-              <SvgColor
-                src={item.activeImgSrc}
-                className={cn("size-[19px]!", item.bgColor)}
-              />
-            </div>
-          ))}
-        </div>
-
-        <div className="flex flex-col items-start">
-          <h5 className="font-semibold leading-none text-xs">{totalReactions}</h5>
-          <h6 className="text-[11px] leading-none">All Reactions</h6>
+          <div className="flex flex-col items-start">
+            <h5 className="font-semibold leading-none text-xs">
+              {totalReactions}
+            </h5>
+            <h6 className="text-[11px] leading-none">All Reactions</h6>
+          </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  },
+);

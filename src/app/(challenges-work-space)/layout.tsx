@@ -77,7 +77,9 @@ const Layout = ({ children }: LayoutProps) => {
             </div>
           </Panel>
 
-          <PanelResizeHandle className="w-1.5 rounded-full h-full cursor-col-resize bg-transparent hover:bg-primary/40 data-resize-handle-active:bg-primary/60 transition-colors duration-150" />
+
+        <PanelResizeHandle className="h-full rounded-full w-[5px] cursor-col-resize bg-transparent hover:bg-primary/40 data-resize-handle-active:bg-primary/60 transition-colors duration-150" />
+
           <Panel minSize={40}>
             <div className="overflow-hidden h-full w-full">
               <CodePlaygroundScreen />
