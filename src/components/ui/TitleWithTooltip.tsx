@@ -42,7 +42,7 @@ export function TitleWithTooltipIfTruncated({
       <h1
         ref={ref}
         className={cn(
-          "block w-full min-w-0 truncate text-[23px] font-extrabold 2xl:text-[26px]",
+          "block w-full min-w-0 truncate font-extrabold text-[26px]",
           className,
         )}
       >

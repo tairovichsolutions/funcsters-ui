@@ -165,9 +165,9 @@
   --flash-white: #ffffff33;
   --medium-gray: #ffffffcc;
   --challenge-progress-card: oklch(54.93% 0.169 256.2);
-  --activity-calendar-card: oklch(49.19% 0.193 272.24);
+  --activity-calendar-card: oklch(0.4919 0.1933 272.24);
   --streak-stats-card: oklch(58.3% 0.173 37.8);
-  --xp-points-card: oklch(70.25% 0.142 80.84);
+  --xp-points-card: oklch(0.7025 0.1421 80.84);
   --mid-slate: oklch(100% 0 0);
   --background: #0d1a26;
   --foreground: oklch(0.985 0.002 247.839);

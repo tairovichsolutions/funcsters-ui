@@ -22,6 +22,7 @@ export const Assets = {
     ResetPasswordImage: "/images/otp.png",
     EmailSendImage: "/images/SentEmail.png",
     XpStarsImage: "/images/XpStarImage.png",
+    XpStarDarkImage: "/images/XpStarDarkImage.png",
     LoginDarkImage: "/images/login-dark.png",
     ProfileImage: "/images/profileImage.png",
     SignUpDarkImage: "/images/SignupDark.png",
@@ -98,11 +99,14 @@ export const Assets = {
     Singlecomma: "/svgs/single-comma.svg",
     ResetAccount: "/svgs/resetAccount.svg",
     XpPointsImage: "/svgs/XpPointsImage.svg",
+    XpPointsDarkImage: "/svgs/XpPointsDarkImage.svg",
     DeleteAccount: "/svgs/deleteAccount.svg",
     NotificationIcon: "/svgs/notification.svg",
     SearchListIcon: "/svgs/search-list-icon.svg",
     StreakStatsImage: "/svgs/StreakStatsImage.svg",
     ActivityCalendarImage: "/svgs/ActivityCalendarImage.svg",
+    ActivityCalendarDarkImage: "/svgs/ActivityCalendarDarkImage.svg",
+
     ChallengeProgressImage: "/svgs/ChallengeProgressImage.svg",
   },
 };
