@@ -19,9 +19,12 @@ interface ModalProps {
   scroll?: ModalScroll;
   className?: string;
   overlayClass?: string;
+  ClossBtnClass?: string;
   headerClass?: string;
   contentClass?: string;
   footerClass?: string;
+  ClossBtnIconClass?: string;
+
   children: React.ReactNode;
 }
 
@@ -32,8 +35,10 @@ export function Modal({
   header,
   footer,
   stickyFooter = false,
+  ClossBtnIconClass,
   showClose = true,
   size = "md",
+  ClossBtnClass,
   scroll = "content",
   className,
   overlayClass,
@@ -54,27 +59,41 @@ export function Modal({
   };
 
   return (
-    <Dialog.Root open={open} onOpenChange={onClose}>
+    <Dialog.Root
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          onClose?.(); // call your closeModal only when Radix tries to close
+        }
+      }}
+    >
       <Dialog.Portal>
         <Dialog.Overlay
           className={cn(
             "fixed inset-0 z-50 backdrop-blur-xs bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
-            overlayClass
+            overlayClass,
           )}
         />
         <Dialog.Content
           className={cn(
             "fixed left-1/2 top-1/2 max-h-[90vh] flex flex-col z-50 w-[92vw] overflow-hidden -translate-x-1/2 -translate-y-1/2 rounded-xl bg-modal-background shadow-xl outline-none",
             sizeClass[size],
-            className
+            className,
           )}
         >
           {showClose && (
             <Dialog.Close
-              className="inline-flex absolute z-50 right-2 top-2 h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+              className={cn(
+                "inline-flex absolute z-50 right-2 top-2 h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer",
+                ClossBtnClass,
+              )}
               aria-label="Close"
             >
-              <X size={16} />
+              <X
+                size={16}
+                className={cn(ClossBtnIconClass)}
+                strokeWidth={ClossBtnIconClass ? 3.5 : 2}
+              />
             </Dialog.Close>
           )}
 
@@ -82,7 +101,7 @@ export function Modal({
             <div
               className={cn(
                 "sticky top-0 z-10 flex items-center justify-between border-b bg-white/80 dark:bg-[#0D1A26]/50 backdrop-blur px-5 py-3",
-                headerClass
+                headerClass,
               )}
             >
               <div className="min-w-0">
@@ -107,7 +126,7 @@ export function Modal({
                 ? "min-h-0 overflow-y-auto h-full custom-scrollbar"
                 : "",
               hasHeader ? "px-5 py-4" : "px-5 py-5",
-              contentClass
+              contentClass,
             )}
           >
             {children}
@@ -120,7 +139,7 @@ export function Modal({
                 stickyFooter
                   ? "sticky bottom-0 bg-white/80 backdrop-blur z-10"
                   : "",
-                footerClass
+                footerClass,
               )}
             >
               {footer}

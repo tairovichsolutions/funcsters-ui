@@ -9,7 +9,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { MatricCard } from "@/components/ui/matric-card";
 import { StatsScorePoints } from "@/components/ui/stats-score-points";
 import { useActivityCalendar } from "@/queries/useActivityCalendar";
-import { useTheme } from "next-themes";
 
 type CalendarCell = {
   date: Date | null;
@@ -21,7 +20,7 @@ const formatMonthKey = (d: Date) =>
 
 const formatDateKey = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate(),
+    d.getDate()
   ).padStart(2, "0")}`;
 
 const monthKey = (monthStr: string) => {
@@ -31,7 +30,7 @@ const monthKey = (monthStr: string) => {
 
 export const ActivityCalendarCard: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = React.useState<string | undefined>(
-    undefined,
+    undefined
   );
 
   const { data: activityCalendarData } = useActivityCalendar(selectedMonth);
@@ -60,11 +59,11 @@ export const ActivityCalendarCard: React.FC = () => {
 
   const registeredMonthStr = React.useMemo(
     () => (registeredDate ? registeredDate.slice(0, 7) : undefined),
-    [registeredDate],
+    [registeredDate]
   );
   const todayMonthStr = React.useMemo(
     () => (today ? today.slice(0, 7) : undefined),
-    [today],
+    [today]
   );
 
   const canGoPrev = React.useMemo(() => {
@@ -93,7 +92,7 @@ export const ActivityCalendarCard: React.FC = () => {
 
   const totalActivity = React.useMemo(
     () => days.reduce((sum, d) => sum + d.count, 0),
-    [days],
+    [days]
   );
 
   const year = currentMonthDate.getFullYear();
@@ -199,21 +198,14 @@ export const ActivityCalendarCard: React.FC = () => {
 
   const weekDayLabels = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
-  const { resolvedTheme } = useTheme();
-
-  const isDark = resolvedTheme === "dark";
   return (
     <MatricCard
-      imgSrc={
-        isDark
-          ? Assets.Svgs.ActivityCalendarDarkImage
-          : Assets.Svgs.ActivityCalendarImage
-      }
+      imgSrc={Assets.Svgs.ActivityCalendarImage}
       className="bg-activity-calendar-card flex! gap-3 3xl:gap-10!  justify-between"
     >
       <StatsScorePoints value={totalActivity} label="Activities" />
 
-      <div className="relative w-full flex flex-1 flex-col text-[12px] text-white z-10 max-w-72 3xl:max-w-64 bg--500">
+      <div className="relative w-full flex flex-1 flex-col text-[12px] text-white z-10 max-w-[240px] bg--500">
         <div className="flex flex-col border-b pb-1 border-white/50 items-end gap-2 w-full">
           <div className="flex items-center gap-2 text-xs w-full justify-between font-medium text-white">
             <span className="ml-1.5">{monthLabel}</span>
@@ -317,7 +309,7 @@ export const ActivityCalendarCard: React.FC = () => {
                               .filter(Boolean)
                               .join(" ")}
                           >
-                            <span className="leading-none">{dayNumber}</span>
+                            <span className="leading-none mt-0.5">{dayNumber}</span>
                           </div>
                         </div>
                       </Tooltip>

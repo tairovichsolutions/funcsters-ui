@@ -1,11 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import { Assets } from "@/constants/assets";
 import { Button } from "@/components/ui/button";
-import { useProfileSettingModal } from "@/providers/ProfileSettingModalsProvider";
 import { Input } from "@/components";
+import { useAuthModal } from "@/providers/AuthModalsProvider";
+import React from "react";
 
 export const DeleteAccountConfirmationModal = () => {
-  const { closeModal } = useProfileSettingModal();
+  const [reason, setReason] = React.useState("");
+  const { closeModal } = useAuthModal();
   const onDelete = () => {
     closeModal();
   };
@@ -15,7 +17,7 @@ export const DeleteAccountConfirmationModal = () => {
         <img src={Assets.Images.ConfirmationImage} alt="" />
       </div>
       <div className="flex flex-col gap-2">
-        <h2 className="font-extrabold text-2xl text-black text-center">
+        <h2 className="font-bold text-[27px]  leading-none text-black text-center">
           Account Deletion?
         </h2>
         <p className="font-normal text-[13px] max-w-md text-center text-medium-gray">
@@ -26,13 +28,27 @@ export const DeleteAccountConfirmationModal = () => {
       </div>
 
       <div className="w-full">
-        <Input label="Reason" placeholder="Enter your reason" />
+        <Input
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          label="Type"
+          placeholder="Enter your reason"
+        />
       </div>
       <div className=" grid grid-cols-2 items-center justify-center gap-4  w-full">
-        <Button variant="outline" onClick={() => closeModal()}>
+        <Button
+          className=" w-full! border h-11! border-[#0000004D] dark:border-gray-400 dark:text-gray-400 text-[#000000B2]"
+          variant="outline"
+          onClick={() => closeModal()}
+        >
           Cancel
         </Button>
-        <Button variant="destructive" onClick={onDelete}>
+        <Button
+          disabled={!reason.trim()}
+          variant="destructive"
+          className="h-11!"
+          onClick={onDelete}
+        >
           Yes,Delete
         </Button>
       </div>

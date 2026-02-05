@@ -44,7 +44,7 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
 
         <div className=" grid w-full grid-cols-2  gap-3 mt-3 px-5">
           <Button
-            className=" w-full! border border-[#0000004D] dark:border-gray-400 dark:text-gray-400 text-[#000000B2]"
+            className=" w-full! border h-11! border-[#0000004D] dark:border-gray-400 dark:text-gray-400 text-[#000000B2]"
             variant="outline"
             onClick={onClose}
           >
@@ -53,7 +53,7 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
           <Button
             loading={isPending}
             onClick={onConfirm}
-            className="bg-[#D7263D] hover:bg-red-700 text-white w-full!"
+            className="bg-[#D7263D] h-11! hover:bg-red-700 text-white w-full!"
           >
             Yes, Delete
           </Button>

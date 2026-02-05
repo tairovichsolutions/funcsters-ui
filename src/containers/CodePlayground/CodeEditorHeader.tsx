@@ -1,10 +1,8 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Play, Send, TextAlignStart } from "lucide-react";
-import { useGetUserProfile } from "@/queries/useGetUserProfile";
 import { EditerFontSizeControl } from "./EditerFontSizeControl";
 import { LanguageSelector } from "../ChallengesWorkSpace/LanguageSelector";
-import { useAuthModal } from "@/providers/AuthModalsProvider";
 
 interface CodeEditorHeaderType {
   code: string;
@@ -26,9 +24,7 @@ export const CodeEditorHeader = React.memo(
     handleFormatCode,
     submitCodePending,
   }: CodeEditorHeaderType) => {
-    const { data: userData } = useGetUserProfile();
-    const isAuthenticated = userData?.data?.authenticated || false;
-    const { openModal } = useAuthModal();
+
 
     return (
       <div className="h-full w-full flex justify-between items-center">
@@ -54,17 +50,7 @@ export const CodeEditorHeader = React.memo(
 
           <EditerFontSizeControl />
 
-          {!isAuthenticated ? (
-            <Button
-              type="button"
-              aria-label="Run"
-              className="gap-2 text-[13px]!"
-              onClick={() => openModal("loginRequiredModal")}
-            >
-              <Play className="size-3.5 fill-white" />
-              Run
-            </Button>
-          ) : allTestPass ? (
+          {allTestPass ? (
             <Button
               type="button"
               disabled={!code}
@@ -94,5 +80,5 @@ export const CodeEditorHeader = React.memo(
         </div>
       </div>
     );
-  }
+  },
 );

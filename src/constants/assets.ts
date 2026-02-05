@@ -65,6 +65,7 @@ export const Assets = {
       CPlusPlus: "/svgs/languages/c-plus-plus.svg",
     },
     Eye: "/svgs/eye.svg",
+    CelebrationImg: "/svgs/celebrationImg.svg",
     IntelligenceLogo: "/svgs/Intelligence-logo.svg",
     ArrowLeftSvg: "/svgs/arrowLeftSvg.svg",
     arrowLeftSvgDark: "/svgs/arrowLeftSvgDark.svg",
