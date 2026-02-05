@@ -21,6 +21,8 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
 import { SolutionSubmittedModal } from "@/containers/CodePlayground/SolutionSubmittedModal";
+import { useGetUserProfile } from "@/queries/useGetUserProfile";
+import { useAuthModal } from "@/providers/AuthModalsProvider";
 
 const LOCAL_STORAGE_KEY = "funcsters-code-snippets";
 
@@ -91,9 +93,19 @@ export const CodePlaygroundScreen = memo(() => {
     starterCode,
     selectedLanguage,
     updateUserProgress,
+    viewedSolution,
+    userProgress,
   } = useLanguageImplementations();
+
+
+  console.log("viewedSolution",viewedSolution)
+
   const { mutateAsync: runCode, isPending } = useRunCode();
   const { mutateAsync: submitCode, isPending: submitPending } = useSubmitCode();
+
+  const { data: userData } = useGetUserProfile();
+  const isAuthenticated = userData?.data?.authenticated || false;
+  const { openModal } = useAuthModal();
 
   useEffect(() => {
     if (!languageId || Number.isNaN(challengeId)) return;
@@ -120,9 +132,13 @@ export const CodePlaygroundScreen = memo(() => {
 
   useEffect(() => {
     setResults(null);
-  }, [languageId]);
+  }, [languageId, challengeId]);
 
   const handleRunCode = useCallback(async () => {
+    if (!isAuthenticated) {
+      openModal("loginRequiredModal");
+      return;
+    }
     if (!languageId || Number.isNaN(challengeId)) return;
 
     try {
@@ -140,9 +156,13 @@ export const CodePlaygroundScreen = memo(() => {
       setResults(null);
       toast.error(err?.message || "Something went wrong while running code");
     }
-  }, [code, languageId, challengeId, runCode]);
+  }, [code, languageId, challengeId, runCode, isAuthenticated, openModal]);
 
   const handleSubmitCode = useCallback(async () => {
+    if (!isAuthenticated) {
+      openModal("loginRequiredModal");
+      return;
+    }
     if (!languageId || Number.isNaN(challengeId)) return;
 
     try {
@@ -163,7 +183,9 @@ export const CodePlaygroundScreen = memo(() => {
       const failed = res?.data?.data?.data?.testRunSummary?.failed ?? 0;
 
       if (failed === 0) {
-        setSubmitModalOpen(true);
+        if (userProgress !== "COMPLETED") {
+          setSubmitModalOpen(true);
+        }
         setResults(null);
         setResults(res.data);
         updateUserProgress?.(languageId, "COMPLETED");
@@ -174,7 +196,17 @@ export const CodePlaygroundScreen = memo(() => {
       console.error(err);
       toast.error("Unexpected error while submitting");
     }
-  }, [code, languageId, challengeId, submitCode, updateUserProgress, xpCount]);
+  }, [
+    code,
+    languageId,
+    challengeId,
+    submitCode,
+    updateUserProgress,
+    xpCount,
+    userProgress,
+    isAuthenticated,
+    openModal,
+  ]);
 
   const websiteTheme: EditorTheme =
     resolvedTheme === "dark" ? "vs-dark" : "light";
@@ -200,6 +232,7 @@ export const CodePlaygroundScreen = memo(() => {
 
               {submitModalOpen && (
                 <SolutionSubmittedModal
+                  viewedSolution={viewedSolution}
                   open={submitModalOpen}
                   onClose={() => setSubmitModalOpen(false)}
                   xpCount={earnedXp}

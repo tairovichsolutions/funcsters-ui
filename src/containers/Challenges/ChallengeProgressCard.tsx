@@ -48,15 +48,17 @@ const EMPTY_SLICE: ChartSlice = {
 };
 
 const CustomLegend = ({ data }: { data: ChartSlice[] }) => (
-  <div className="grid grid-cols-2 gap-x-7 gap-y-2 text-white mt-2 ">
+  <div className="grid grid-cols-2 min-w-40  gap-3 gap-y-1.5 text-white my-1 ">
     {data.map((item) => (
-      <div key={item.key} className="flex items-center gap-1.5">
-        <span
-          className="h-2.5 w-2.5 rounded-full"
-          style={{ backgroundColor: item.fill }}
-        />
-        <span className="font-imbMono text-xs">{item.name}</span>
-        <span className="ml-auto   font-semibold text-xs">{item.value}</span>
+      <div
+        style={{ backgroundColor: item.fill }}
+        key={item.key}
+        className=" px-2 w-full py-1 rounded-sm flex items-center justify-center gap-1.5"
+      >
+        <span className="font-imbMono text-xs leading-none">{item.name}</span>
+        <span className=" font-semibold text-xs leading-none pt-[3px]">
+          {item.value}
+        </span>
       </div>
     ))}
   </div>
@@ -98,14 +100,14 @@ export const ChallengeProgressCard: React.FC<ChallengeProgressCardProps> =
           <div className="h-full">
             <StatsScorePoints value={totalCompleted} label="Completed" />
           </div>
-          <div className="flex h-full! w-64! flex-col items-center justify-center">
+          <div className="flex h-full!    me-3 flex-col items-center justify-center">
             <ResponsiveContainer width="100%" height={"100%"}>
               <PieChart className="[&_.recharts-layer]:outline-hidden [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-hidden">
                 <Pie
                   data={chartData}
                   dataKey={isEmpty ? "displayValue" : "value"}
-                  innerRadius={isEmpty ? 55 : 45}
-                  outerRadius={isEmpty ? 85 : 80}
+                  innerRadius={48}
+                  outerRadius={75}
                   startAngle={-270}
                   endAngle={90}
                   fill={isEmpty ? "#5492DC" : undefined}
@@ -134,14 +136,14 @@ export const ChallengeProgressCard: React.FC<ChallengeProgressCardProps> =
                   y="57%"
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  className="fill-white text-xs font-light"
+                  className="fill-white text-[11px] font-light"
                 >
                   {isEmpty ? "Start Solving!" : "Total"}
                 </text>
               </PieChart>
             </ResponsiveContainer>
 
-            {totalCompleted > 0 && <CustomLegend data={slices} />}
+        <CustomLegend data={slices} />
           </div>
         </div>
       </MatricCard>

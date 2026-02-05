@@ -53,9 +53,13 @@ const Layout = ({ children }: LayoutProps) => {
     }
   }, [displayXp, currentLangImpl, setXpCount]);
 
+  // useEffect(() => {
+  //   if (list.length > 0) setLanguages(list);
+  // }, [list, setLanguages]);
+
   useEffect(() => {
-    if (list.length > 0) setLanguages(list);
-  }, [list, setLanguages]);
+  if (list.length > 0) setLanguages(list.map((x: any) => ({ ...x })));
+}, [list, setLanguages])
 
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">

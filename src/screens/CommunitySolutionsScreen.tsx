@@ -41,7 +41,7 @@ export const CommunitySolutionsScreen = React.memo(() => {
   const { id } = useParams<{ id: string }>();
   const challengeId = id;
 
-  const { languageId, selectedLanguage, setXpCount } =
+  const { languageId, selectedLanguage, setXpCount, markViewedSolution } =
     useLanguageImplementations();
 
   const { data: challengeData, isLoading: challengeLoading } =
@@ -84,6 +84,8 @@ export const CommunitySolutionsScreen = React.memo(() => {
       ...prev,
       [languageId]: true,
     }));
+
+    markViewedSolution?.(languageId);
 
     setOpenUnlockModal(false);
     setXpCount(0);

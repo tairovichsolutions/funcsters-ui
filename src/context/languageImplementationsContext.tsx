@@ -7,6 +7,7 @@ export interface LanguageImplementation {
   starterCode: string;
   languageName: string;
   userProgress: string;
+  viewedSolution: boolean;
 }
 
 interface LanguageImplementationsContextType {
@@ -14,12 +15,14 @@ interface LanguageImplementationsContextType {
   starterCode: string;
   userProgress: string;
   selectedLanguage: string;
+  viewedSolution: boolean;
   languageId: number | null;
   setXpCount: (xp: number) => void;
   languageList: LanguageImplementation[];
   handleLanguageChange: (lang: string) => void;
   setLanguages: (langs: LanguageImplementation[]) => void;
   updateUserProgress?: (languageId: number, newProgress: string) => void;
+  markViewedSolution?: (languageId: number) => void;
 }
 
 const LanguageImplementationsContext = createContext<
@@ -37,7 +40,7 @@ export const LanguageImplementationsProvider = ({
   const [languageId, setLanguageId] = useState<number | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string>("");
   const [languageList, setLanguageList] = useState<LanguageImplementation[]>(
-    []
+    [],
   );
 
   const handleLanguageChange = useCallback(
@@ -45,7 +48,7 @@ export const LanguageImplementationsProvider = ({
       setSelectedLanguage(lang);
       localStorage.setItem("selectedLanguage", lang);
       const found = languageList.find(
-        (l) => l.languageName.toLowerCase() === lang.toLowerCase()
+        (l) => l.languageName.toLowerCase() === lang.toLowerCase(),
       );
       if (found) {
         setStarterCode(found.starterCode);
@@ -53,8 +56,20 @@ export const LanguageImplementationsProvider = ({
         setUserProgress(found.userProgress);
       }
     },
-    [languageList]
+    [languageList],
   );
+
+  const viewedSolution =
+    languageList.find((l) => l.languageId === languageId)?.viewedSolution ??
+    false;
+
+  const markViewedSolution = useCallback((id: number) => {
+    setLanguageList((prev) =>
+      prev.map((l) =>
+        l.languageId === id ? { ...l, viewedSolution: true } : l,
+      ),
+    );
+  }, []);
 
   const setLanguages = useCallback((langs: LanguageImplementation[]) => {
     setLanguageList(langs);
@@ -87,15 +102,15 @@ export const LanguageImplementationsProvider = ({
     (id: number, newProgress: string) => {
       setLanguageList((prev) =>
         prev.map((l) =>
-          l.languageId === id ? { ...l, userProgress: newProgress } : l
-        )
+          l.languageId === id ? { ...l, userProgress: newProgress } : l,
+        ),
       );
 
       if (languageId === id) {
         setUserProgress(newProgress);
       }
     },
-    [languageId]
+    [languageId],
   );
 
   return (
@@ -109,8 +124,10 @@ export const LanguageImplementationsProvider = ({
         userProgress,
         languageList,
         selectedLanguage,
+        viewedSolution,
         updateUserProgress,
         handleLanguageChange,
+        markViewedSolution,
       }}
     >
       {children}
@@ -122,7 +139,7 @@ export const useLanguageImplementations = () => {
   const context = useContext(LanguageImplementationsContext);
   if (!context) {
     throw new Error(
-      "useLanguageImplementations must be used within LanguageImplementationsProvider"
+      "useLanguageImplementations must be used within LanguageImplementationsProvider",
     );
   }
   return context;
