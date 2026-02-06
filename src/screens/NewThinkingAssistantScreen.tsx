@@ -13,7 +13,7 @@ const suggestions: string[] = [
 
 export const NewThinkingAssistantScreen = () => {
   const handleSend = () => {
-    console.log("as");
+    console.log("data");
   };
 
   const { resolvedTheme } = useTheme();

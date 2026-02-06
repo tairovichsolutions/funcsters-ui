@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   try {
     const base = accessToken
       ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/challenges`
-      : `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/auth/challenges`;
+      : `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/guest/challenges`;
 
     const incomingUrl = new URL(req.url);
     const qs = incomingUrl.search;

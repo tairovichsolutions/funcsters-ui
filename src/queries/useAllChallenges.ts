@@ -21,7 +21,8 @@ export const useInfiniteChallenges = (params: ChallengeQueryParams = {}) => {
 
     const url = `/api/all-challanges?${sp.toString()}`;
     const { data } = await apiClient.get(url);
-    const challenges = data?.data?.challenges ?? [];
+    const challenges = data?.data?.challenges ?? data?.challenges ?? [];
+
     const hasMore = challenges.length === PAGE_SIZE;
 
     return {

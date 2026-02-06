@@ -8,7 +8,7 @@ export async function GET() {
   try {
     const url = accessToken
       ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/tags/active`
-      : `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/auth/tags/active`;
+      : `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/guest/tags/active`;
     const res = await fetch(url, {
       method: "GET",
       headers: {

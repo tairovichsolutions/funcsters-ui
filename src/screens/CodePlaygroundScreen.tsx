@@ -98,7 +98,6 @@ export const CodePlaygroundScreen = memo(() => {
     showSuccessModal
   } = useLanguageImplementations();
 
-  console.log("viewedSolution", viewedSolution);
 
   const { mutateAsync: runCode, isPending } = useRunCode();
   const { mutateAsync: submitCode, isPending: submitPending } = useSubmitCode();

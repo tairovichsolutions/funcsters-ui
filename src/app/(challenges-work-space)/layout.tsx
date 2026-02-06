@@ -27,7 +27,6 @@ const Layout = ({ children }: LayoutProps) => {
     setShowSuccessModal,
   } = useLanguageImplementations();
 
-  console.log("showSuccessModal", showSuccessModal);
 
   const { data: mySolutionData } = useMyCommunitySolutions(
     Number(id),

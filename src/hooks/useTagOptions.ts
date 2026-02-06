@@ -28,7 +28,7 @@ export const useTagOptions = (): UseTagOptionsResult => {
 
   const tagOptions = React.useMemo(
     () =>
-      (data?.data ?? []).map((tag: ApiTag) => ({
+      (data?.tags ?? []).map((tag: ApiTag) => ({
         id: String(tag.tagId),
         label: tag.tagName,
       })),
