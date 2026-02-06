@@ -23,7 +23,7 @@ const KEY_BINDING_OPTIONS: { label: string; value: EditorKeyBinding }[] = [
   { label: "Vim", value: "vim" },
 ];
 
-// ---------- Shortcut Display Helpers ----------
+// ---------- Shortcut key Helpers ----------
 
 type Modifier = "cmd" | "ctrl";
 type KeyIconType = "comma" | "enter" | "singlequote" | "r" | "b";

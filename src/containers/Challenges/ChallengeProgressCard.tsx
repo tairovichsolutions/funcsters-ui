@@ -111,7 +111,8 @@ export const ChallengeProgressCard: React.FC<ChallengeProgressCardProps> =
                   startAngle={-270}
                   endAngle={90}
                   fill={isEmpty ? "#5492DC" : undefined}
-                  strokeWidth={1}
+                  stroke="transparent"
+                  strokeWidth={0}
                 >
                   {chartData.map((entry, index) => (
                     <Cell
@@ -143,7 +144,7 @@ export const ChallengeProgressCard: React.FC<ChallengeProgressCardProps> =
               </PieChart>
             </ResponsiveContainer>
 
-        <CustomLegend data={slices} />
+            <CustomLegend data={slices} />
           </div>
         </div>
       </MatricCard>
