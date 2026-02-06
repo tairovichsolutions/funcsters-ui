@@ -61,7 +61,7 @@ export const CommunitySolutionsCard = React.memo(
     const [checked, setChecked] = React.useState(() => !data.hidden);
 
     const { id } = useParams();
-    const { languageId } = useLanguageImplementations();
+    const { languageId, setShowSuccessModal } = useLanguageImplementations();
 
     const solutionId = data?.solutionInfo?.solutionId;
 
@@ -87,7 +87,11 @@ export const CommunitySolutionsCard = React.memo(
           challengeId: Number(id),
           languageId: Number(languageId),
         };
-        await deleteMySolutionfc(payload);
+        const res = await deleteMySolutionfc(payload);
+
+        if (res.status === 200) {
+          setShowSuccessModal(false);
+        }
       } catch (error) {
         console.log("Solution deleted Error:", error);
       }
@@ -211,7 +215,7 @@ export const CommunitySolutionsCard = React.memo(
 
         <div className="mt-3  px-1 flex items-center justify-between">
           <CommunitySolutionsVote
-          mySolution={mySolution}
+            mySolution={mySolution}
             languageId={Number(languageId)}
             challengeId={Number(id)}
             solutionId={solutionId}
@@ -231,5 +235,5 @@ export const CommunitySolutionsCard = React.memo(
         </div>
       </div>
     );
-  }
+  },
 );

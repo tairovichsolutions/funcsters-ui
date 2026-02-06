@@ -10,16 +10,38 @@ import { useChallengeById } from "@/queries/useChallengeById";
 import { CodePlaygroundScreen } from "@/screens/CodePlaygroundScreen";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
+import { useMyCommunitySolutions } from "@/queries/useMyCommunitySolutions";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
-
 const Layout = ({ children }: LayoutProps) => {
   const { id } = useParams();
   const { data } = useChallengeById(String(id));
-  const { setLanguages, setXpCount, languageId } = useLanguageImplementations();
+  const {
+    setLanguages,
+    setXpCount,
+    languageId,
+    showSuccessModal,
+    setShowSuccessModal,
+  } = useLanguageImplementations();
+
+  console.log("showSuccessModal", showSuccessModal);
+
+  const { data: mySolutionData } = useMyCommunitySolutions(
+    Number(id),
+    languageId as number,
+    true,
+  );
+
+  useEffect(() => {
+    if (mySolutionData?.data?.solutionInfo === null) {
+      setShowSuccessModal(true);
+    } else {
+      setShowSuccessModal(false);
+    }
+  }, [mySolutionData, setShowSuccessModal]);
 
   const list = useMemo(() => data?.data?.languageImplementations || [], [data]);
 
@@ -58,16 +80,19 @@ const Layout = ({ children }: LayoutProps) => {
   // }, [list, setLanguages]);
 
   useEffect(() => {
-  if (list.length > 0) setLanguages(list.map((x: any) => ({ ...x })));
-}, [list, setLanguages])
+    if (list.length > 0) setLanguages(list.map((x: any) => ({ ...x })));
+  }, [list, setLanguages]);
 
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">
       <ChallengesWorkSpaceHeader />
 
       <div className="flex-1 overflow-hidden py-4 px-12">
-        <PanelGroup direction="horizontal" className="h-full w-full gap-1.5">
-          <Panel minSize={40}>
+        <PanelGroup
+          direction="horizontal"
+          className="h-full w-full  gap-1.5"
+        >
+          <Panel minSize={40} defaultSize={50}>
             <div className="border border-border-soft flex h-full flex-col  rounded-[10px] overflow-hidden">
               <div className="px-4 flex justify-center items-center w-full h-16 border-b border-border-soft">
                 <ChallengesSubNav />
@@ -81,10 +106,9 @@ const Layout = ({ children }: LayoutProps) => {
             </div>
           </Panel>
 
+          <PanelResizeHandle className="h-full rounded- w-1.5 cursor-col-resize bg-transparent hover:bg-primary/40 data-resize-handle-active:bg-primary/60 transition-colors duration-150" />
 
-        <PanelResizeHandle className="h-full rounded-full w-[5px] cursor-col-resize bg-transparent hover:bg-primary/40 data-resize-handle-active:bg-primary/60 transition-colors duration-150" />
-
-          <Panel minSize={40}>
+          <Panel minSize={40} defaultSize={50}>
             <div className="overflow-hidden h-full w-full">
               <CodePlaygroundScreen />
             </div>

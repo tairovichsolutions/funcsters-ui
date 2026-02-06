@@ -23,6 +23,8 @@ interface LanguageImplementationsContextType {
   setLanguages: (langs: LanguageImplementation[]) => void;
   updateUserProgress?: (languageId: number, newProgress: string) => void;
   markViewedSolution?: (languageId: number) => void;
+  showSuccessModal: boolean;
+  setShowSuccessModal: (value: boolean) => void;
 }
 
 const LanguageImplementationsContext = createContext<
@@ -42,6 +44,8 @@ export const LanguageImplementationsProvider = ({
   const [languageList, setLanguageList] = useState<LanguageImplementation[]>(
     [],
   );
+
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
 
   const handleLanguageChange = useCallback(
     (lang: string) => {
@@ -128,6 +132,8 @@ export const LanguageImplementationsProvider = ({
         updateUserProgress,
         handleLanguageChange,
         markViewedSolution,
+        showSuccessModal,
+        setShowSuccessModal,
       }}
     >
       {children}

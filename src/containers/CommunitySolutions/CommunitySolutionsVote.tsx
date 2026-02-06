@@ -113,10 +113,10 @@ export const CommunitySolutionsVote = React.memo(
                   disabled={isPending || mySolution}
                   onClick={() => handleVoteClick(key)}
                   className={cn(
-                    "group flex items-center gap-1.5 rounded-md cursor-pointer",
+                    "group flex items-center gap-1.5 rounded-md",
                     "border border-transparent",
                     !mySolution &&
-                      "transition-transform duration-300 ease-out hover:scale-[1.02]",
+                      "transition-transform duration-300 ease-out hover:scale-[1.02]  cursor-pointer",
                   )}
                   aria-pressed={isActive}
                 >
@@ -164,9 +164,11 @@ export const CommunitySolutionsVote = React.memo(
               <div
                 key={item.key}
                 className={cn(
-                  "border-2 bg-background z-10 shrink-0 size-8 flex justify-center items-center",
+                  "border-2 bg-background z-10 shrink-0 size-8 flex p-1  rounded-full justify-center items-center",
                   "border-[#ece3e39d] dark:border-[#97a9b64b]",
-                  "hover:scale-110 cursor-pointer p-1 rounded-full transition-all",
+
+                  !mySolution &&
+                    "hover:scale-110 cursor-pointer  transition-all",
                 )}
               >
                 <SvgColor

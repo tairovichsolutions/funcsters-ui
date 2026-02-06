@@ -41,8 +41,13 @@ export const CommunitySolutionsScreen = React.memo(() => {
   const { id } = useParams<{ id: string }>();
   const challengeId = id;
 
-  const { languageId, selectedLanguage, setXpCount, markViewedSolution } =
-    useLanguageImplementations();
+  const {
+    languageId,
+    selectedLanguage,
+    setXpCount,
+    setShowSuccessModal,
+    markViewedSolution,
+  } = useLanguageImplementations();
 
   const { data: challengeData, isLoading: challengeLoading } =
     useChallengeById(challengeId);

@@ -63,7 +63,7 @@ export function Modal({
       open={open}
       onOpenChange={(isOpen) => {
         if (!isOpen) {
-          onClose?.(); // call your closeModal only when Radix tries to close
+          onClose?.();
         }
       }}
     >
