@@ -6,7 +6,7 @@ import { useAuthModal } from "@/providers/AuthModalsProvider";
 import React from "react";
 
 export const DeleteAccountConfirmationModal = () => {
-  const [reason, setReason] = React.useState("");
+  const [reason, setReason] = React.useState("I Understand");
   const { closeModal } = useAuthModal();
   const onDelete = () => {
     closeModal();
@@ -33,6 +33,10 @@ export const DeleteAccountConfirmationModal = () => {
           onChange={(e) => setReason(e.target.value)}
           label="Type"
           placeholder="Enter your reason"
+          onFocus={(e) => {
+            const len = e.target.value.length;
+            e.target.setSelectionRange(len, len);
+          }}
         />
       </div>
       <div className=" grid grid-cols-2 items-center justify-center gap-4  w-full">

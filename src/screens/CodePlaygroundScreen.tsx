@@ -95,10 +95,10 @@ export const CodePlaygroundScreen = memo(() => {
     updateUserProgress,
     viewedSolution,
     userProgress,
+    showSuccessModal
   } = useLanguageImplementations();
 
-
-  console.log("viewedSolution",viewedSolution)
+  console.log("viewedSolution", viewedSolution);
 
   const { mutateAsync: runCode, isPending } = useRunCode();
   const { mutateAsync: submitCode, isPending: submitPending } = useSubmitCode();
@@ -183,7 +183,7 @@ export const CodePlaygroundScreen = memo(() => {
       const failed = res?.data?.data?.data?.testRunSummary?.failed ?? 0;
 
       if (failed === 0) {
-        if (userProgress !== "COMPLETED") {
+        if (userProgress !== "COMPLETED" || showSuccessModal) {
           setSubmitModalOpen(true);
         }
         setResults(null);
@@ -206,6 +206,7 @@ export const CodePlaygroundScreen = memo(() => {
     userProgress,
     isAuthenticated,
     openModal,
+    showSuccessModal
   ]);
 
   const websiteTheme: EditorTheme =
@@ -216,7 +217,7 @@ export const CodePlaygroundScreen = memo(() => {
 
   return (
     <div className="h-full w-full shrink-0">
-      <PanelGroup direction="vertical" className="gap-1.5 w-full h-full">
+      <PanelGroup direction="vertical" className="w-full h-full gap-1.5">
         <Panel minSize={40} defaultSize={65}>
           <div className="border border-border-soft rounded-xl overflow-hidden h-full w-full flex flex-col bg-background">
             <div className="px-4 flex items-center justify-between border-b border-border-soft h-16 overflow-hidden">
@@ -260,7 +261,7 @@ export const CodePlaygroundScreen = memo(() => {
           </div>
         </Panel>
 
-        <PanelResizeHandle className="w-full rounded-full shrink-0 h-[7px] cursor-col-resize bg-transparent hover:bg-primary/40 data-resize-handle-active:bg-primary/60 transition-colors duration-150" />
+        <PanelResizeHandle className="w-full rounded-full shrink-0 h-1.5 cursor-row-resize bg-transparent hover:bg-primary/40 data-resize-handle-active:bg-primary/60 transition-colors duration-150" />
 
         <Panel minSize={10} defaultSize={35}>
           <div className="w-full h-full">

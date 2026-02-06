@@ -10,7 +10,6 @@ const Page = async () => {
     return redirect(`/challenges`);
   }
 
-  // return <ThinkingAssistantScreen />;
   return <NewThinkingAssistantScreen />;
 };
 
