@@ -12,10 +12,9 @@ type SocialButton = {
   provider: OAuthProvider;
 };
 
-const OAUTH_BASE_URL = "https://api.funcsters.io";
 
 function buildOAuthRedirectUrl(provider: OAuthProvider) {
-  return `https://api.funcsters.io/oauth2/authorization/google`;
+  return `https://api.funcsters.io/oauth2/authorization/${provider}`;
 }
 
 export const SocialLoginButtons: React.FC = () => {

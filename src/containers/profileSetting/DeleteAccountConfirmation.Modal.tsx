@@ -3,13 +3,17 @@ import { Assets } from "@/constants/assets";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components";
 import { useAuthModal } from "@/providers/AuthModalsProvider";
-import React from "react";
+import React, { useState } from "react";
 
 export const DeleteAccountConfirmationModal = () => {
-  const [reason, setReason] = React.useState("I Understand");
   const { closeModal } = useAuthModal();
   const onDelete = () => {
     closeModal();
+  };
+  const [reason, setReason] = useState<string>("I Understand");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setReason(e.target.value);
   };
   return (
     <div className="p-8 flex flex-col gap-4 justify-center items-center">
@@ -30,13 +34,11 @@ export const DeleteAccountConfirmationModal = () => {
       <div className="w-full">
         <Input
           value={reason}
-          onChange={(e) => setReason(e.target.value)}
+          name="reason"
+          type="text"
+          onChange={handleChange}
           label="Type"
           placeholder="Enter your reason"
-          onFocus={(e) => {
-            const len = e.target.value.length;
-            e.target.setSelectionRange(len, len);
-          }}
         />
       </div>
       <div className=" grid grid-cols-2 items-center justify-center gap-4  w-full">
