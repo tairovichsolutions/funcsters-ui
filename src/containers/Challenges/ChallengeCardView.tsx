@@ -9,6 +9,7 @@ import { DifficultyChip } from "@/components/ui/difficulty-chip";
 
 export const ChallengeCardView = ({
   id,
+  slug,
   tags,
   title,
   summary,
@@ -19,7 +20,7 @@ export const ChallengeCardView = ({
 
   const handleCardClick = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest("[data-stop-nav]")) return;
-    router.push(Navigation.ChallengesDetail(String(id)));
+    router.push(Navigation.ChallengesDetail(String(slug)));
   };
 
   return (

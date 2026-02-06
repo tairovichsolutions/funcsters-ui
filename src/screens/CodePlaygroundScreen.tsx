@@ -8,7 +8,6 @@ import {
 } from "@/containers/CodePlayground";
 import toast from "react-hot-toast";
 import { useTheme } from "next-themes";
-import { useParams } from "next/navigation";
 import { useRunCode } from "@/mutations/useRunCode";
 import { useSubmitCode } from "@/mutations/useSubmitCode";
 import { RunCodeApiResponse } from "@/types/run-code-type";
@@ -29,7 +28,7 @@ const LOCAL_STORAGE_KEY = "funcsters-code-snippets";
 type Snippet = {
   code: string;
   languageId: number;
-  challengeId: number;
+  challengeId: string;
 };
 
 const readSnippets = (): Snippet[] => {
@@ -46,8 +45,8 @@ const readSnippets = (): Snippet[] => {
 
 const getSavedCode = (
   languageId: number | null,
-  challengeId: number,
-): string | null => {
+  challengeId: string | null,
+) => {
   if (!languageId || !challengeId) return null;
   const snippets = readSnippets();
   const found = snippets.find(
@@ -58,7 +57,7 @@ const getSavedCode = (
 
 const saveSnippetOnRun = (
   languageId: number | null,
-  challengeId: number,
+  challengeId: string | null,
   code: string,
 ) => {
   if (!languageId || !challengeId || typeof window === "undefined") return;
@@ -78,8 +77,6 @@ const saveSnippetOnRun = (
 };
 
 export const CodePlaygroundScreen = memo(() => {
-  const { id } = useParams();
-  const challengeId = Number(id);
   const { resolvedTheme } = useTheme();
   const [code, setCode] = useState("");
   const [results, setResults] = useState<RunCodeApiResponse | null>(null);
@@ -93,11 +90,15 @@ export const CodePlaygroundScreen = memo(() => {
     starterCode,
     selectedLanguage,
     updateUserProgress,
+    challengeId: chId,
     viewedSolution,
     userProgress,
-    showSuccessModal
+    showSuccessModal,
   } = useLanguageImplementations();
 
+  const challengeId = String(chId);
+
+  console.log("starterCodestarterCode", code);
 
   const { mutateAsync: runCode, isPending } = useRunCode();
   const { mutateAsync: submitCode, isPending: submitPending } = useSubmitCode();
@@ -107,9 +108,11 @@ export const CodePlaygroundScreen = memo(() => {
   const { openModal } = useAuthModal();
 
   useEffect(() => {
-    if (!languageId || Number.isNaN(challengeId)) return;
+    if (!languageId || !challengeId) return;
 
     const saved = getSavedCode(languageId, challengeId);
+
+    console.log("saved", saved);
     if (saved !== null) {
       setCode(saved);
     } else if (starterCode) {
@@ -138,7 +141,7 @@ export const CodePlaygroundScreen = memo(() => {
       openModal("loginRequiredModal");
       return;
     }
-    if (!languageId || Number.isNaN(challengeId)) return;
+    if (!languageId || !challengeId) return;
 
     try {
       const payload = {
@@ -162,7 +165,7 @@ export const CodePlaygroundScreen = memo(() => {
       openModal("loginRequiredModal");
       return;
     }
-    if (!languageId || Number.isNaN(challengeId)) return;
+    if (!languageId || !challengeId) return;
 
     try {
       const payload = {
@@ -205,7 +208,7 @@ export const CodePlaygroundScreen = memo(() => {
     userProgress,
     isAuthenticated,
     openModal,
-    showSuccessModal
+    showSuccessModal,
   ]);
 
   const websiteTheme: EditorTheme =

@@ -39,18 +39,18 @@ export const CommunitySolutionsScreen = React.memo(() => {
   const [selectedFilter, setSelectedFilter] = useState<SortKey>("top_rated");
 
   const { id } = useParams<{ id: string }>();
-  const challengeId = id;
 
   const {
     languageId,
     selectedLanguage,
     setXpCount,
+    challengeId,
     setShowSuccessModal,
     markViewedSolution,
   } = useLanguageImplementations();
 
   const { data: challengeData, isLoading: challengeLoading } =
-    useChallengeById(challengeId);
+    useChallengeById(id);
 
   const languageImplementations: LanguageImplementation[] =
     challengeData?.data?.languageImplementations ?? [];
@@ -69,7 +69,7 @@ export const CommunitySolutionsScreen = React.memo(() => {
 
   const { data: allSolutionData, isLoading: allSolutionLoading } =
     useCommunitySolutions(
-      challengeId,
+      challengeId as number,
       languageId as number,
       canViewSolutions,
       selectedFilter,
@@ -77,10 +77,13 @@ export const CommunitySolutionsScreen = React.memo(() => {
 
   const { data: mySolutionData, isLoading: mySolutionLoading } =
     useMyCommunitySolutions(
-      challengeId,
+      challengeId as number,
       languageId as number,
       canViewSolutions,
     );
+
+
+    
 
   const handleUnlockSolution = () => {
     if (!languageId) return;

@@ -19,19 +19,27 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const { id } = useParams();
   const { data } = useChallengeById(String(id));
+
+  const challengesDetailData = data?.data ?? data;
+
   const {
     setLanguages,
     setXpCount,
     languageId,
-    showSuccessModal,
+    challengeId,
+    setChallengeId,
     setShowSuccessModal,
   } = useLanguageImplementations();
 
+  useEffect(() => {
+    setChallengeId(challengesDetailData?.id);
+  }, [challengesDetailData, setChallengeId]);
+  const canFetchMySolution = Boolean(challengeId && languageId);
 
   const { data: mySolutionData } = useMyCommunitySolutions(
-    Number(id),
-    languageId as number,
-    true,
+    challengeId,
+    languageId,
+    canFetchMySolution,
   );
 
   useEffect(() => {
@@ -42,7 +50,10 @@ const Layout = ({ children }: LayoutProps) => {
     }
   }, [mySolutionData, setShowSuccessModal]);
 
-  const list = useMemo(() => data?.data?.languageImplementations || [], [data]);
+  const list = useMemo(
+    () => challengesDetailData?.languageImplementations || [],
+    [challengesDetailData],
+  );
 
   const currentLangImpl = list?.find(
     (lang: any) => lang.languageId === languageId,
@@ -53,7 +64,7 @@ const Layout = ({ children }: LayoutProps) => {
       impl?.userProgress === "COMPLETED" && impl?.viewedSolution === false,
   ).length;
 
-  let displayXp = data?.data?.xp ?? 0;
+  let displayXp = challengesDetailData?.xp ?? 0;
   for (let i = 0; i < completedCount; i++) {
     displayXp = Math.floor(displayXp / 2);
   }
@@ -87,10 +98,7 @@ const Layout = ({ children }: LayoutProps) => {
       <ChallengesWorkSpaceHeader />
 
       <div className="flex-1 overflow-hidden py-4 px-12">
-        <PanelGroup
-          direction="horizontal"
-          className="h-full w-full  gap-1.5"
-        >
+        <PanelGroup direction="horizontal" className="h-full w-full  gap-1.5">
           <Panel minSize={40} defaultSize={50}>
             <div className="border border-border-soft flex h-full flex-col  rounded-[10px] overflow-hidden">
               <div className="px-4 flex justify-center items-center w-full h-16 border-b border-border-soft">

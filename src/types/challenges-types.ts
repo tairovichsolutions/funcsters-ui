@@ -4,6 +4,7 @@ import { DifficultyLevelTypes, UserProgressTypes } from "./chips-types";
 export interface ChallengesTypes {
   id: number;
   title: string;
+  slug: string;
   summary: string;
   tags?: string[];
   [x: string]: any;

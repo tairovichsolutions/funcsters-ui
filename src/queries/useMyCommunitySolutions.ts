@@ -6,10 +6,13 @@ import { getCookie } from "cookies-next";
 import { apiClient } from "@/lib/axiosClient";
 
 export const useMyCommunitySolutions = (
-  challengeId: string | number,
-  languageId: string | number,
+  challengeId: string | number | null,
+  languageId: string | number | null,
   enabledFlag: boolean,
 ) => {
+
+
+  console.log("challengeIdchallengeId",challengeId ,languageId)
   const userId = getCookie("userId");
   const fetchSolutions = async () => {
     const { data } = await apiClient.get(`/api/my-community-solution`, {

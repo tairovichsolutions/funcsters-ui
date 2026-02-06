@@ -19,10 +19,14 @@ import { TitleWithTooltipIfTruncated } from "@/components/ui/TitleWithTooltip";
 export const ChallengesDetailScreen = () => {
   const { id } = useParams();
   const { data, isLoading, error } = useChallengeById(String(id));
+
+  console.log("datamee", data?.data);
   const { xpCount, languageId } = useLanguageImplementations();
   const { data: userData } = useGetUserProfile();
   const isAuthenticated = userData?.data?.authenticated || false;
-  const challengesDetailData = data?.data;
+  const challengesDetailData = data?.data ?? data ;
+
+  console.log("challengesDetailData", challengesDetailData);
   const axiosError =
     error && typeof error === "object" && "response" in error
       ? (error as { response?: { data?: { message?: string } } })
