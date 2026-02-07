@@ -33,7 +33,8 @@ const Layout = ({ children }: LayoutProps) => {
 
   useEffect(() => {
     setChallengeId(challengesDetailData?.id);
-  }, [challengesDetailData, setChallengeId]);
+  }, [challengesDetailData, setChallengeId, id]);
+
   const canFetchMySolution = Boolean(challengeId && languageId);
 
   const { data: mySolutionData } = useMyCommunitySolutions(
