@@ -12,7 +12,6 @@ export const useMyCommunitySolutions = (
 ) => {
 
 
-  console.log("challengeIdchallengeId",challengeId ,languageId)
   const userId = getCookie("userId");
   const fetchSolutions = async () => {
     const { data } = await apiClient.get(`/api/my-community-solution`, {

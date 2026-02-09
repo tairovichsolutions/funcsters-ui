@@ -1,9 +1,9 @@
 "use client";
 
-import { QueryKey } from "@/constants/queryKey";
-import { useQuery } from "@tanstack/react-query";
 import { getCookie } from "cookies-next";
 import { apiClient } from "@/lib/axiosClient";
+import { QueryKey } from "@/constants/queryKey";
+import { useQuery } from "@tanstack/react-query";
 
 export type SortKey = "top_rated" | "most_genius" | "most_solid" | "newest";
 

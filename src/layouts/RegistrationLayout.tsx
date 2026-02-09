@@ -24,7 +24,6 @@ export const RegistrationLayout = ({
   useEffect(() => {
     if (!pathname) return;
 
-    console.log("pathname", pathname);
     localStorage.setItem("redirectUrl", pathname);
   }, [pathname]);
 

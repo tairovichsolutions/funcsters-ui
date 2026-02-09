@@ -32,7 +32,6 @@ export async function GET(
     const data = await res.json();
 
 
-    console.log("datadatadata",data)
     if (!res.ok) {
       const status = data?.error?.statusCode ?? res.status ?? 500;
       const message =

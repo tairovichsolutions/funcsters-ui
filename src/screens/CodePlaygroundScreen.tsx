@@ -8,20 +8,20 @@ import {
 } from "@/containers/CodePlayground";
 import toast from "react-hot-toast";
 import { useTheme } from "next-themes";
-import { useRunCode } from "@/mutations/useRunCode";
-import { useSubmitCode } from "@/mutations/useSubmitCode";
-import { RunCodeApiResponse } from "@/types/run-code-type";
-import { MonacoCodeEditer } from "@/components/ui/monaco-editor";
 import {
   EditorTheme,
   useEditorSettings,
 } from "@/context/EditorSettingsContext";
+import { useRunCode } from "@/mutations/useRunCode";
+import { useSubmitCode } from "@/mutations/useSubmitCode";
+import { RunCodeApiResponse } from "@/types/run-code-type";
+import { useAuthModal } from "@/providers/AuthModalsProvider";
+import { useGetUserProfile } from "@/queries/useGetUserProfile";
+import { MonacoCodeEditer } from "@/components/ui/monaco-editor";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
 import { SolutionSubmittedModal } from "@/containers/CodePlayground/SolutionSubmittedModal";
-import { useGetUserProfile } from "@/queries/useGetUserProfile";
-import { useAuthModal } from "@/providers/AuthModalsProvider";
 
 const LOCAL_STORAGE_KEY = "funcsters-code-snippets";
 
@@ -88,21 +88,17 @@ export const CodePlaygroundScreen = memo(() => {
     xpCount,
     languageId,
     starterCode,
+    userProgress,
+    viewedSolution,
+    showSuccessModal,
     selectedLanguage,
     updateUserProgress,
     challengeId: chId,
-    viewedSolution,
-    userProgress,
-    showSuccessModal,
   } = useLanguageImplementations();
 
-  const challengeId = String(chId);
-
-  console.log("starterCodestarterCode", code);
-
+  const challengeId = chId;
   const { mutateAsync: runCode, isPending } = useRunCode();
   const { mutateAsync: submitCode, isPending: submitPending } = useSubmitCode();
-
   const { data: userData } = useGetUserProfile();
   const isAuthenticated = userData?.data?.authenticated || false;
   const { openModal } = useAuthModal();
@@ -110,9 +106,8 @@ export const CodePlaygroundScreen = memo(() => {
   useEffect(() => {
     if (!languageId || !challengeId) return;
 
-    const saved = getSavedCode(languageId, challengeId);
+    const saved = getSavedCode(languageId, String(challengeId));
 
-    console.log("saved", saved);
     if (saved !== null) {
       setCode(saved);
     } else if (starterCode) {
@@ -150,7 +145,7 @@ export const CodePlaygroundScreen = memo(() => {
         challengeId,
       };
 
-      saveSnippetOnRun(languageId, challengeId, code);
+      saveSnippetOnRun(languageId, String(challengeId), code);
 
       const res = (await runCode(payload)) as { data: RunCodeApiResponse };
       setResults(res.data);
@@ -246,11 +241,11 @@ export const CodePlaygroundScreen = memo(() => {
             <div className="flex-1 min-h-0">
               <MonacoCodeEditer
                 value={code}
-                onChange={handleCodeChange}
-                editorRef={editorRef}
                 theme={editorTheme}
+                editorRef={editorRef}
                 className="w-full h-full"
                 tabSize={settings.tabSize}
+                onChange={handleCodeChange}
                 language={selectedLanguage}
                 fontSize={settings.fontSize}
                 wordWrap={settings.wordWrap}

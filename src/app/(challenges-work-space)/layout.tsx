@@ -8,9 +8,9 @@ import { useParams } from "next/navigation";
 import { ReactNode, useEffect, useMemo } from "react";
 import { useChallengeById } from "@/queries/useChallengeById";
 import { CodePlaygroundScreen } from "@/screens/CodePlaygroundScreen";
+import { useMyCommunitySolutions } from "@/queries/useMyCommunitySolutions";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
-import { useMyCommunitySolutions } from "@/queries/useMyCommunitySolutions";
 
 interface LayoutProps {
   children: ReactNode;
@@ -23,17 +23,22 @@ const Layout = ({ children }: LayoutProps) => {
   const challengesDetailData = data?.data ?? data;
 
   const {
-    setLanguages,
     setXpCount,
     languageId,
     challengeId,
+    setLanguages,
     setChallengeId,
     setShowSuccessModal,
   } = useLanguageImplementations();
 
+
+  
+
   useEffect(() => {
     setChallengeId(challengesDetailData?.id);
   }, [challengesDetailData, setChallengeId, id]);
+
+
 
   const canFetchMySolution = Boolean(challengeId && languageId);
 
@@ -86,9 +91,7 @@ const Layout = ({ children }: LayoutProps) => {
     }
   }, [displayXp, currentLangImpl, setXpCount]);
 
-  // useEffect(() => {
-  //   if (list.length > 0) setLanguages(list);
-  // }, [list, setLanguages]);
+
 
   useEffect(() => {
     if (list.length > 0) setLanguages(list.map((x: any) => ({ ...x })));

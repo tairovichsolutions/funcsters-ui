@@ -1,8 +1,8 @@
 "use client";
 
+import { apiClient } from "@/lib/axiosClient";
 import { QueryKey } from "@/constants/queryKey";
 import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@/lib/axiosClient";
 
 export const useAuthorizationUrl = (
   provider?: string,

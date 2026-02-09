@@ -1,7 +1,7 @@
 "use client";
 
-import { QueryKey } from "@/constants/queryKey";
 import { apiClient } from "@/lib/axiosClient";
+import { QueryKey } from "@/constants/queryKey";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type { ChallengeQueryParams } from "@/hooks/useChallengesFilters";
 
