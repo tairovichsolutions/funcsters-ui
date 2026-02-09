@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { cn } from "@/lib";
@@ -22,7 +23,7 @@ import { ChallengesTypes } from "@/types";
 export const ProblemListButton: React.FC = () => {
   const router = useRouter();
   const { id } = useParams();
-  const currentChallengeId = Number(id);
+  const currentSlug  = String(id);
   const { tagOptions, tagLabelMap } = useTagOptions();
 
   const {
@@ -52,25 +53,20 @@ export const ProblemListButton: React.FC = () => {
 
   const isLoadingList = isLoading || isFetching;
 
-  const { prevChallenge, nextChallenge } = React.useMemo(() => {
-    const index = allChallenges?.findIndex(
-      (item: { id: number }) => item?.id === currentChallengeId
-    );
+const { prevChallenge, nextChallenge } = React.useMemo(() => {
+  const index = allChallenges.findIndex((item: any) => item?.slug === currentSlug);
 
-    const prev = index > 0 ? allChallenges[index - 1] : null;
+  const prev = index > 0 ? allChallenges[index - 1] : null;
+  const next = index >= 0 && index < allChallenges.length - 1 ? allChallenges[index + 1] : null;
 
-    const next =
-      index >= 0 && index < allChallenges?.length - 1
-        ? allChallenges[index + 1]
-        : null;
+  return { prevChallenge: prev, nextChallenge: next };
+}, [allChallenges, currentSlug]);
 
-    return { prevChallenge: prev, nextChallenge: next };
-  }, [allChallenges, currentChallengeId]);
 
-  const handleNavigate = (challengeId: number | null) => {
-    if (challengeId == null) return;
-    router.push(Navigation.ChallengesDetail(String(challengeId)));
-  };
+const handleNavigate = (slug: string | null) => {
+  if (!slug) return;
+  router.push(Navigation.ChallengesDetail(slug));
+};
 
   return (
     <div
@@ -119,7 +115,7 @@ export const ProblemListButton: React.FC = () => {
         <Tooltip content="Previous">
           <button
             disabled={!prevChallenge}
-            onClick={() => handleNavigate(prevChallenge?.id ?? null)}
+onClick={() => handleNavigate(prevChallenge?.slug ?? null)}
             className={cn(
               "rounded-sm cursor-pointer flex justify-center hover:bg-[#0050921A]/90 items-center disabled:opacity-50 disabled:cursor-not-allowed",
               isLoading && "select-none! opacity-80 cursor-not-allowed!"
@@ -131,7 +127,7 @@ export const ProblemListButton: React.FC = () => {
 
         <Tooltip content="Next">
           <button
-            onClick={() => handleNavigate(nextChallenge?.id ?? null)}
+       onClick={() => handleNavigate(nextChallenge?.slug ?? null)}
             disabled={!nextChallenge}
             className={cn(
               "rounded-sm cursor-pointer flex justify-center hover:bg-[#0050921A]/90 items-center disabled:opacity-50 disabled:cursor-not-allowed",

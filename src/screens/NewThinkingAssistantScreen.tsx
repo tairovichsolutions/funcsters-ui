@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { Assets } from "@/constants/assets";
 import GPTLikeInput from "./inputdara";
 import { useTheme } from "next-themes";
+import { Assets } from "@/constants/assets";
 
 const suggestions: string[] = [
   "Help me understand the logic behind this problem",
@@ -13,7 +13,7 @@ const suggestions: string[] = [
 
 export const NewThinkingAssistantScreen = () => {
   const handleSend = () => {
-    console.log("as");
+    console.log("data");
   };
 
   const { resolvedTheme } = useTheme();

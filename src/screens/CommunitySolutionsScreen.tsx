@@ -5,29 +5,28 @@ import {
   AllCommunitySolution,
   MyCommunitySolution,
 } from "@/containers/CommunitySolutions";
-import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { AlertBanner, TagSelector, UnlockSolutionCard } from "@/components";
 import {
   SortKey,
   useCommunitySolutions,
 } from "@/queries/useCommunitySolutions";
+import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { VOTE_OPTIONS } from "@/constants/selectOptions";
+import { ScrollRestoration } from "next-scroll-restoration";
+import { useChallengeById } from "@/queries/useChallengeById";
+import { AlertBanner, TagSelector, UnlockSolutionCard } from "@/components";
 import { useMyCommunitySolutions } from "@/queries/useMyCommunitySolutions";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
 import { CommunitySolutionCardSkeleton } from "@/skeletons/CommunitySolutionCardSkeleton";
-import { useChallengeById } from "@/queries/useChallengeById";
-import { VOTE_OPTIONS } from "@/constants/selectOptions";
-
-import { ScrollRestoration } from "next-scroll-restoration";
 
 type UserProgress = "TODO" | "IN_PROGRESS" | "COMPLETED";
 
 type LanguageImplementation = {
   languageId: number;
-  viewedSolution: boolean;
-  languageName: string;
-  userProgress: UserProgress;
   starterCode: string;
+  languageName: string;
+  viewedSolution: boolean;
+  userProgress: UserProgress;
 };
 
 export const CommunitySolutionsScreen = React.memo(() => {
@@ -39,18 +38,17 @@ export const CommunitySolutionsScreen = React.memo(() => {
   const [selectedFilter, setSelectedFilter] = useState<SortKey>("top_rated");
 
   const { id } = useParams<{ id: string }>();
-  const challengeId = id;
 
   const {
     languageId,
-    selectedLanguage,
     setXpCount,
-    setShowSuccessModal,
+    challengeId,
+    selectedLanguage,
     markViewedSolution,
   } = useLanguageImplementations();
 
   const { data: challengeData, isLoading: challengeLoading } =
-    useChallengeById(challengeId);
+    useChallengeById(id);
 
   const languageImplementations: LanguageImplementation[] =
     challengeData?.data?.languageImplementations ?? [];
@@ -69,7 +67,7 @@ export const CommunitySolutionsScreen = React.memo(() => {
 
   const { data: allSolutionData, isLoading: allSolutionLoading } =
     useCommunitySolutions(
-      challengeId,
+      challengeId as number,
       languageId as number,
       canViewSolutions,
       selectedFilter,
@@ -77,7 +75,7 @@ export const CommunitySolutionsScreen = React.memo(() => {
 
   const { data: mySolutionData, isLoading: mySolutionLoading } =
     useMyCommunitySolutions(
-      challengeId,
+      challengeId as number,
       languageId as number,
       canViewSolutions,
     );
@@ -126,8 +124,8 @@ export const CommunitySolutionsScreen = React.memo(() => {
       <ScrollRestoration />
       {openUnlockModal && (
         <UnlockSolutionCard
-          language={selectedLanguage}
           isOpen={openUnlockModal}
+          language={selectedLanguage}
           handleUnlockSolution={handleUnlockSolution}
         />
       )}
@@ -146,10 +144,10 @@ export const CommunitySolutionsScreen = React.memo(() => {
         </h3>
 
         <TagSelector
-          label={selectedLabel}
-          tags={VOTE_OPTIONS}
-          className={"text-xs! bg-[#0000000D]! border-none! shadow-none!"}
           multiple={false}
+          tags={VOTE_OPTIONS}
+          label={selectedLabel}
+          className={"text-xs! bg-[#0000000D]! border-none! shadow-none!"}
           value={[selectedFilter]}
           onChange={(selected) => {
             const next = (selected?.[0] as SortKey) ?? "top_rated";

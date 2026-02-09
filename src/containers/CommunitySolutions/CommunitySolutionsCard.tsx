@@ -5,7 +5,6 @@ import React from "react";
 import { Trash2 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Iconify } from "@/components";
-import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { CommunitySolutionType } from "@/types";
@@ -60,8 +59,8 @@ export const CommunitySolutionsCard = React.memo(
 
     const [checked, setChecked] = React.useState(() => !data.hidden);
 
-    const { id } = useParams();
-    const { languageId, setShowSuccessModal } = useLanguageImplementations();
+    const { languageId, setShowSuccessModal, challengeId } =
+      useLanguageImplementations();
 
     const solutionId = data?.solutionInfo?.solutionId;
 
@@ -70,7 +69,7 @@ export const CommunitySolutionsCard = React.memo(
       setChecked(value);
       try {
         const payload: payloadType = {
-          challengeId: Number(id),
+          challengeId: Number(challengeId),
           languageId: Number(languageId),
           visible: value,
         };
@@ -84,7 +83,7 @@ export const CommunitySolutionsCard = React.memo(
     const handleDelete = async () => {
       try {
         const payload: DeletePayload = {
-          challengeId: Number(id),
+          challengeId: Number(challengeId),
           languageId: Number(languageId),
         };
         const res = await deleteMySolutionfc(payload);
@@ -217,7 +216,7 @@ export const CommunitySolutionsCard = React.memo(
           <CommunitySolutionsVote
             mySolution={mySolution}
             languageId={Number(languageId)}
-            challengeId={Number(id)}
+            challengeId={Number(challengeId)}
             solutionId={solutionId}
             voteData={data?.votes}
           />

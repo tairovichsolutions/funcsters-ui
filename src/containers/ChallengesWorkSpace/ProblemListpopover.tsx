@@ -204,7 +204,7 @@ export const ProblemListpopover = React.memo(
                 <div key={item.id ?? i}>
                   <div className="flex justify-between gap-3 py-2">
                     <PopoverClose asChild>
-                      <Link href={Navigation.ChallengesDetail(String(item.id))}>
+                      <Link href={Navigation.ChallengesDetail(String(item.slug))}>
                         <h3 className="text-sm font-medium">{item.title}</h3>
                       </Link>
                     </PopoverClose>

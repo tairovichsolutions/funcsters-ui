@@ -4,12 +4,12 @@ import * as React from "react";
 import type { ChallengesTypes } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { useGetUserProfile } from "@/queries/useGetUserProfile";
+import { useInfiniteChallenges } from "@/queries/useAllChallenges";
 import { GreetingArea } from "@/containers/Challenges/GreetingArea";
 import { useChallengesFilters } from "@/hooks/useChallengesFilters";
 import { ChallengesFiltersBar } from "@/containers/Challenges/ChallengesFiltersBar";
 import { ChallengesListSection } from "@/containers/Challenges/ChallengesListSection";
 import { MatricsAndActivityChart } from "@/containers/Challenges/MatricsAndActivityChart";
-import { useInfiniteChallenges } from "@/queries/useAllChallenges";
 
 export const ChallengesScreen: React.FC = () => {
   const searchParams = useSearchParams();
@@ -49,28 +49,28 @@ export const ChallengesScreen: React.FC = () => {
   return (
     <div className="py-4 flex flex-col gap-5">
       <GreetingArea
+        profileLoading={profileLoading}
         isAuthenticated={isAuthenticated}
         username={userData?.data?.user?.username}
-        profileLoading={profileLoading}
       />
 
       <MatricsAndActivityChart
-        isAuthenticated={isAuthenticated}
         profileLoading={profileLoading}
+        isAuthenticated={isAuthenticated}
       />
 
       <div className=" flex flex-col gap-5 mt-3">
         <ChallengesFiltersBar
-          isFetching={isFetching}
-          isAuthenticated={isAuthenticated}
-          currentView={currentView}
-          filters={filters}
-          setSearch={setSearch}
-          setDifficulty={setDifficulty}
-          setStatus={setStatus}
-          setTags={setTags}
           remove={remove}
+          setTags={setTags}
+          filters={filters}
           clearAll={clearAll}
+          setSearch={setSearch}
+          setStatus={setStatus}
+          isFetching={isFetching}
+          currentView={currentView}
+          setDifficulty={setDifficulty}
+          isAuthenticated={isAuthenticated}
         />
 
         <ChallengesListSection

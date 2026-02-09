@@ -1,7 +1,7 @@
 "use client";
 
-import { QueryKey } from "@/constants/queryKey";
 import { apiClient } from "@/lib/axiosClient";
+import { QueryKey } from "@/constants/queryKey";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type { ChallengeQueryParams } from "@/hooks/useChallengesFilters";
 
@@ -21,7 +21,8 @@ export const useInfiniteChallenges = (params: ChallengeQueryParams = {}) => {
 
     const url = `/api/all-challanges?${sp.toString()}`;
     const { data } = await apiClient.get(url);
-    const challenges = data?.data?.challenges ?? [];
+    const challenges = data?.data?.challenges ?? data?.challenges ?? [];
+
     const hasMore = challenges.length === PAGE_SIZE;
 
     return {

@@ -20,7 +20,7 @@ export async function GET(
   try {
     const url = accessToken
       ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/challenges/${id}`
-      : `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/auth/challenges/${id}`;
+      : `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/guest/challenges/${id}`;
     const res = await fetch(url, {
       method: "GET",
       headers: {
@@ -30,6 +30,8 @@ export async function GET(
       cache: "no-store",
     });
     const data = await res.json();
+
+
     if (!res.ok) {
       const status = data?.error?.statusCode ?? res.status ?? 500;
       const message =
