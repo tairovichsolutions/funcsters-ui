@@ -160,6 +160,7 @@ export const CodePlaygroundScreen = memo(() => {
       openModal("loginRequiredModal");
       return;
     }
+
     if (!languageId || !challengeId) return;
 
     try {
@@ -180,7 +181,10 @@ export const CodePlaygroundScreen = memo(() => {
       const failed = res?.data?.data?.data?.testRunSummary?.failed ?? 0;
 
       if (failed === 0) {
-        if (userProgress !== "COMPLETED" || showSuccessModal) {
+        const shouldShowXp = !viewedSolution && userProgress !== "COMPLETED";
+        setEarnedXp(shouldShowXp ? xpCount : 0);
+
+        if (shouldShowXp || showSuccessModal) {
           setSubmitModalOpen(true);
         }
         setResults(null);
@@ -196,6 +200,7 @@ export const CodePlaygroundScreen = memo(() => {
   }, [
     code,
     languageId,
+    viewedSolution,
     challengeId,
     submitCode,
     updateUserProgress,
@@ -230,7 +235,6 @@ export const CodePlaygroundScreen = memo(() => {
 
               {submitModalOpen && (
                 <SolutionSubmittedModal
-                  viewedSolution={viewedSolution}
                   open={submitModalOpen}
                   onClose={() => setSubmitModalOpen(false)}
                   xpCount={earnedXp}

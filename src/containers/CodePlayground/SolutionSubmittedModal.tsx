@@ -16,9 +16,10 @@ const ShareIcon = ({ name }: { name: string }) => (
 export const SolutionSubmittedModal = ({
   open,
   onClose,
-  viewedSolution,
   xpCount,
 }: any) => {
+  console.log("xpCount", xpCount);
+
   const shareIcons = [
     "iconoir:facebook",
     "iconoir:twitter",
@@ -27,7 +28,12 @@ export const SolutionSubmittedModal = ({
   ];
 
   return (
-    <Modal ClossBtnIconClass="size-6!" ClossBtnClass=" text-xl top-6 right-6! text-primary " open={open} onClose={onClose}>
+    <Modal
+      ClossBtnIconClass="size-6!"
+      ClossBtnClass=" text-xl top-6 right-6! text-primary "
+      open={open}
+      onClose={onClose}
+    >
       <div className="  space-y-5 ">
         <div className=" bg-[#E5F3FF] dark:bg-primary/15 rounded-lg flex flex-col items-center gap-6 p-4">
           <div className=" size-[110px] bg-[#008CFF]/20 rounded-full  flex justify-center items-center">
@@ -60,7 +66,7 @@ export const SolutionSubmittedModal = ({
               </div>
             </div>
 
-            {!viewedSolution && (
+            {xpCount > 0 && (
               <div className="bg-[#FFFAF4] dark:bg-[#FFFAF4]/15 p-3 rounded-3xl flex items-center gap-3 w-full justify-center">
                 <Image
                   src={Assets.Svgs.XpCoin}
