@@ -205,7 +205,7 @@ export const ActivityCalendarCard: React.FC = () => {
     >
       <StatsScorePoints value={totalActivity} label="Activities" />
 
-      <div className="relative w-full flex flex-1 flex-col text-[12px] text-white z-10 max-w-[240px] bg--500">
+      <div className="relative w-full flex flex-1 flex-col text-[12px] text-white z-10 max-w-[230px] bg--500">
         <div className="flex flex-col border-b pb-1 border-white/50 items-end gap-2 w-full">
           <div className="flex items-center gap-2 text-xs w-full justify-between font-medium text-white">
             <span className="ml-1.5">{monthLabel}</span>
@@ -236,7 +236,7 @@ export const ActivityCalendarCard: React.FC = () => {
           ))}
         </div>
 
-        <div className="flex flex-1 flex-col justify-between gap-[2px]">
+        <div className="flex flex-1 flex-col justify-between gap-0.5">
           {visibleWeeks.map((week, weekIndex) => (
             <div key={weekIndex} className="relative">
               <div className="grid grid-cols-7 text-center">
@@ -279,7 +279,7 @@ export const ActivityCalendarCard: React.FC = () => {
                   );
 
                   let containerClasses =
-                    "flex h-[26px] w-full items-center justify-center text-[12px]";
+                    "flex h-[26px]  w-full items-center justify-center text-[13.5px]";
 
                   if (inStreak) {
                     containerClasses += " bg-[#FFCE5139]";
@@ -302,14 +302,14 @@ export const ActivityCalendarCard: React.FC = () => {
                         <div className={containerClasses}>
                           <div
                             className={[
-                              "flex size-[22px] shrink-0 items-center justify-center rounded-full text-[13px] font-semibold",
+                              "flex size-[27px] shrink-0 items-center justify-center rounded-full text-[14.5px] font-semibold",
                               "bg-[#FFCE51]",
                               inStreak ? "text-[#F75900]" : "text-[#1B1B43]",
                             ]
                               .filter(Boolean)
                               .join(" ")}
                           >
-                            <span className="leading-none mt-0.5">{dayNumber}</span>
+                            <span className="leading-none">{dayNumber}</span>
                           </div>
                         </div>
                       </Tooltip>
