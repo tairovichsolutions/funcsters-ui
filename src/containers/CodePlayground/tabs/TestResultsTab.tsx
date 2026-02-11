@@ -24,12 +24,12 @@ export const TestResultsTab = React.memo(({ tests }: { tests: TestCase[] }) => {
               "m-2 rounded-[12px] border!",
               isPass
                 ? "bg-success/[0.102] border-success"
-                : "bg-danger/[0.102] border-danger"
+                : "bg-danger/[0.102] border-danger",
             )}
           >
             <AccordionTrigger
               className={cn(
-                "px-3 py-2.5 font-medium flex cursor-pointer  items-center  gap-2 hover:no-underline"
+                "px-3 py-2.5 font-medium flex cursor-pointer  items-center  gap-2 hover:no-underline",
               )}
             >
               <div className="flex text-sm items-center gap-4">
@@ -49,10 +49,17 @@ export const TestResultsTab = React.memo(({ tests }: { tests: TestCase[] }) => {
                 {/* <KeyValueBox label="Input" value={` ${test?.input?.arr}`} /> */}
 
                 <InputKeyValues input={test?.input} />
-                <KeyValueBox label="Expected Output" value={test?.expected} />
+
+                {test?.expected && (
+                  <KeyValueBox label="Expected Output" value={test?.expected} />
+                )}
 
                 {test?.actual && (
                   <KeyValueBox label="Actual" value={test?.actual} />
+                )}
+
+                  {test?.error && (
+                  <KeyValueBox label="Error" value={test?.error} />
                 )}
               </div>
             </AccordionContent>
