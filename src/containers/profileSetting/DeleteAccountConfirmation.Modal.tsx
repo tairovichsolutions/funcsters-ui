@@ -30,8 +30,8 @@ export const DeleteAccountConfirmationModal = () => {
         <img src={Assets.Images.ConfirmationImage} alt="confirmation_image" />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <h2 className="font-bold text-[27px] leading-none text-black text-center">
+      <div className="flex flex-col gap-3">
+        <h2 className="font-bold text-[27px] leading-none text-center">
           Delete Account
         </h2>
         <p className="font-normal text-[13px] max-w-md text-center text-medium-gray">
@@ -50,7 +50,7 @@ export const DeleteAccountConfirmationModal = () => {
           label="Type"
           value={confirmation}
           onChange={(e: any) => setConfirmation(e.target.value)}
-          placeholder='Type "I understand" here'
+          // placeholder='Type "I understand" here'
           error={
             showError ? "You must type 'I understand' to confirm" : undefined
           }
