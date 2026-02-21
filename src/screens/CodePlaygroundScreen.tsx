@@ -94,6 +94,7 @@ export const CodePlaygroundScreen = memo(() => {
     selectedLanguage,
     updateUserProgress,
     challengeId: chId,
+    setCurrentCode,
   } = useLanguageImplementations();
 
   const challengeId = chId;
@@ -110,16 +111,20 @@ export const CodePlaygroundScreen = memo(() => {
 
     if (saved !== null) {
       setCode(saved);
+      setCurrentCode(saved);
     } else if (starterCode) {
       setCode(starterCode);
+      setCurrentCode(starterCode);
     } else {
       setCode("");
+      setCurrentCode("");
     }
-  }, [languageId, challengeId, starterCode]);
+  }, [languageId, challengeId, starterCode, setCurrentCode]);
 
   const handleCodeChange = useCallback((value?: string) => {
     setCode(value ?? "");
-  }, []);
+    setCurrentCode(value ?? "");
+  }, [setCurrentCode]);
 
   const handleFormatCode = useCallback(() => {
     const editor = editorRef.current;

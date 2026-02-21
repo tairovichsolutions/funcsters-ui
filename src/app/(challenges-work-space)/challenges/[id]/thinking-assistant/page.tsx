@@ -1,16 +1,7 @@
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { NewThinkingAssistantScreen } from "@/screens/NewThinkingAssistantScreen";
+import { ThinkingAssistantScreen } from "@/screens/ThinkingAssistantScreen";
 
 const Page = async () => {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("accessToken")?.value;
-
-  if (!accessToken) {
-    return redirect(`/challenges`);
-  }
-
-  return <NewThinkingAssistantScreen />;
+  return <ThinkingAssistantScreen />;
 };
 
 export default Page;
