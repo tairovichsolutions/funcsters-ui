@@ -147,8 +147,8 @@ export const CodePlaygroundScreen = memo(() => {
 
       saveSnippetOnRun(languageId, String(challengeId), code);
 
-      const res = (await runCode(payload)) as { data: RunCodeApiResponse };
-      setResults(res.data);
+      const res = (await runCode(payload)) as { data: { data: RunCodeApiResponse } };
+      setResults(res.data.data);
     } catch (err: any) {
       setResults(null);
       toast.error(err?.message || "Something went wrong while running code");
@@ -178,7 +178,7 @@ export const CodePlaygroundScreen = memo(() => {
         return;
       }
 
-      const failed = res?.data?.testRunSummary?.failed ?? 0;
+      const failed = res?.data?.data?.testRunSummary?.failed ?? 0;
 
       if (failed === 0) {
         const shouldShowXp = !viewedSolution && userProgress !== "COMPLETED";
@@ -188,7 +188,7 @@ export const CodePlaygroundScreen = memo(() => {
           setSubmitModalOpen(true);
         }
         setResults(null);
-        setResults(res.data);
+        setResults(res.data.data);
         updateUserProgress?.(languageId, "COMPLETED");
       } else {
         setResults(null);
