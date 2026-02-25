@@ -178,7 +178,7 @@ export const CodePlaygroundScreen = memo(() => {
         return;
       }
 
-      const failed = res?.data?.data?.data?.testRunSummary?.failed ?? 0;
+      const failed = res?.data?.testRunSummary?.failed ?? 0;
 
       if (failed === 0) {
         const shouldShowXp = !viewedSolution && userProgress !== "COMPLETED";
@@ -230,7 +230,7 @@ export const CodePlaygroundScreen = memo(() => {
                 submitCodePending={submitPending}
                 handleSubmitCode={handleSubmitCode}
                 handleFormatCode={handleFormatCode}
-                allTestPass={results?.data?.data?.testRunSummary?.passed >= 1}
+                allTestPass={(results?.testRunSummary?.passed ?? 0) >= 1}
               />
 
               {submitModalOpen && (
@@ -266,7 +266,7 @@ export const CodePlaygroundScreen = memo(() => {
 
         <Panel minSize={10} defaultSize={35}>
           <div className="w-full h-full">
-            <TestResultsPanel results={results?.data?.data} />
+            <TestResultsPanel results={results} />
           </div>
         </Panel>
       </PanelGroup>

@@ -19,7 +19,6 @@ export type ApiTestRunSummary = {
 };
 
 export type RunCodeApiResponse = {
-  data: any;
   message: string;
   statusCode: number;
   description: string;
