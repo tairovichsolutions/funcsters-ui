@@ -47,12 +47,12 @@ export const ChallengesScreen: React.FC = () => {
   }, [data]);
 
   return (
-    <div className="py-4 flex flex-col gap-5">
-      <GreetingArea
+    <div className="pt-7 pb-4 flex flex-col gap-5">
+      {/* <GreetingArea
         profileLoading={profileLoading}
         isAuthenticated={isAuthenticated}
         username={userData?.data?.user?.username}
-      />
+      /> */}
 
       <MatricsAndActivityChart
         profileLoading={profileLoading}
