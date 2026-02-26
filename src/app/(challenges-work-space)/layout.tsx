@@ -11,6 +11,7 @@ import { CodePlaygroundScreen } from "@/screens/CodePlaygroundScreen";
 import { useMyCommunitySolutions } from "@/queries/useMyCommunitySolutions";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
+import { performTAGarbageCollection } from "@/hooks/useThinkingAssistant";
 
 interface LayoutProps {
   children: ReactNode;
@@ -32,10 +33,11 @@ const Layout = ({ children }: LayoutProps) => {
   } = useLanguageImplementations();
 
 
-  
+
 
   useEffect(() => {
     setChallengeId(challengesDetailData?.id);
+    performTAGarbageCollection();
   }, [challengesDetailData, setChallengeId, id]);
 
 

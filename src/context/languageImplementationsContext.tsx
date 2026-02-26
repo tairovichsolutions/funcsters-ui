@@ -27,6 +27,8 @@ interface LanguageImplementationsContextType {
   setShowSuccessModal: (value: boolean) => void;
   challengeId: number | null;
   setChallengeId: (id: number | null) => void;
+  currentCode: string;
+  setCurrentCode: (code: string) => void;
 }
 
 const LanguageImplementationsContext = createContext<
@@ -47,6 +49,7 @@ export const LanguageImplementationsProvider = ({
     [],
   );
   const [challengeId, setChallengeId] = useState<number | null>(null);
+  const [currentCode, setCurrentCode] = useState<string>("");
 
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
 
@@ -139,6 +142,8 @@ export const LanguageImplementationsProvider = ({
         setShowSuccessModal,
         challengeId,
         setChallengeId,
+        currentCode,
+        setCurrentCode,
       }}
     >
       {children}
