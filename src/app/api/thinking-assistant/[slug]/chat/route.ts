@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
-    request: Request,
-    { params }: { params: { slug: string } }
+    request: NextRequest,
+    { params }: { params: Promise<{ slug: string }> }
 ) {
     const { slug } = await params;
     const cookieStore = await cookies();
