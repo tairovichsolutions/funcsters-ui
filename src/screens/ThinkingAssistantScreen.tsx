@@ -16,6 +16,7 @@ import { useTheme } from "next-themes";
 import GPTLikeInput from "./inputdara";
 import { ArrowUp, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DisplayAvatar } from "@/components/ui";
 
 const stripContext = (content: string) => {
   const marker = "--- USER MESSAGE ---";
@@ -52,6 +53,14 @@ export const ThinkingAssistantScreen = () => {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
+  const user = userData?.data?.user;
+  const userAvatarUrl = user?.avatarUrl
+    ? user?.avatarUrl.startsWith("https")
+      ? user.avatarUrl
+      : `https://www.funcsters.io/static${user.avatarUrl}`
+    : Assets.Images.Avatar;
+  const userFirstLetter = user?.username?.charAt(0)?.toUpperCase() || "U";
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -81,7 +90,7 @@ export const ThinkingAssistantScreen = () => {
     <div className="flex flex-col h-full bg-background relative overflow-hidden">
       {/* Header / Intro Section - Only show when chat is NOT active */}
       {!isChatActive && (
-        <div className="flex-1 overflow-y-auto px-4 py-14 flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300">
+        <div className="flex-1 overflow-y-auto px-4 py-14 flex flex-col items-center justify-center">
           <div className="flex flex-col items-center gap-3 text-center w-full">
             <img
               src={Assets.Svgs.IntelligenceLogo}
@@ -95,10 +104,12 @@ export const ThinkingAssistantScreen = () => {
 
             <div className="text-sm font-medium text-foreground/80">
               You&apos;re working on{" "}
-              {isChallengeLoading ? (
+              {challenge?.title ? (
+                <span className="font-bold text-primary">&ldquo;{challenge.title}&rdquo;</span>
+              ) : isChallengeLoading ? (
                 <Skeleton className="h-4 w-32 inline-block mx-1 align-middle rounded-sm bg-muted-foreground/20" />
               ) : (
-                <span className="font-bold text-primary">&ldquo;{challenge?.title || "this problem"}&rdquo;</span>
+                <span className="font-bold text-primary">&ldquo;this problem&rdquo;</span>
               )}{" "}
               Let&apos;s think it through
             </div>
@@ -155,10 +166,10 @@ export const ThinkingAssistantScreen = () => {
                 )}
               >
                 {!isUser && (
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 p-1">
                     <img
-                      src="/favicon.ico" // Using favicon as logo placeholder
-                      className="w-5 h-5 object-contain"
+                      src={Assets.Svgs.IntelligenceLogo}
+                      className="w-full h-full object-contain"
                       alt="AI"
                     />
                   </div>
@@ -166,7 +177,7 @@ export const ThinkingAssistantScreen = () => {
 
                 <div
                   className={cn(
-                    "max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm",
+                    "max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm break-all",
                     isUser
                       ? "bg-primary text-primary-foreground rounded-tr-none"
                       : "bg-muted/50 text-foreground border border-border/50 rounded-tl-none"
@@ -180,10 +191,11 @@ export const ThinkingAssistantScreen = () => {
                 </div>
 
                 {isUser && (
-                  <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0 overflow-hidden border border-border">
-                    {/* User Avatar Placeholder */}
-                    <span className="text-xs font-bold">You</span>
-                  </div>
+                  <DisplayAvatar
+                    src={userAvatarUrl}
+                    FallbackName={userFirstLetter}
+                    className="w-8 h-8 shrink-0 border border-border"
+                  />
                 )}
               </div>
             );
@@ -191,11 +203,16 @@ export const ThinkingAssistantScreen = () => {
 
           {isLoading && (
             <div className="flex w-full gap-3 justify-start animate-pulse">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-                <Loader2 className="w-4 h-4 animate-spin text-primary" />
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 p-1">
+                <img
+                  src={Assets.Svgs.IntelligenceLogo}
+                  className="w-full h-full object-contain"
+                  alt="AI"
+                />
               </div>
               <div className="bg-muted/30 px-4 py-3 rounded-2xl rounded-tl-none border border-border/30">
                 <span className="text-xs text-muted-foreground flex items-center gap-2">
+                  <Loader2 className="w-3 h-3 animate-spin text-primary" />
                   Thinking...
                 </span>
               </div>

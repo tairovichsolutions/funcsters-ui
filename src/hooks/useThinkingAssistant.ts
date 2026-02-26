@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/axiosClient";
+import toast from "react-hot-toast";
 
 const STORAGE_KEY = "funcsters_ta_history";
 const TTL_MS = 2 * 60 * 60 * 1000; // 2 hours
@@ -29,17 +30,15 @@ export const useThinkingAssistant = (
   // Check if limit is already reached based on loaded messages
   useEffect(() => {
     // Current limit is 20 user messages. 
-    // Since history has pairs, roughly 40 total messages. 
-    // But backend counts "turns" or "requests".
-    // We can just rely on the error from backend, OR count locally.
-    // Let's count locally as a first defense.
+    // We only set limit reached to true if we are NOT currently waiting for a response.
+    // This allows the 20th response to be seen before the blocker appears.
     const userMsgCount = messages.filter(m => m.role === "user").length;
-    if (userMsgCount >= 20) {
+    if (userMsgCount >= 20 && !isLoading) {
       setIsLimitReached(true);
-    } else {
+    } else if (userMsgCount < 20) {
       setIsLimitReached(false);
     }
-  }, [messages]);
+  }, [messages, isLoading]);
 
   // Load history on mount/slug change
   useEffect(() => {
@@ -65,26 +64,24 @@ export const useThinkingAssistant = (
     // Prevent sending if limit reached
     if (isLimitReached) return;
 
-    setIsLoading(true);
+    // Capture history before optimistic update
+    const historyBefore = messages;
 
-    // Optimistic update? No, because we might not save if failed.
-    // But we need to send history.
-    const historyToSend = messages;
+    // 1. Optimistically display user message
+    setMessages((prev) => [...prev, { role: "user", content: userText }]);
+    setIsLoading(true);
 
     try {
       const payload = {
         userMessage: userText,
         currentCode,
         language,
-        history: historyToSend,
+        history: historyBefore,
       };
 
-      const fullUrl = `http://localhost:8091/api/v1/challenges/${slug}/thinking-assistant/chat`;
+      const fullUrl = `/api/thinking-assistant/${slug}/chat`;
 
-      const response = await apiClient.post(
-        fullUrl,
-        payload
-      );
+      const response = await apiClient.post(fullUrl, payload);
 
       const data = response.data.data || response.data;
 
@@ -101,9 +98,9 @@ export const useThinkingAssistant = (
           { role: "assistant", content: data.reply || "" },
         ];
       } else {
-        // Subsequent turns: Append
+        // Subsequent turns: Append to fixed history
         finalHistory = [
-          ...messages,
+          ...historyBefore,
           { role: "user", content: userText },
           { role: "assistant", content: data.reply || "" },
         ];
@@ -126,10 +123,15 @@ export const useThinkingAssistant = (
     } catch (error: any) {
       console.error("Thinking Assistant Error:", error);
 
+      // Rollback optimistic update on error
+      setMessages(historyBefore);
+
       // Handle fallback HTTP status codes if the backend switches to errors
       if (error?.response?.status === 400 || error?.response?.status === 429) {
         setIsLimitReached(true);
       }
+
+      toast.error(error?.response?.data?.message || "Failed to send message. Please try again.");
     } finally {
       setIsLoading(false);
     }

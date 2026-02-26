@@ -11,7 +11,8 @@ export const useChallengeById = (id?: String) => {
   };
 
   return useQuery({
-    queryKey: [QueryKey.GetChallengeById],
+    queryKey: [QueryKey.GetChallengeById, id],
     queryFn: fetcher,
+    enabled: !!id,
   });
 };
