@@ -23,7 +23,7 @@ export const ChallengesDetailScreen = () => {
   const { xpCount, languageId } = useLanguageImplementations();
   const { data: userData } = useGetUserProfile();
   const isAuthenticated = userData?.data?.authenticated || false;
-  const challengesDetailData = data?.data ?? data ;
+  const challengesDetailData = data?.data ?? data;
 
   const axiosError =
     error && typeof error === "object" && "response" in error
@@ -100,7 +100,7 @@ export const ChallengesDetailScreen = () => {
         </div>
       </div>
 
-      <div className="mt-5 space-y-7 pb-5 ">
+      <div className="mt-5 space-y-5 pb-5 ">
         <MDMarkdown source={challengesDetailData?.instructions} />
         <div className="flex gap-2 flex-wrap">
           {challengesDetailData?.tags?.map((tag: string, i: number) => (
