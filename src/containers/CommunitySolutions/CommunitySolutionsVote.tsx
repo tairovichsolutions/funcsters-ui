@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 
+import { MessageCircle } from "lucide-react";
 import { cn } from "@/lib";
 import { SvgColor } from "@/components";
 import { VOTE_CONFIG } from "@/constants/voteConfig";
@@ -15,6 +16,9 @@ type CommunitySolutionsVoteProps = {
   languageId: number | string;
   solutionId: number | string;
   challengeId: number | string;
+  commentsCount?: number;
+  onToggleComments?: () => void;
+  isCommentsExpanded?: boolean;
 };
 
 type VoteCounts = Record<VoteType, number>;
@@ -35,6 +39,9 @@ export const CommunitySolutionsVote = React.memo(
     mySolution,
     solutionId,
     voteData,
+    commentsCount = 100,
+    onToggleComments,
+    isCommentsExpanded,
   }: CommunitySolutionsVoteProps) {
     const { mutateAsync: voteSolution, isPending } = useVoteCommunitySolution();
 
@@ -156,6 +163,47 @@ export const CommunitySolutionsVote = React.memo(
               );
             },
           )}
+
+          <>
+            <div className="w-[1px] h-6 bg-[#00509233] dark:bg-[#FFFFFF33] mx-1 md:mx-3" />
+            <button
+              type="button"
+              onClick={onToggleComments}
+              className={cn(
+                "group flex items-center gap-1.5 rounded-md",
+                "border border-transparent",
+                "transition-transform duration-300 ease-out hover:scale-[1.02] cursor-pointer"
+              )}
+            >
+              <div className="flex items-center justify-center p-1 relative">
+                <MessageCircle
+                  className={cn(
+                    "size-[21px] transition-colors fill-current text-[#1D2939] dark:text-gray-100",
+                    isCommentsExpanded && "opacity-80"
+                  )}
+                />
+                <div className="absolute flex gap-[2px] mb-0.5">
+                  <span className="w-0.5 h-0.5 rounded-full bg-white dark:bg-black"></span>
+                  <span className="w-0.5 h-0.5 rounded-full bg-white dark:bg-black"></span>
+                  <span className="w-0.5 h-0.5 rounded-full bg-white dark:bg-black"></span>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-start space-y-0.5">
+                <h5
+                  className={cn(
+                    "text-xs font-semibold text-[#1D2939] dark:text-gray-100",
+                    isCommentsExpanded && "opacity-80"
+                  )}
+                >
+                  Comments
+                </h5>
+                <h6 className="text-[11px] leading-none transition-colors duration-300 text-[#1D2939] dark:text-gray-100 opacity-60">
+                  {commentsCount}
+                </h6>
+              </div>
+            </button>
+          </>
         </div>
 
         <div className="flex items-center gap-3">

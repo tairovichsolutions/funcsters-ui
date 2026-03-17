@@ -21,6 +21,7 @@ import { CommunitySolutionsVote } from "./CommunitySolutionsVote";
 import { useToggleMySolution } from "@/mutations/useToggleMySolution";
 import { useDeleteMySolution } from "@/mutations/useDeleteMySolution";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
+import { CommentsSection } from "./CommentsSection";
 
 const Dot = () => (
   <span className="size-1! rounded-full bg-black  dark:bg-white" />
@@ -39,10 +40,12 @@ interface DeletePayload {
 type CommunitySolutionsCardProps = {
   data: CommunitySolutionType;
   mySolution?: boolean;
+  isNestedView?: boolean;
+  onViewAllComments?: (data: CommunitySolutionType) => void;
 };
 
 export const CommunitySolutionsCard = React.memo(
-  ({ data, mySolution }: CommunitySolutionsCardProps) => {
+  ({ data, mySolution, isNestedView, onViewAllComments }: CommunitySolutionsCardProps) => {
     const { theme } = useTheme();
     const isDarkMode = theme === "dark";
 
@@ -58,6 +61,7 @@ export const CommunitySolutionsCard = React.memo(
     } = useDeleteMySolution();
 
     const [checked, setChecked] = React.useState(() => !data.hidden);
+    const [isCommentsExpanded, setIsCommentsExpanded] = React.useState(false);
 
     const { languageId, setShowSuccessModal, challengeId } =
       useLanguageImplementations();
@@ -219,6 +223,9 @@ export const CommunitySolutionsCard = React.memo(
             challengeId={Number(challengeId)}
             solutionId={solutionId}
             voteData={data?.votes}
+            commentsCount={data?.solutionInfo?.commentsCount ?? 0}
+            isCommentsExpanded={isCommentsExpanded}
+            onToggleComments={() => setIsCommentsExpanded(p => !p)}
           />
 
           {deleteModalOpen && (
@@ -232,6 +239,14 @@ export const CommunitySolutionsCard = React.memo(
             />
           )}
         </div>
+
+        {(isCommentsExpanded || isNestedView) && (
+          <CommentsSection
+            submissionId={solutionId}
+            isNestedView={isNestedView}
+            onViewAllComments={() => onViewAllComments?.(data)}
+          />
+        )}
       </div>
     );
   },

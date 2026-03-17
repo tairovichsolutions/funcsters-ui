@@ -7,7 +7,13 @@ import { CommunitySolutionType } from "@/types";
 import { CommunitySolutionsCard } from "./CommunitySolutionsCard";
 
 export const AllCommunitySolution = React.memo(
-  ({ allSolutionData }: { allSolutionData: CommunitySolutionType[] }) => {
+  ({
+    allSolutionData,
+    onViewAllComments,
+  }: {
+    allSolutionData: CommunitySolutionType[];
+    onViewAllComments?: (v: CommunitySolutionType) => void;
+  }) => {
     return (
       <div className="space-y-5 mt-5 pb-5">
         {allSolutionData?.length > 0 ? (
@@ -15,6 +21,7 @@ export const AllCommunitySolution = React.memo(
             <CommunitySolutionsCard
               data={item}
               key={item?.solutionInfo?.solutionId ?? i}
+              onViewAllComments={() => onViewAllComments?.(item)}
             />
           ))
         ) : (

@@ -15,6 +15,7 @@ export type SolutionInfoType = {
   runtimeMs: number;
   solutionId: number;
   submittedAgo: string;
+  commentsCount?: number;
 };
 
 export type CommunityVotesType = {
