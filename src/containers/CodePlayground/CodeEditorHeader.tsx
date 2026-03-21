@@ -27,7 +27,7 @@ export const CodeEditorHeader = React.memo(
 
 
     return (
-      <div className="h-full w-full flex justify-between items-center">
+      <div className="h-full w-full flex  justify-between items-center">
         <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
           <LanguageSelector
             className={

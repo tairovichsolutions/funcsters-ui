@@ -3,6 +3,175 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* —— Keenlys Marquee —— */
+@keyframes keenlys-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  } /* move by half because we duplicated items */
+}
+
+
+.shimmer {
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    110deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.45) 40%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.45) 60%,
+    transparent 80%
+  );
+
+  filter: blur(2px);
+}
+
+/* All same duration */
+.s1, .s2, .s3 {
+  animation: shimmerSweep 2.5s linear infinite;
+}
+
+.s1 { animation-delay: 0s; }
+.s2 { animation-delay: 0.3s; }
+.s3 { animation-delay: 0.6s; }
+
+/* 4th shimmer (stop at 20% then continue) */
+.s4 {
+  animation: shimmerLast 2.9s linear infinite;
+  animation-delay: 0.9s;
+}
+
+/* normal sweeps */
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(120%) scaleX(1.2);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  60% {
+    transform: translateX(-120%) scaleX(1.2);
+    opacity: 1;
+  }
+
+  61% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(-120%) scaleX(1.2);
+    opacity: 0;
+  }
+}
+
+/* 4th wave with pause mid-way */
+@keyframes shimmerLast {
+  0% {
+    transform: translateX(120%) scaleX(1.2);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  /* reach stop point */
+  50% {
+    transform: translateX(-10%) scaleX(1.2);
+    opacity: 1;
+  }
+
+  /* pause at -20% */
+  65% {
+    transform: translateX(-10%) scaleX(1.2);
+    opacity: 1;
+  }
+
+  /* continue to end */
+  100% {
+    transform: translateX(-120%) scaleX(1.2);
+    opacity: 1;
+  }
+}
+.keenlys-marquee-group {
+  overflow: hidden;
+  position: relative;
+}
+
+.keenlys-marquee-track {
+  display: flex;
+  width: max-content; /* allow natural width */
+  will-change: transform;
+  animation-name: keenlys-marquee;
+  animation-timing-function: linear;
+  animation-duration: var(--marquee-duration, 12000ms);
+  animation-iteration-count: var(--marquee-iteration, infinite);
+}
+
+/* Pause on hover (no JS needed) */
+.keenlys-marquee-group:hover .keenlys-marquee-track {
+  animation-play-state: paused;
+}
+
+/* Item sizing (approx slidesPerView feel) */
+.keenlys-marquee-item {
+  position: relative;
+  height: 10rem; /* h-40 */
+  width: 9rem; /* ~w-36 */
+  margin-right: 16px; /* spaceBetween 16 */
+  border-radius: 1rem; /* rounded-2xl */
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .keenlys-marquee-item {
+    width: 10rem;
+  }
+} /* sm:w-40 */
+@media (min-width: 768px) {
+  .keenlys-marquee-item {
+    width: 11rem;
+  }
+} /* md:w-44 */
+@media (min-width: 1024px) {
+  .keenlys-marquee-item {
+    width: 12rem;
+  }
+} /* lg:w-48 */
+
+/* ::selection {
+  background: yellow;
+} */
+
+.marquee-swiper .swiper-wrapper {
+  transition-timing-function: linear !important;
+}
+@keyframes aurora {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+.animate-aurora {
+  background-size: 400% 400%;
+  animation: aurora 10s ease infinite;
+}
+
 @theme inline {
   --color-md-editor-text: var(--md-editor-text);
   --color-input-border: var(--input-border);
@@ -88,7 +257,64 @@
     }
   }
 }
+.flyIn {
+  animation: flyInAnimation 0.5s ease-out forwards;
+}
 
+@keyframes flyInAnimation {
+  0% {
+    transform: translatey(20%);
+    opacity: 0;
+  }
+  100% {
+    transform: translatey(0);
+    opacity: 1;
+  }
+}
+
+.faq-content-animation {
+  /* Applying a slightly longer duration for a smoother feel */
+  animation: contentFlyIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity; /* For smoother performance */
+}
+
+button:not([disabled]),
+.button:not([disabled]) {
+  cursor: pointer;
+}
+/* Custom Floating Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.float-icon-1 {
+  animation: float 3s ease-in-out infinite;
+}
+
+.float-icon-2 {
+  animation: float 3s ease-in-out infinite;
+  animation-delay: 0.5s; /* Offset the timing */
+}
+
+.float-icon-3 {
+  animation: float 3s ease-in-out infinite;
+  animation-delay: 1s; /* Offset the timing */
+}
+
+@theme {
+  --color-neutral-04: #070707;
+  --color-neutral-03: #0d1a26;
+  --color-neutral-05: #878787;
+  --color-blue-base: #008cff;
+}
 :root {
   --color-content-primary: #00000099;
   --md-editor-text: #000911;
@@ -108,7 +334,7 @@
   --flash-white: oklch(95.51% 0 0);
   --mid-slate: oklch(20.77% 0.04 265.75);
   --medium-gray: oklch(62.34% 0 0);
-  --challenge-progress-card: #1E6FD1;
+  --challenge-progress-card: #1e6fd1;
   --activity-calendar-card: #5865f2;
   --streak-stats-card: oklch(0.69 0.2 38);
   --xp-points-card: oklch(0.83 0.17 82);
@@ -200,7 +426,6 @@
   --sidebar-accent-foreground: oklch(0.985 0.002 247.839);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
-
   --scrollbar-track: rgba(192, 185, 185, 0);
   --scrollbar-thumb: #1a2e41;
   --scrollbar-thumb-hover: #60a5fa;

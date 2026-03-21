@@ -75,7 +75,7 @@ export default function GPTLikeInput({ onSend, maxHeight = 180 }: Props) {
           value={value}
           onChange={handleInputChange}
           onKeyDown={onKeyDown}
-          placeholder="Ask anything..."
+          placeholder="Ask  anything..."
           rows={1}
           className="block text-sm w-full min-w-0 bg-transparent dark:text-white hide-scrollbar outline-none border-none resize-none leading-6 py-1 text-gray-900 placeholder:text-gray-400"
         />

@@ -12,7 +12,9 @@
 
 # testing
 /coverage
-
+package-lock.json
+.git-dev
+.git-func
 # next.js
 /.next/
 /out/
@@ -34,6 +36,7 @@ yarn-error.log*
 .env*
 .env.local
 .env
+.git-func
 
 # vercel
 .vercel

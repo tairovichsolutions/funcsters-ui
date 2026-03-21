@@ -3,6 +3,12 @@ import MDEditor from "@uiw/react-md-editor";
 
 export const MDMarkdown = ({ source }: { source: string }) => {
   const { resolvedTheme } = useTheme();
+
+  // Determine the color based on the theme
+  // If dark mode is active, use red. Otherwise, use blue.
+  const bgColor = resolvedTheme === "dark" ? "#191a27" : "#f6f8fa";
+  const bgColorLight = resolvedTheme === "dark" ? "#00010f" : "";
+
   return (
     <div
       data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
@@ -10,7 +16,11 @@ export const MDMarkdown = ({ source }: { source: string }) => {
     >
       <MDEditor.Markdown
         source={source}
-        className="m-0! p-0! min-h-0! bg-transparent! text-sm text-md-editor-text
+        style={{
+          "--color-canvas-subtle": bgColor,
+          backgroundColor: bgColorLight
+        } as React.CSSProperties}
+        className="m-0! p-0! min-h-0! text-sm text-md-editor-text
           [&_ol]:list-decimal [&_ol]:pl-0! [&_ol]:ml-4! [&_ol]:my-2
           [&_ul]:list-disc [&_ul]:pl-0! [&_ul]:ml-4! [&_ul]:my-2
           [&_li]:my-0.5 [&_li]:pl-1

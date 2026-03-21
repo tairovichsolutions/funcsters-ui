@@ -15,7 +15,7 @@ export const ChallengesSubNav = () => {
   const userId = getCookie("userId");
   const { openModal } = useAuthModal();
 
-  const protectedTabNames = ["Community Solutions", "Thinking Assistant"];
+  const protectedTabNames = ["Community Solutions", ];
 
   const handleClick = (
     e: React.MouseEvent<HTMLButtonElement>,

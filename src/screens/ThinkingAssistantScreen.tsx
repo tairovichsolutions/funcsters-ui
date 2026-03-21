@@ -72,10 +72,11 @@ export const ThinkingAssistantScreen = () => {
   }, [messages, isLoading]);
 
   const handleSend = async (text: string) => {
-    if (!isAuthenticated) {
-      openModal("loginRequiredModal");
-      return;
-    }
+    //TODO:jahid login thinking
+    // if (!isAuthenticated) {
+    //   openModal("loginRequiredModal");
+    //   return;
+    // }
     if (!text.trim() || isLoading) return;
     await sendMessage(text);
   };
@@ -218,6 +219,32 @@ export const ThinkingAssistantScreen = () => {
               </div>
             </div>
           )}
+          <div className="flex w-full gap-3 justify-start animate-pulse">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 p-1">
+                <img
+                  src={Assets.Svgs.IntelligenceLogo}
+                  className="w-full h-full object-contain"
+                  alt="AI"
+                />
+              </div>
+              <div className="bg-muted/30 px-4 py-3 rounded-2xl rounded-tl-none border border-border/30">
+                <span className="text-xs text-muted-foreground flex items-center gap-2">
+                  <Loader2 className="w-3 h-3 animate-spin text-primary" />
+                  Thinking...
+                </span>
+              </div>
+            </div>
+            
+<div className="flex items-center justify-center h-40">
+  <div className="relative text-base  text-neutral-05 overflow-hidden">
+    Thinking...
+
+    <span className="shimmer bg-blue-500 s1"></span>
+    <span className="shimmer bg-blue-500 s2"></span>
+    <span className="shimmer bg-blue-500 s3"></span>
+    <span className="shimmer bg-blue-500 s4"></span>
+  </div>
+</div>
           <div ref={messagesEndRef} />
         </div>
       )}

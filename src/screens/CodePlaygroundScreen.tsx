@@ -81,7 +81,7 @@ export const CodePlaygroundScreen = memo(() => {
   const [code, setCode] = useState("");
   const [results, setResults] = useState<RunCodeApiResponse | null>(null);
   const [earnedXp, setEarnedXp] = useState<number | null>(null);
-  const [submitModalOpen, setSubmitModalOpen] = useState(false);
+  const [submitModalOpen, setSubmitModalOpen] = useState(true);
   const editorRef = useRef<any | null>(null);
   const { settings } = useEditorSettings();
   const {
@@ -226,7 +226,7 @@ export const CodePlaygroundScreen = memo(() => {
     <div className="h-full w-full shrink-0">
       <PanelGroup direction="vertical" className="w-full h-full gap-1.5">
         <Panel minSize={40} defaultSize={65}>
-          <div className="border border-border-soft rounded-xl overflow-hidden h-full w-full flex flex-col bg-background">
+          <div className="border border-border-soft rounded-xl overflow-hidden h-full w-full flex flex-col bg-background dark:bg-[#00010f]">
             <div className="px-4 flex items-center justify-between border-b border-border-soft h-16 overflow-hidden">
               <CodeEditorHeader
                 code={code}
@@ -247,7 +247,7 @@ export const CodePlaygroundScreen = memo(() => {
               )}
             </div>
 
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 ">
               <MonacoCodeEditer
                 value={code}
                 theme={editorTheme}
@@ -267,8 +267,7 @@ export const CodePlaygroundScreen = memo(() => {
           </div>
         </Panel>
 
-        <PanelResizeHandle className="w-full rounded-full shrink-0 h-1.5 cursor-row-resize bg-transparent hover:bg-primary/40 data-resize-handle-active:bg-primary/60 transition-colors duration-150" />
-
+        <PanelResizeHandle className="w-full rounded-full shrink-0 h-1.5 cursor-row-resize bg-transparent hover:bg-primary/40 data-resize-handle-active:bg-primary/60 transition-colors duration-150" />        
         <Panel minSize={10} defaultSize={35}>
           <div className="w-full h-full">
             <TestResultsPanel results={results} />

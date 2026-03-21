@@ -15,7 +15,6 @@ export default async function Home() {
   return (
     <div className="scroll-smooth bg-black bg-[url('/images/landing-page-bg.png')] bg-cover font-magseva h-full w-full">
       <LandingPageScreen />
-      
     </div>
   );
 }

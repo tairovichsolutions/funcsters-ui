@@ -2,6 +2,38 @@ export const Assets = {
   Icons: {},
 
   Images: {
+    logo:{
+      funcstersLogo:"/images/logo/funcsterslogo.png",
+      funcText:"/images/logo/func.png",
+      sterText:"/images/logo/ster.png",
+      logoss:"/images/logo/logoss.JPG",
+      funcsterwhitelogoSS:"/images/logo/funcsterwhitelogoSS.JPG",
+      funcstersTextLogo:"/images/logo/funcstersTextLogo.png"
+      
+    
+
+    },
+    landingPage:{
+      hero:"/images/landingPage/Coding-cuate-banner.png",
+      faqBanner:"/images/landingPage/Tablet login-cuate 1 (1).png",
+      Handcodingcuate1:"/images/landingPage/Hand coding-cuate 1 (1).png",
+      personalgrowthcuate1:"/images/landingPage/personal growth-cuate 1.png",
+      Progressoverviewcuate1:"/images/landingPage/Progress overview-cuate 1.png",
+      Careerprogresscuate1:"/images/landingPage/Career progress-cuate 1.png",
+      ThinkingAsisstanceBanner:"/images/landingPage/Chat 2 (2).png",
+      ReactIcon:"/images/landingPage/ReactIcon2.png",
+      reactShadowIcon:"/images/landingPage/reactShadowIcon.png" ,
+      reactShadowIcon2:"/images/landingPage/reactShadowIcon2.png" ,
+      banner4:"/images/landingPage/banner4.png" ,
+      celender:"/images/landingPage/celender.png" ,
+      highstreak:"/images/landingPage/highstreak.png" ,
+      xppoint:"/images/landingPage/xppoint.png" ,
+      banner5:"/images/landingPage/Banner5 2x.png" ,
+      EllipseHasantest:"/images/landingPage/EllipseHasatest.png" ,
+      python1:"/images/landingPage/python 1 (2).png" ,
+      
+    },
+    sponsoredIcons: Array.from({ length: 8 }, (_, i) => `/sponsoredIcone/Group-${i + 1}.png`),
     steps: {
       sigup: "/images/steps/signup.png",
       Submit: "/images/steps/submit.png",
