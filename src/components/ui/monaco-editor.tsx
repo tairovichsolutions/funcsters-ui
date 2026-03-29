@@ -4,6 +4,8 @@ import React from "react";
 import { cn } from "@/lib";
 import Editor from "@monaco-editor/react";
 import { EditorKeyBinding } from "@/context/EditorSettingsContext";
+import * as Y from "yjs";
+import { Client } from "@stomp/stompjs";
 
 function useMonacoShortcuts(params: {
   keyBinding: EditorKeyBinding;
@@ -81,6 +83,8 @@ type Props = {
   onChange?: (value: string) => void;
   theme?: "light" | "vs-dark" | "hc-black";
   editorRef?: React.MutableRefObject<any | null>;
+  pairingSessionId?: number | string | null;
+  stompClient?: Client | null;
 };
 
 const DARK_THEME_NAME = "custom-dark";
@@ -102,9 +106,12 @@ export const MonacoCodeEditer = React.memo(
     autoComplete = true,
     keyBinding = "vscode",
     language = "javascript",
+    pairingSessionId,
+    stompClient,
   }: Props) => {
     const internalEditorRef = React.useRef<any | null>(null);
     const monacoRef = React.useRef<any | null>(null);
+    const [isMounted, setIsMounted] = React.useState(false);
 
     React.useEffect(() => {
       if (editorRef) {
@@ -133,6 +140,57 @@ export const MonacoCodeEditer = React.memo(
 
       monaco.editor.setTheme(theme === "vs-dark" ? DARK_THEME_NAME : theme);
     }, [theme]);
+
+    // Handle YJS Real-time Synchronization using STOMP relay
+    React.useEffect(() => {
+      if (!isMounted || !pairingSessionId || !stompClient || !stompClient.connected) return;
+      const editor = internalEditorRef.current;
+      if (!editor) return;
+
+      let binding: any;
+      let sub: any;
+      const doc = new Y.Doc();
+
+      const initYjs = async () => {
+        const { MonacoBinding } = await import("y-monaco");
+        const ytext = doc.getText("monaco");
+        
+        binding = new MonacoBinding(
+          ytext,
+          editor.getModel(),
+          new Set([editor]),
+          null
+        );
+
+        doc.on("update", (update: Uint8Array, origin: any) => {
+          if (origin !== "stomp") {
+            const message = JSON.stringify(Array.from(update));
+            stompClient.publish({
+              destination: `/app/session/${pairingSessionId}/update`,
+              body: message,
+            });
+          }
+        });
+
+        sub = stompClient.subscribe(`/topic/session/${pairingSessionId}/update`, (msg) => {
+          try {
+            const array = JSON.parse(msg.body);
+            const update = new Uint8Array(array);
+            Y.applyUpdate(doc, update, "stomp");
+          } catch (e) {
+            console.error("YJS update error", e);
+          }
+        });
+      };
+
+      initYjs();
+
+      return () => {
+        if (binding) binding.destroy();
+        if (sub) sub.unsubscribe();
+        doc.destroy();
+      };
+    }, [isMounted, pairingSessionId, stompClient, stompClient?.connected]);
 
     return (
       <div className={cn("h-full w-full", className)}>
@@ -188,6 +246,8 @@ export const MonacoCodeEditer = React.memo(
             monaco.editor.setTheme(
               theme === "vs-dark" ? DARK_THEME_NAME : theme,
             );
+            
+            setIsMounted(true);
           }}
         />
       </div>

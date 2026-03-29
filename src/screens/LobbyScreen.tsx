@@ -11,8 +11,10 @@ import { PairProgrammingSidebar } from "@/containers/PairProgramming/PairProgram
 import { useInfiniteChallenges } from "@/queries/useAllChallenges";
 import { TagSelector } from "@/components/TagSelector";
 import FilterPills, { Filters } from "@/containers/Challenges/FilterPills";
+import { usePairingLobby } from "@/queries/usePairingLobby";
 import { usePairingStore, pairingStore } from "@/mock/pairingStore";
 import { PairProgrammingRulesModal } from "@/containers/PairProgramming/PairProgrammingRulesModal";
+import TagScroller from "@/containers/Challenges/TagScroller";
 
 // Sub-component to handle timer countdown without re-rendering the whole lobby list
 const BannerTimer = ({ expiry }: { expiry: number }) => {
@@ -50,6 +52,7 @@ export const LobbyScreen = () => {
   const router = useRouter();
   const { data: challengesData } = useInfiniteChallenges({});
   const realChallenges = challengesData?.pages[0]?.challenges || [];
+  const { data: lobbyRequests } = usePairingLobby();
   
   const { isRequesting: activeRequest, activeChallengeSlug, activeChallengeTitle, incomingRequests, requestExpiry, mode, targetUser, hasPermission } = usePairingStore();
   
@@ -66,30 +69,38 @@ export const LobbyScreen = () => {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Map MOCK_LOBBY_USERS to real challenges randomly from API
+  // Map API requests to the UI model structure
   const mappedLobbyUsers = useMemo(() => {
-    if (realChallenges.length === 0) return MOCK_LOBBY_USERS;
-    return MOCK_LOBBY_USERS.map((user, idx) => {
-      const realChallenge = realChallenges[idx % realChallenges.length];
-      return {
-        ...user,
-        challenge: {
-          id: realChallenge.id || user.challenge.id,
-          slug: realChallenge.slug || user.challenge.id,
-          title: realChallenge.title || user.challenge.title,
-          difficulty: realChallenge.difficulty || user.challenge.difficulty,
-          tags: realChallenge.tags || user.challenge.tags,
-        }
-      };
-    });
-  }, [realChallenges]);
+    if (!lobbyRequests) return [];
+    return lobbyRequests.map((req) => ({
+      sessionId: String(req.id), // Real DB Session ID
+      id: String(req.hostId || req.id), // Used for unique keys
+      username: req.hostUsername || "Anonymous",
+      avatarUrl: req.hostAvatarUrl || "https://ui-avatars.com/api/?name=" + (req.hostUsername || "Dev"),
+      occupation: req.hostOccupation || "Developer",
+      country: { name: req.hostCountry || "Earth", flag: req.hostCountryFlag || "🌎" },
+      xp: req.hostXp || 0,
+      goal: req.description || `Needs help with ${(req.focusAreas || []).join(", ").toLowerCase() || 'code review'}`,
+      focusAreas: req.focusAreas || [],
+      preferredLanguages: req.preferredLanguages || [],
+      spokenLanguages: req.spokenLanguages || [],
+      challenge: {
+        id: req.challengeId || null,
+        slug: req.challengeSlug || "unknown",
+        title: req.challengeTitle || "Unknown Challenge",
+        difficulty: req.challengeDifficulty || "EASY",
+        tags: req.challengeTags || [],
+      },
+      status: req.status,
+    }));
+  }, [lobbyRequests]);
 
   // Performance FIX: Memoize filtering separately from the parent's tick-based state
   const filteredUsers = useMemo(() => {
     return mappedLobbyUsers.filter((user) => {
       if (filters.difficulty && filters.difficulty.length > 0 && !filters.difficulty.includes(user.challenge.difficulty)) return false;
       if (filters.country && filters.country.length > 0 && !filters.country.includes(user.country.name)) return false;
-      if (filters.language && filters.language.length > 0 && !filters.language.includes(user.programmingLanguage)) return false;
+      if (filters.language && filters.language.length > 0 && !user.preferredLanguages.some(l => filters.language!.includes(l))) return false;
       if (filters.spoken && filters.spoken.length > 0 && !user.spokenLanguages.some(sl => filters.spoken!.includes(sl))) return false;
       return true;
     });
@@ -99,8 +110,8 @@ export const LobbyScreen = () => {
     const challengeSlug = (user.challenge as any).slug;
     if (activeRequest) return;
 
-    // Instant store update
-    pairingStore.requestToJoin(String(user.challenge.id), challengeSlug, user.challenge.title, user);
+    // Call store with real backend Request ID (mapped as sessionId)
+    pairingStore.requestToJoin(user.sessionId, String(user.challenge.id), challengeSlug, user.challenge.title, user);
   };
 
   const handleJoinRequested = () => {
@@ -228,7 +239,7 @@ export const LobbyScreen = () => {
                        : `Requested to Help @${targetUser?.username}`}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1 font-medium">
-                  Challenge: <span className="font-bold text-foreground underline underline-offset-2">"{activeChallengeTitle}"</span>
+                  Challenge: <span className="font-bold text-foreground underline underline-offset-2">&quot;{activeChallengeTitle}&quot;</span>
                 </p>
             </div>
           </div>
@@ -377,29 +388,41 @@ export const LobbyScreen = () => {
                 </div>
 
                 {/* Challenge context */}
-                <div className="flex items-center justify-between bg-accent/20 border border-accent/20 rounded-md py-1.5 px-2.5 mt-1">
-                   <Link href={`/challenges/${(user.challenge as any).slug}/detail`} className="text-[11px] font-semibold hover:text-primary transition-colors underline-offset-2 hover:underline line-clamp-1 flex-1">
-                     {user.challenge.title}
-                   </Link>
-                   <DifficultyChip level={user.challenge.difficulty as "EASY" | "MEDIUM" | "HARD"} className="scale-[0.80] origin-right shrink-0" />
+                <div className="flex flex-col bg-accent/20 border border-accent/20 rounded-md py-1.5 px-2.5 mt-1 gap-1.5">
+                   <div className="flex items-center justify-between gap-2">
+                     <Link href={`/challenges/${(user.challenge as any).slug}/detail`} className="text-[11px] font-semibold hover:text-primary transition-colors underline-offset-2 hover:underline line-clamp-1 flex-1">
+                       {user.challenge.title}
+                     </Link>
+                     <DifficultyChip level={user.challenge.difficulty as "EASY" | "MEDIUM" | "HARD"} className="scale-[0.80] origin-right shrink-0" />
+                   </div>
+                   <div className="h-4 overflow-hidden">
+                      <TagScroller tags={user.challenge.tags} />
+                   </div>
                 </div>
 
                 <div className="mt-1 relative opacity-80">
                   <div className="absolute top-0.5 left-0 w-0.5 h-[calc(100%-4px)] bg-primary/5 rounded-full" />
                   <p className="text-[10px] leading-tight font-medium text-foreground italic pl-2.5 line-clamp-2">
-                    &quot;{user.goal || "Looking to pair program on this challenge."}&quot;
+                    &quot;{user.goal || `Looking for help with ${user.focusAreas.join(", ").toLowerCase() || "code review"}.`}&quot;
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 text-[11px] text-muted-foreground font-medium mt-1">
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <Code className="w-3 h-3 text-primary" />
-                    {user.programmingLanguage}
+                <div className="flex flex-col gap-1.5 mt-1">
+                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium">
+                    <Code className="w-3 h-3 text-primary shrink-0" />
+                    <div className="flex flex-wrap gap-1">
+                      {user.preferredLanguages.map((l: string) => (
+                        <span key={l} className="bg-primary/5 text-primary px-1 rounded-sm">{l}</span>
+                      ))}
+                    </div>
                   </div>
-                  <span className="w-1 h-1 rounded-full bg-border shrink-0" />
-                  <div className="flex items-center gap-1.5 truncate">
+                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium">
                     <MessageSquare className="w-3 h-3 text-green-500 shrink-0" />
-                    <span className="truncate">{user.spokenLanguages.join(", ")}</span>
+                    <div className="flex flex-wrap gap-1">
+                      {user.spokenLanguages.map((sl: string) => (
+                        <span key={sl} className="bg-green-500/5 text-green-600 px-1 rounded-sm">{sl}</span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -407,13 +430,18 @@ export const LobbyScreen = () => {
               <div className="p-3 bg-muted/20 border-t border-border/50">
                 <Button 
                   size="sm"
-                  className="w-full text-[11px] font-bold h-8 transition-transform active:scale-[0.98]"
-                  variant={isPending ? "secondary" : "default"}
+                  className={`w-full text-[11px] font-bold h-10 transition-transform active:scale-[0.98] ${
+                    isPending && hasPermission ? "bg-orange-500 hover:bg-orange-600 shadow-lg shadow-orange-500/30" : ""
+                  }`}
+                  variant={isPending ? (hasPermission ? "default" : "secondary") : "default"}
                   disabled={!!activeRequest && !isPending}
-                  onClick={() => handlePair(user)}
+                  onClick={() => {
+                    if (isPending && hasPermission) handleJoinRequested();
+                    else handlePair(user);
+                  }}
                 >
-                  <Users className="w-3 h-3 mr-1.5" />
-                  {isPending ? "Request Sent..." : `Pair with ${user.username}`}
+                  <Users className="w-3.5 h-3.5 mr-1.5" />
+                  {isPending ? (hasPermission ? "Join Session Now" : "Request Sent...") : `Pair with ${user.username}`}
                 </Button>
               </div>
             </div>

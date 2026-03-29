@@ -21,6 +21,7 @@ import { PairProgrammingSidebar } from "@/containers/PairProgramming/PairProgram
 import { PairProgrammingRulesModal } from "@/containers/PairProgramming/PairProgrammingRulesModal";
 import { usePairingStore, pairingStore } from "@/mock/pairingStore";
 import { toast } from "react-hot-toast";
+import { useAudioCall } from "@/hooks/useAudioCall";
 
 export const ChallengesWorkSpaceHeader = () => {
   const { id } = useParams();
@@ -46,11 +47,18 @@ export const ChallengesWorkSpaceHeader = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [connectedPartner, setConnectedPartner] = useState<any>(null);
 
-  const { isRequesting: isPartnerRequested, requestExpiry, activeChallengeId, activeChallengeTitle, incomingRequests } = usePairingStore();
-  const isThisChallengeActive = isPartnerRequested && activeChallengeId === challengeId;
-  const isAnotherChallengeActive = isPartnerRequested && activeChallengeId !== challengeId;
+  const { isRequesting: isPartnerRequested, requestExpiry, activeChallengeSlug: storeChallengeSlug, activeChallengeTitle, incomingRequests, hasPermission, sessionStarted, mode, requestId } = usePairingStore();
+  const storeSlug = String(storeChallengeSlug || '').toLowerCase();
+  const currentSlug = String(challengeSlug || '').toLowerCase();
+  
+  const isThisChallengeActive = isPartnerRequested && storeSlug === currentSlug && storeSlug !== '';
+  const isAnotherChallengeActive = isPartnerRequested && storeSlug !== currentSlug && storeSlug !== '';
 
   const [requestTimeLeft, setRequestTimeLeft] = useState(0);
+
+  useEffect(() => {
+    pairingStore.rehydrateActiveRequest();
+  }, []);
 
   useEffect(() => {
     if (!isPartnerRequested || requestExpiry === 0) return;
@@ -86,17 +94,25 @@ export const ChallengesWorkSpaceHeader = () => {
     }
   }, [searchParams, pathname, router]);
 
-  const [isSessionActive, setIsSessionActive] = useState(false);
+  useEffect(() => {
+    if (!isPartnerRequested) {
+      setIsSidebarOpen(false);
+    }
+  }, [isPartnerRequested]);
+
   const [isMuted, setIsMuted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(45 * 60);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
+  
+  // Wire up the WebRTC voice chat automatically when session activates
+  useAudioCall(hasPermission ? requestId : null, isMuted);
 
   useEffect(() => {
     if (searchParams.get("session") === "active") {
       const rulesAlreadyAgreed = searchParams.get("rules") === "agreed";
       
       if (rulesAlreadyAgreed) {
-          setIsSessionActive(true);
+          pairingStore.setPermission(true);
       } else {
           setIsRulesModalOpen(true);
       }
@@ -108,9 +124,25 @@ export const ChallengesWorkSpaceHeader = () => {
     }
   }, [searchParams]);
 
+  const { targetUser } = usePairingStore();
+  
+  // Sync connected partner from store for Joiners
+  useEffect(() => {
+    if (hasPermission && mode === 'join' && targetUser) {
+        setConnectedPartner(targetUser);
+    }
+  }, [hasPermission, mode, targetUser]);
+
+  // Signal join to start session timer
+  useEffect(() => {
+    if (hasPermission && mode === 'join' && requestId && !sessionStarted) {
+        pairingStore.joinSession(requestId);
+    }
+  }, [hasPermission, mode, requestId, sessionStarted]);
+
   const handleAcceptRules = () => {
     setIsRulesModalOpen(false);
-    setIsSessionActive(true);
+    pairingStore.setPermission(true);
     router.replace(pathname);
   };
 
@@ -120,13 +152,13 @@ export const ChallengesWorkSpaceHeader = () => {
   };
 
   useEffect(() => {
-    if (isSessionActive && timeLeft > 0) {
+    if (hasPermission && sessionStarted && timeLeft > 0) {
       const timer = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [isSessionActive, timeLeft]);
+  }, [hasPermission, sessionStarted, timeLeft]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -135,18 +167,22 @@ export const ChallengesWorkSpaceHeader = () => {
   };
 
   const handlePairRequest = (data: any) => {
-    if (userXP < 1) return;
+    if (userXP < 1) {
+      toast.error("You need at least 1 XP to request a programming partner.");
+      return;
+    }
 
     setIsRequesting(true);
     setTimeout(() => {
       setIsRequesting(false);
       setIsPairModalOpen(false);
-      pairingStore.startBroadcast(challengeId, String(challengeSlug), challengeTitle);
+      const actualId = challengeData?.id ? String(challengeData.id) : challengeId;
+      pairingStore.startBroadcast(actualId, String(challengeSlug), challengeTitle, data);
     }, 1500);
   };
 
   const handleLeaveSession = () => {
-    setIsSessionActive(false);
+    pairingStore.endActiveSession();
     setConnectedPartner(null);
     setTimeLeft(45 * 60);
   };
@@ -180,7 +216,7 @@ export const ChallengesWorkSpaceHeader = () => {
 
         <div className="flex gap-3 items-center">
           <div className="flex items-center gap-2 mr-2">
-            {!isSessionActive ? (
+            {!hasPermission ? (
               isThisChallengeActive ? (
                 <div className="flex items-center gap-2">
                   <Button
@@ -208,9 +244,8 @@ export const ChallengesWorkSpaceHeader = () => {
                     requests={incomingRequests}
                     onAccept={(partner) => {
                       setIsSidebarOpen(false);
-                      pairingStore.cancelRequest();
+                      pairingStore.acceptPartner(partner.id);
                       setConnectedPartner(partner);
-                      setIsSessionActive(true);
                     }}
                   />
                 </div>
@@ -251,18 +286,23 @@ export const ChallengesWorkSpaceHeader = () => {
                       ME
                     </div>
                   </Tooltip>
-                  <Tooltip content={connectedPartner?.username} place="bottom">
+                  <Tooltip content={!sessionStarted ? `${connectedPartner?.username || 'Partner'} will join shortly. Please hang tight!` : (connectedPartner?.username || 'Partner')} place="bottom">
                     <div className="relative w-6 h-6 rounded-full overflow-hidden border border-background shrink-0 cursor-pointer">
                       <img src={connectedPartner?.avatarUrl} alt="Partner" className="w-full h-full object-cover" />
+                      {!sessionStarted && (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                           <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
+                        </div>
+                      )}
                     </div>
                   </Tooltip>
                 </div>
 
                 <div className="w-px h-3.5 bg-border mx-1" />
 
-                <div className="flex items-center gap-1.5 bg-accent/30 px-2 py-0.5 rounded-full border border-border-soft text-xs font-mono font-bold text-green-500">
+                <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-border-soft text-xs font-mono font-bold transition-colors ${sessionStarted ? 'bg-accent/30 text-green-500' : 'bg-orange-500/10 text-orange-500 animate-pulse'}`}>
                   <Clock className="w-3 h-3" />
-                  {formatTime(timeLeft)}
+                  {sessionStarted ? formatTime(timeLeft) : "45:00"}
                 </div>
                 
                 <div className="flex items-center gap-1.5 ml-1">
@@ -281,7 +321,7 @@ export const ChallengesWorkSpaceHeader = () => {
                     className="h-7 px-3 text-[11px] font-bold text-destructive hover:text-destructive-foreground hover:bg-destructive rounded-full border border-destructive/30 bg-destructive/10"
                     onClick={handleLeaveSession}
                   >
-                    Leave
+                    {mode === "broadcast" ? "End Session" : "Leave"}
                   </Button>
                 </div>
               </div>

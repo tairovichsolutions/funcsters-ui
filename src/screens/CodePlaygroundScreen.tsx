@@ -18,8 +18,10 @@ import { RunCodeApiResponse } from "@/types/run-code-type";
 import { useAuthModal } from "@/providers/AuthModalsProvider";
 import { useGetUserProfile } from "@/queries/useGetUserProfile";
 import { MonacoCodeEditer } from "@/components/ui/monaco-editor";
+import { usePairingStore, pairingStore } from "@/mock/pairingStore";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { useSearchParams } from "next/navigation";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
 import { SolutionSubmittedModal } from "@/containers/CodePlayground/SolutionSubmittedModal";
 
@@ -103,6 +105,10 @@ export const CodePlaygroundScreen = memo(() => {
   const { data: userData } = useGetUserProfile();
   const isAuthenticated = userData?.data?.authenticated || false;
   const { openModal } = useAuthModal();
+  
+  const searchParams = useSearchParams();
+  const { requestId } = usePairingStore();
+  const isSessionActive = searchParams.get("session") === "active";
 
   useEffect(() => {
     if (!languageId || !challengeId) return;
@@ -260,6 +266,8 @@ export const CodePlaygroundScreen = memo(() => {
                 keyBinding={settings.keyBinding}
                 onSubmitShortcut={handleSubmitCode}
                 autoComplete={settings.autoComplete}
+                pairingSessionId={isSessionActive ? requestId : null}
+                stompClient={isSessionActive ? pairingStore.getClient() : null}
               />
             </div>
           </div>
