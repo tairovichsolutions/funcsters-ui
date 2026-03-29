@@ -156,7 +156,6 @@ export const CodePlaygroundScreen = memo(() => {
       setResults(res.data.data);
     } catch (err: any) {
       setResults(null);
-      toast.error(err?.message || "Something went wrong while running code");
     }
   }, [code, languageId, challengeId, runCode, isAuthenticated, openModal]);
 
@@ -179,7 +178,6 @@ export const CodePlaygroundScreen = memo(() => {
       const res = await submitCode(payload);
 
       if (res?.status !== 200) {
-        toast.error("Something went wrong while submitting");
         return;
       }
 
@@ -200,7 +198,7 @@ export const CodePlaygroundScreen = memo(() => {
       }
     } catch (err: any) {
       console.error(err);
-      toast.error("Unexpected error while submitting");
+      // Removed toast as requested
     }
   }, [
     code,

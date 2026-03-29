@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Assets } from "@/constants/assets";
 import { Logo } from "@/components/ui/logo";
 import { NavigationLinks } from "@/components";
@@ -22,6 +22,9 @@ export const DashboardHeader = () => {
 
   const { data: userData, isLoading } = useGetUserProfile();
   const isAuthenticated = userData?.data?.authenticated || false;
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!action) return;
@@ -59,17 +62,17 @@ export const DashboardHeader = () => {
           <SvgColor src={Assets.Svgs.NotificationIcon} />
         </Button>
 
-        {isLoading ? (
+        {!mounted || isLoading ? (
           <ProfileAvatarSkeleton />
         ) : isAuthenticated ? (
           <ProfileAvatar userData={userData?.data?.user} />
         ) : (
-          <>
+          <div className="flex gap-2">
             <Button onClick={() => openModal("signUp")}>Sign Up</Button>
             <Button onClick={() => openModal("login")} variant={"outline"}>
               Login
             </Button>
-          </>
+          </div>
         )}
       </div>
     </header>

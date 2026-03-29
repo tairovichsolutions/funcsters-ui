@@ -3,7 +3,13 @@
 import * as React from "react";
 import { X } from "lucide-react";
 import { Scrollable } from "@/components";
-import type { Filters } from "@/hooks/useChallengesFilters";
+import type { Filters as BaseFilters } from "@/hooks/useChallengesFilters";
+
+export type Filters = BaseFilters & {
+  country?: string[];
+  language?: string[];
+  spoken?: string[];
+};
 
 interface FilterPillsTypes {
   filters: Filters;
@@ -11,6 +17,9 @@ interface FilterPillsTypes {
     difficulty?: Record<string, string>;
     status?: Record<string, string>;
     tags?: Record<string, string>;
+    country?: Record<string, string>;
+    language?: Record<string, string>;
+    spoken?: Record<string, string>;
   };
   onClearAll: () => void;
   onRemove: (key: keyof Filters, value?: string) => void;
@@ -52,6 +61,33 @@ export const FilterPills = React.memo(
         key: "tags",
         id: t,
         label: `#${label}`,
+      });
+    });
+
+    (filters.country || []).forEach((c) => {
+      const label = labels.country?.[c] ?? c;
+      items.push({
+        key: "country",
+        id: c,
+        label: `Country: ${label}`,
+      });
+    });
+
+    (filters.language || []).forEach((l) => {
+      const label = labels.language?.[l] ?? l;
+      items.push({
+        key: "language",
+        id: l,
+        label: `Lang: ${label}`,
+      });
+    });
+
+    (filters.spoken || []).forEach((s) => {
+      const label = labels.spoken?.[s] ?? s;
+      items.push({
+        key: "spoken",
+        id: s,
+        label: `Spoken: ${label}`,
       });
     });
 

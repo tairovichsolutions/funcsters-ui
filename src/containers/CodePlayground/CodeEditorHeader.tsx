@@ -24,8 +24,6 @@ export const CodeEditorHeader = React.memo(
     handleFormatCode,
     submitCodePending,
   }: CodeEditorHeaderType) => {
-
-
     return (
       <div className="h-full w-full flex justify-between items-center">
         <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -36,7 +34,7 @@ export const CodeEditorHeader = React.memo(
           />
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <Button
             size="icon"
             type="button"
