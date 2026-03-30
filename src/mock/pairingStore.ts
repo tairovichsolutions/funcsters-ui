@@ -57,6 +57,9 @@ class PairingDemoStore extends EventTarget {
     sessionStarted: false,
     // Real tracking variables
     requestId: null as number | null,
+    isConnected: false,
+    connectionError: null as string | null,
+    dataChannel: null as RTCDataChannel | null,
   };
 
   private client: Client | null = null;
@@ -92,20 +95,26 @@ class PairingDemoStore extends EventTarget {
       return;
     }
 
-    let baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
-    // convert https://api.../api to https://api.../ws
-    baseUrl = baseUrl.replace(/\/api$/, "");
-    if (!baseUrl) baseUrl = "http://localhost:8091";
+    let baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8091";
+    // strip everything after /api if present, or just use the base
+    let wsBaseUrl = baseUrl;
+    if (baseUrl.includes("/api")) {
+      wsBaseUrl = baseUrl.split("/api")[0];
+    }
+    
+    const socketUrl = `${wsBaseUrl}/ws`.replace(/([^:]\/)\/+/g, "$1"); // remove double slashes except after protocol
+    console.log("[STOMP] Initializing connection to:", socketUrl);
     
     this.client = new Client({
-      webSocketFactory: () => new SockJS(`${baseUrl}/ws`),
+      webSocketFactory: () => new SockJS(socketUrl),
       connectHeaders: {
         Authorization: `Bearer ${token}`,
       },
-      debug: (str) => console.log("STOMP: " + str),
+      debug: (str) => console.log("[STOMP Debug]: " + str),
       reconnectDelay: 5000,
       onConnect: () => {
-        console.log("Connected to Pairing WebSocket!");
+        console.log("[STOMP] Connected Successfully!");
+        this.setState({ isConnected: true, connectionError: null });
         
         this.offerSub = this.client?.subscribe("/user/queue/pairing/offer", (msg) => {
            if (this._state.mode !== "broadcast") return;
@@ -141,10 +150,25 @@ class PairingDemoStore extends EventTarget {
         
         // Listen to Lobby if we are broadcasting
         this.lobbySubscription = this.client?.subscribe("/topic/lobby", (msg) => {});
+
+        // Re-subscribe to active session topic if rehydrated
+        if (this._state.requestId && this._state.hasPermission) {
+            console.log("Re-subscribing to live session topic", this._state.requestId);
+            this.initSessionSubscription(this._state.requestId);
+        }
       },
       onStompError: (frame) => {
-        console.error("STOMP Error", frame);
+        console.error("[STOMP] Protocol Error", frame);
+        this.setState({ isConnected: false, connectionError: "STOMP protocol error" });
       },
+      onWebSocketError: (event) => {
+        console.error("[STOMP] WebSocket Error", event);
+        this.setState({ isConnected: false, connectionError: "WebSocket connection failed" });
+      },
+      onDisconnect: () => {
+        console.log("[STOMP] Disconnected");
+        this.setState({ isConnected: false });
+      }
     });
     
     this.client.activate();
@@ -158,6 +182,7 @@ class PairingDemoStore extends EventTarget {
       if (this.declinedSub) this.declinedSub.unsubscribe();
       if (this.sessionSub) this.sessionSub.unsubscribe();
       if (this.client) this.client.deactivate();
+      this.setState({ isConnected: false });
     } catch (e) {
       console.warn("Error stopping STOMP client", e);
     }
@@ -170,8 +195,14 @@ class PairingDemoStore extends EventTarget {
   }
 
   private initSessionSubscription(requestId: number) {
+    if (!this.client || !this.client.connected) {
+        console.warn("Cannot subscribe to session: STOMP client not connected");
+        return;
+    }
     if (this.sessionSub) this.sessionSub.unsubscribe();
-    this.sessionSub = this.client?.subscribe(`/topic/session/${requestId}`, (msg) => {
+    
+    console.log("Subscribing to session topic:", `/topic/session/${requestId}`);
+    this.sessionSub = this.client.subscribe(`/topic/session/${requestId}`, (msg) => {
       const payload = JSON.parse(msg.body);
       if (payload.type === "SESSION_ENDED") {
         this.cancelRequest();
@@ -297,6 +328,13 @@ class PairingDemoStore extends EventTarget {
     this.setState({ hasPermission: granted });
   }
 
+  setDataChannel(dc: RTCDataChannel | null) {
+    if (dc) {
+      dc.binaryType = "arraybuffer";
+    }
+    this.setState({ dataChannel: dc });
+  }
+
   async rehydrateActiveRequest() {
     try {
       const res = await apiClient.get("/api/pairing/my-request");
@@ -364,6 +402,7 @@ class PairingDemoStore extends EventTarget {
       hasPermission: false,
       sessionStarted: false,
       requestId: null,
+      dataChannel: null,
     });
   }
 }

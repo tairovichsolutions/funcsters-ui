@@ -107,8 +107,15 @@ export const CodePlaygroundScreen = memo(() => {
   const { openModal } = useAuthModal();
   
   const searchParams = useSearchParams();
-  const { requestId } = usePairingStore();
-  const isSessionActive = searchParams.get("session") === "active";
+  const { requestId, isConnected, dataChannel, mode: pairingMode, hasPermission, sessionStarted } = usePairingStore();
+  // Session is active if EITHER:
+  // 1. URL has ?session=active (joiner navigated here), OR
+  // 2. The store says we have permission (host accepted a partner from sidebar)
+  const isSessionActive = searchParams.get("session") === "active" || (hasPermission && !!requestId);
+
+  useEffect(() => {
+    console.log("[Playground Session Log]", { isSessionActive, requestId, isConnected, hasPermission, sessionStarted, dataChannel: !!dataChannel, pairingMode });
+  }, [isSessionActive, requestId, isConnected, hasPermission, sessionStarted, dataChannel, pairingMode]);
 
   useEffect(() => {
     if (!languageId || !challengeId) return;
@@ -267,7 +274,10 @@ export const CodePlaygroundScreen = memo(() => {
                 onSubmitShortcut={handleSubmitCode}
                 autoComplete={settings.autoComplete}
                 pairingSessionId={isSessionActive ? requestId : null}
-                stompClient={isSessionActive ? pairingStore.getClient() : null}
+                dataChannel={isSessionActive ? dataChannel : null}
+                isConnected={isConnected}
+                userName={userData?.data?.user?.username || userData?.data?.username}
+                pairingMode={isSessionActive ? pairingMode : null}
               />
             </div>
           </div>

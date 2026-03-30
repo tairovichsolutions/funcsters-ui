@@ -104,8 +104,8 @@ export const ChallengesWorkSpaceHeader = () => {
   const [timeLeft, setTimeLeft] = useState(45 * 60);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
   
-  // Wire up the WebRTC voice chat automatically when session activates
-  useAudioCall(hasPermission ? requestId : null, isMuted);
+  // Wire up the WebRTC voice chat + DataChannel automatically when session activates
+  useAudioCall(hasPermission ? requestId : null, isMuted, sessionStarted);
 
   useEffect(() => {
     if (searchParams.get("session") === "active") {

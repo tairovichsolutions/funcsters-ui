@@ -5,7 +5,7 @@ import { cn } from "@/lib";
 import Editor from "@monaco-editor/react";
 import { EditorKeyBinding } from "@/context/EditorSettingsContext";
 import * as Y from "yjs";
-import { Client } from "@stomp/stompjs";
+import * as awarenessProtocols from "y-protocols/awareness";
 
 function useMonacoShortcuts(params: {
   keyBinding: EditorKeyBinding;
@@ -84,13 +84,16 @@ type Props = {
   theme?: "light" | "vs-dark" | "hc-black";
   editorRef?: React.MutableRefObject<any | null>;
   pairingSessionId?: number | string | null;
-  stompClient?: Client | null;
+  dataChannel?: RTCDataChannel | null;
+  isConnected?: boolean;
+  userName?: string;
+  /** "broadcast" = host (seeds initial code), "join" = partner (waits for sync) */
+  pairingMode?: "broadcast" | "join" | null;
 };
 
 const DARK_THEME_NAME = "custom-dark";
 
-export const MonacoCodeEditer = React.memo(
-  ({
+export const MonacoCodeEditer = ({
     value,
     editorRef,
     options,
@@ -107,7 +110,10 @@ export const MonacoCodeEditer = React.memo(
     keyBinding = "vscode",
     language = "javascript",
     pairingSessionId,
-    stompClient,
+    dataChannel,
+    isConnected,
+    userName,
+    pairingMode,
   }: Props) => {
     const internalEditorRef = React.useRef<any | null>(null);
     const monacoRef = React.useRef<any | null>(null);
@@ -141,64 +147,301 @@ export const MonacoCodeEditer = React.memo(
       monaco.editor.setTheme(theme === "vs-dark" ? DARK_THEME_NAME : theme);
     }, [theme]);
 
-    // Handle YJS Real-time Synchronization using STOMP relay
+    const isYjsInitializedRef = React.useRef(false);
+    
+    // Stable YJS doc & awareness — recreated per session to clear lingering states, stale clocks, and old text!
+    const doc = React.useMemo(() => {
+        isYjsInitializedRef.current = false;
+        return new Y.Doc();
+    }, [pairingSessionId]);
+    const awareness = React.useMemo(() => new awarenessProtocols.Awareness(doc), [doc]);
+    // Stable random color per component mount
+    const myColorRef = React.useRef<string | null>(null);
+    if (!myColorRef.current) {
+      const COLORS = ['#FF6B6B', '#51CF66', '#339AF0', '#FCC419', '#CC5DE8', '#22B8CF', '#FF922B'];
+      myColorRef.current = COLORS[Math.floor(Math.random() * COLORS.length)];
+    }
+
+    // Handle YJS Real-time Synchronization using WebRTC DataChannel
     React.useEffect(() => {
-      if (!isMounted || !pairingSessionId || !stompClient || !stompClient.connected) return;
+      if (!isMounted || !pairingSessionId || !dataChannel || !isConnected) {
+         console.log("[YJS] Skipping init — missing deps:", { isMounted, pairingSessionId, hasDC: !!dataChannel, isConnected });
+         return;
+      }
+      
       const editor = internalEditorRef.current;
-      if (!editor) return;
+      if (!editor) {
+        console.log("[YJS] Skipping init — editor not ready");
+        return;
+      }
 
-      let binding: any;
-      let sub: any;
-      const doc = new Y.Doc();
+      console.log("[YJS] Initializing collaboration for session", pairingSessionId, "mode:", pairingMode, "DC state:", dataChannel.readyState);
 
-      const initYjs = async () => {
-        const { MonacoBinding } = await import("y-monaco");
-        const ytext = doc.getText("monaco");
-        
-        binding = new MonacoBinding(
-          ytext,
-          editor.getModel(),
-          new Set([editor]),
-          null
-        );
+      let binding: any = null;
+      let destroyed = false;
+      let heartbeatInterval: NodeJS.Timeout;
+      
+      // Ensure binary mode for DataChannel
+      dataChannel.binaryType = "arraybuffer";
 
-        doc.on("update", (update: Uint8Array, origin: any) => {
-          if (origin !== "stomp") {
-            const message = JSON.stringify(Array.from(update));
-            stompClient.publish({
-              destination: `/app/session/${pairingSessionId}/update`,
-              body: message,
-            });
-          }
-        });
-
-        sub = stompClient.subscribe(`/topic/session/${pairingSessionId}/update`, (msg) => {
-          try {
-            const array = JSON.parse(msg.body);
-            const update = new Uint8Array(array);
-            Y.applyUpdate(doc, update, "stomp");
-          } catch (e) {
-            console.error("YJS update error", e);
-          }
-        });
+      const sendOverChannel = (type: number, payload: Uint8Array) => {
+        if (destroyed) return;
+        if (dataChannel.readyState !== "open") return;
+        const msg = new Uint8Array(payload.length + 1);
+        msg[0] = type;
+        msg.set(payload, 1);
+        try {
+            dataChannel.send(msg);
+        } catch (e) {
+            console.error("[YJS WebRTC] Send error", e);
+        }
       };
 
-      initYjs();
+      // Use addEventListener instead of direct assignment to avoid overwriting
+      const handleDCMessage = async (event: MessageEvent) => {
+        if (destroyed) return;
+        let buffer: ArrayBuffer;
+        if (event.data instanceof Blob) {
+            buffer = await event.data.arrayBuffer();
+        } else if (event.data instanceof ArrayBuffer) {
+            buffer = event.data;
+        } else {
+            console.warn("[YJS WebRTC] Unexpected message data type:", typeof event.data);
+            return;
+        }
+        const data = new Uint8Array(buffer);
+        if (data.length === 0) return;
+        const type = data[0];
+        const payload = data.slice(1);
+        if (type === 0) {
+            Y.applyUpdate(doc, payload, "webrtc");
+        } else if (type === 1) {
+            awarenessProtocols.applyAwarenessUpdate(awareness, payload, "webrtc");
+        }
+      };
+
+      dataChannel.addEventListener("message", handleDCMessage);
+
+      const syncFullState = () => {
+        if (destroyed) return;
+        console.log("[YJS] Syncing full state over DataChannel");
+        const state = Y.encodeStateAsUpdate(doc);
+        sendOverChannel(0, state);
+         
+        const awarenessState = awarenessProtocols.encodeAwarenessUpdate(awareness, [doc.clientID]);
+        sendOverChannel(1, awarenessState);
+      };
+
+      const handleDCOpen = () => {
+        console.log("[YJS] DataChannel opened, syncing state");
+        syncFullState();
+      };
+
+      if (dataChannel.readyState === "open") {
+          // Already open — sync immediately
+          syncFullState();
+      } else {
+          // Wait for it to open
+          dataChannel.addEventListener("open", handleDCOpen);
+      }
+
+      // YJS update handler: broadcast local changes to peer
+      const handleDocUpdate = (update: Uint8Array, origin: any) => {
+        if (origin !== "webrtc") {
+          sendOverChannel(0, update);
+        }
+      };
+
+      // Awareness update handler: broadcast cursor/selection changes to peer
+      const handleAwarenessUpdate = ({ added, updated, removed }: any, origin: string) => {
+        if (origin !== "webrtc") {
+          const changedClients = [...added, ...updated, ...removed];
+          if (changedClients.length === 0) return;
+          const enc = awarenessProtocols.encodeAwarenessUpdate(awareness, changedClients);
+          sendOverChannel(1, enc);
+        }
+      };
+
+      doc.on("update", handleDocUpdate);
+      awareness.on("update", handleAwarenessUpdate);
+
+      // Set awareness user info (color + name)
+      // Extract just the username part if the string contains an email address to save space
+      const displayName = userName && userName.includes('@') ? userName.split('@')[0] : userName;
+      awareness.setLocalStateField('user', {
+        name: displayName || 'User',
+        color: myColorRef.current!,
+      });
+
+      // Setup YJS <-> Monaco binding
+      const setupBinding = async () => {
+        if (destroyed) return;
+        try {
+          const { MonacoBinding } = await import("y-monaco");
+          if (destroyed) return;
+          
+          const ytext = doc.getText("monaco");
+          
+          // CRITICAL: Only the HOST seeds the initial code into the shared YJS document.
+          // The JOINER should wait to receive the synced state from the host.
+          // This prevents both sides inserting the same code independently (causing duplicates).
+          const isHost = pairingMode === "broadcast";
+          if (isHost && !isYjsInitializedRef.current && ytext.toString() === "" && (value || defaultValue)) {
+            console.log("[YJS] Host seeding initial code into shared doc");
+            ytext.insert(0, value || defaultValue || "");
+          }
+          isYjsInitializedRef.current = true;
+
+          const model = editor.getModel();
+          if (model && !destroyed) {
+              binding = new MonacoBinding(ytext, model, new Set([editor]), awareness);
+              console.log("[YJS] MonacoBinding created successfully");
+          }
+        } catch (error) {
+          console.error("[YJS] Initialization error", error);
+        }
+      };
+
+      setupBinding();
+
+      // Heartbeat: periodically sync full state + awareness for resilience
+      heartbeatInterval = setInterval(() => {
+        if (destroyed) return;
+        if (dataChannel.readyState === "open") {
+          const awarenessState = awarenessProtocols.encodeAwarenessUpdate(awareness, [doc.clientID]);
+          sendOverChannel(1, awarenessState);
+          
+          // Full state sync as backup (handles missed messages)
+          const state = Y.encodeStateAsUpdate(doc);
+          sendOverChannel(0, state);
+        }
+      }, 3000); // Slightly more frequent for better sync
 
       return () => {
-        if (binding) binding.destroy();
-        if (sub) sub.unsubscribe();
-        doc.destroy();
+        console.log(`[YJS] Cleaning up session ${pairingSessionId}`);
+        destroyed = true;
+        
+        // Clear our local state from awareness so remaining remote peers update their UI
+        try { awareness.setLocalState(null); } catch (e) {}
+
+        if (binding) {
+          try { 
+            // FIX: y-monaco has a bug in its destroy() method where it fails to flatten 
+            // the decorations map before passing it to Monaco, leaving ghost cursors on the screen indefinitely.
+            // We manually flatten and clear the decorations here first, AND we query the editor 
+            // directly to brute-force wipe any remaining YJS artifacts.
+            const model = internalEditorRef.current?.getModel?.();
+            if (model) {
+              const decoIds: string[] = [];
+              if (binding.decorations) {
+                for (const ids of binding.decorations.values()) {
+                  decoIds.push(...(Array.isArray(ids) ? ids : [ids]));
+                }
+              }
+              // Brute force backup: query active decorations and destroy any yRemoteSelection
+              const allDecorations = model.getAllDecorations();
+              for (const deco of allDecorations) {
+                 if (deco.options.className?.includes('yRemoteSelection')) {
+                     decoIds.push(deco.id);
+                 }
+              }
+              internalEditorRef.current?.deltaDecorations(decoIds, []);
+            }
+            binding.destroy(); 
+          } catch (e) { 
+            console.error("[YJS] Error clearing decorations", e);
+          }
+        }
+        if (heartbeatInterval) clearInterval(heartbeatInterval);
+        doc.off("update", handleDocUpdate);
+        awareness.off("update", handleAwarenessUpdate);
+        dataChannel.removeEventListener("message", handleDCMessage);
+        dataChannel.removeEventListener("open", handleDCOpen);
       };
-    }, [isMounted, pairingSessionId, stompClient, stompClient?.connected]);
+    // NOTE: `language` is intentionally excluded — changing language should NOT
+    // re-initialize the YJS binding (it destroys shared state).
+    // `value` and `defaultValue` are also excluded — they only matter for initial seeding.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isMounted, pairingSessionId, dataChannel, isConnected, doc, awareness, userName, pairingMode]);
+
+    // Inject dynamic CSS for remote cursors based on awareness state
+    React.useEffect(() => {
+      const styleId = 'yjs-cursor-styles';
+      let styleEl = document.getElementById(styleId);
+      if (!styleEl) {
+        styleEl = document.createElement('style');
+        styleEl.id = styleId;
+        document.head.appendChild(styleEl);
+      }
+
+      const updateStyles = () => {
+        const states = awareness.getStates();
+        let css = `
+          /* Base styles for all remote cursor labels */
+          .yRemoteSelectionHead::before {
+            position: absolute;
+            top: -1.4em;
+            left: -2px;
+            padding: 1px 6px;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1.4;
+            border-radius: 3px 3px 3px 0;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 100;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+          }
+          .yRemoteSelectionHead::after {
+            position: absolute;
+            top: 0;
+            left: -2px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100;
+          }
+          .yRemoteSelectionHead {
+            position: relative;
+          }
+        `;
+        states.forEach((state: any, clientId: number) => {
+          if (clientId !== doc.clientID && state.user) {
+            const { color, name } = state.user;
+            // Escape name for CSS content
+            const escapedName = (name || 'User').replace(/"/g, '\\"');
+            css += `
+              .yRemoteSelection-${clientId} { background-color: ${color}33 !important; }
+              .yRemoteSelectionHead-${clientId} { border-left: 2px solid ${color} !important; position: relative; }
+              .yRemoteSelectionHead-${clientId}::after { background-color: ${color}; border-radius: 50%; width: 6px; height: 6px; }
+              .yRemoteSelectionHead-${clientId}::before { 
+                background-color: ${color}; 
+                color: #fff;
+                content: "${escapedName}";
+              }
+            `;
+          }
+        });
+        styleEl!.textContent = css;
+      };
+
+      awareness.on('change', updateStyles);
+      updateStyles();
+
+      return () => {
+        awareness.off('change', updateStyles);
+        if (styleEl) styleEl.textContent = '';
+      };
+    }, [awareness, doc.clientID]);
 
     return (
       <div className={cn("h-full w-full", className)}>
         <Editor
           height="100%"
           language={language}
-          value={value}
-          defaultValue={defaultValue}
+          value={pairingSessionId ? undefined : value}
+          defaultValue={pairingSessionId ? value || defaultValue : defaultValue}
           onChange={(v) => onChange?.(v || "")}
           theme={theme === "vs-dark" ? DARK_THEME_NAME : theme}
           options={{
@@ -227,6 +470,7 @@ export const MonacoCodeEditer = React.memo(
             ...options,
           }}
           onMount={(editor, monaco) => {
+            console.log("Monaco editor mounted");
             internalEditorRef.current = editor;
             monacoRef.current = monaco;
 
@@ -246,11 +490,10 @@ export const MonacoCodeEditer = React.memo(
             monaco.editor.setTheme(
               theme === "vs-dark" ? DARK_THEME_NAME : theme,
             );
-            
+
             setIsMounted(true);
           }}
         />
       </div>
     );
-  },
-);
+  };
