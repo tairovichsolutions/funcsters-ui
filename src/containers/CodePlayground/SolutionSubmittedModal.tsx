@@ -30,14 +30,11 @@ export const SolutionSubmittedModal = ({
 
   // 3. The combined handleShare function
 const handleFacebookShare = () => {
-  const url = encodeURIComponent("https://your-site.com/challenge");
-  const quote = encodeURIComponent(
-    "🎉 I just solved a challenge and earned XP! 🚀"
-  );
+  const url = encodeURIComponent("https://funcsters-ui.vercel.app/challenges/palindrome-string/detail");
+  const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
 
-  const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${quote}`;
-
-  window.open(shareUrl, "_blank", "width=600,height=400");
+  // Open in a new tab
+  window.open(shareUrl, "_blank");
 };
 
   const shareIcons = [

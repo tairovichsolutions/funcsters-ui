@@ -26,7 +26,7 @@ export const TestResultsPanel = React.memo(({ results }: any) => {
   const TestResultsPanelData = results?.testRunSummary;
   const compileOutputData = results;
   return (
-    <section className="w-full h-full  border border-border-soft rounded-lg overflow-hidden bg-background dark:bg-[#00010f]">
+    <section className="w-full h-full  border border-border-soft rounded-lg overflow-hidden bg-background ">
       <Tabs defaultValue="results" className=" w-full h-full  flex flex-col">
         <div className="flex items-center justify-between border-b border-border-soft px-1 py-2">
           <TabsList className="bg-transparent p-0 gap-1">

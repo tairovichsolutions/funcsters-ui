@@ -128,7 +128,7 @@ export const MonacoCodeEditer = React.memo(
         base: "vs-dark",
         inherit: true,
         rules: [],
-        colors: { "editor.background": "#00010f" },
+        colors: { "editor.background": "#0D1A26" },
       });
 
       monaco.editor.setTheme(theme === "vs-dark" ? DARK_THEME_NAME : theme);
@@ -181,7 +181,7 @@ export const MonacoCodeEditer = React.memo(
               inherit: true,
               rules: [],
               colors: {
-                "editor.background": "#00010f",  
+                "editor.background": "#0D1A26",  
               },
             });
 
