@@ -20,7 +20,7 @@ export default async function Landing() {
   const token = cookieStore.get("accessToken")?.value;
   const userId = cookieStore.get("userId")?.value;
 
-  if (token && userId) redirect("/challenges");
+  // if (token && userId) redirect("/challenges");
   const logos = Assets.Images.sponsoredIcons || [];
   const tutorItems = logos.map((path, index) => ({
     src: path,
