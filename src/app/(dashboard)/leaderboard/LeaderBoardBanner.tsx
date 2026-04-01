@@ -3,6 +3,7 @@ import BrainNodeSvg from '../../../../public/svgs/leaderBoard/BrainNodeSvg';
 import FlameIcon from '../../../../public/svgs/leaderBoard/FlameIcon';
 import LightningIcon from '../../../../public/svgs/leaderBoard/LightningIcon';
 import AnimatedProgressBar from './AnimatedProgressBar';
+import SecondaryContainer from '@/components/shared/container/SecondaryContainer';
 
 
 // --- Types ---
@@ -68,7 +69,7 @@ export default function LeaderboardBanner() {
 
 
   return (
-    <>
+    <SecondaryContainer>
       <div className="w-full  mx-auto p-3 py-4 sm:py-0  sm:p-4 md:p-6   bg-blue-base rounded-xl  shadow-lg select-none">
 
 
@@ -111,7 +112,7 @@ export default function LeaderboardBanner() {
           </div>
 
           {/* Right: Stats Array Mapping */}
-          <div className="flex gap-3 w-full  md:w-auto overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
+          <div className="flex justify-center items-center gap-3 w-full  md:w-auto overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
             {dashboardData.stats.map((stat) => (
               <div
                 key={stat.id}
@@ -145,6 +146,6 @@ export default function LeaderboardBanner() {
         />
 
       </div>
-    </>
+    </SecondaryContainer>
   );
 }
