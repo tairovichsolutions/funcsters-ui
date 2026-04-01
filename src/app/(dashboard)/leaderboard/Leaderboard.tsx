@@ -210,7 +210,7 @@ export default function Leaderboard() {
                                 >
                                     <div className="flex items-center gap-2">
                                         <GlobeIcon />
-                                        <span className="truncate max-w-[100px]">{country}</span>
+                                        <span className="truncate max-w-[100px] dark:text-black">{country}</span>
                                     </div>
                                     <span className={`text-neutral-05 text-xs transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}><ChevronDown size={24} /></span>
                                 </button>
@@ -364,7 +364,7 @@ export default function Leaderboard() {
                 {!isLoading && currentUser && (
                     <button
                         onClick={scrollToUser}
-                        className="fixed bottom-5 right-8 md:right-[calc((100vw-768px)/2+20px)] lg:right-[calc((100vw-1024px)/2+90px)] xl:right-[calc((100vw-1280px)/2+100px)] 2xl:right-[calc((100vw-1536px)/2+230px)] z-50 group hover:scale-110 transition-transform duration-300 drop-shadow-[0_8px_16px_rgba(59,130,246,0.4)] cursor-pointer"
+                        className="fixed bottom-24  md:bottom-1  right-8 md:right-[calc((100vw-768px)/2+20px)] lg:right-[calc((100vw-1024px)/2+90px)] xl:right-[calc((100vw-1280px)/2+100px)] 2xl:right-[calc((100vw-1536px)/2+230px)] z-50 group hover:scale-110 transition-transform duration-300 drop-shadow-[0_8px_16px_rgba(59,130,246,0.4)] cursor-pointer"
                         title="Scroll to your rank"
                     >
 
