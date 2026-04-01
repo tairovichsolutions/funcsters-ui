@@ -50,12 +50,11 @@ export const ChallengesScreenV2: React.FC = () => {
   }, [data]);
 
 
-  const expandedChallenges = allChallenges.map(challenge => ({
+const expandedChallenges = allChallenges.map(challenge => ({
   ...challenge,
-  // This takes existing tags and adds generic ones until the length is 10
   tags: [
-    ...challenge.tags,
-    ...Array(Math.max(0, 5 - challenge.tags.length))
+    ...(challenge.tags ?? []), // Fallback to empty array if undefined
+    ...Array(Math.max(0, 5 - (challenge.tags?.length ?? 0))) // Safely check length too
       .fill(null)
       .map((_, i) => `Extra Tag ${i + 1}`)
   ]

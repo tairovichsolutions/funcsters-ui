@@ -1,19 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import GamificationBanner from "./LeaderBoardBanner";
-import LeaderboardBanner from "./LeaderBoardBanner";
 import SecondaryContainer from "@/components/shared/container/SecondaryContainer";
-import FlameIcon from "../../../../public/svgs/leaderBoard/FlameIcon";
+import { useEffect, useRef, useState } from "react";
 import FlameIconV2 from "../../../../public/svgs/leaderBoard/FlameIconV2";
 
-import SilverMedalIcon from "../../../../public/svgs/leaderBoard/SilverMedalIcon";
-import BronzeMedalIcon from "../../../../public/svgs/leaderBoard/BronzeMedalIcon";
-import MedalIcon from "../../../../public/svgs/leaderBoard/MedalIcon";
-import GlobeIcon from "../../../../public/svgs/leaderBoard/GlobeIcon";
 import { ChevronDown } from "lucide-react";
+import BronzeMedalIcon from "../../../../public/svgs/leaderBoard/BronzeMedalIcon";
+import GlobeIcon from "../../../../public/svgs/leaderBoard/GlobeIcon";
 import HexagonRankIcon from "../../../../public/svgs/leaderBoard/HexagonRankIcon";
+import MedalIcon from "../../../../public/svgs/leaderBoard/MedalIcon";
+import SilverMedalIcon from "../../../../public/svgs/leaderBoard/SilverMedalIcon";
 import { LanguageBadge } from "./LanguageBadge";
 
 // --- Types ---
@@ -34,7 +31,7 @@ interface UserData {
 }
 
 // --- Base Dummy Data ---
-const BASE_DATA: UserData[] = [
+const BASE_DATA = [
     { id: "1", rank: 1, name: "Jane Cooper", challengesSolved: 187, languages: ["python", "js"], streak: 28, longestStreak: 45, xp: 1000000, xpGained: 520 },
     { id: "2", rank: 2, name: "Wade Warren", challengesSolved: 165, languages: ["python", "js"], streak: 27, longestStreak: 45, xp: 485, xpGained: 485 },
     { id: "3", rank: 3, name: "Jerome Bell", challengesSolved: 152, languages: ["python", "js"], streak: 26, longestStreak: 45, xp: 450, xpGained: 450 },
@@ -112,7 +109,8 @@ const fetchLeaderboardData = async (time: TimePeriod, country: string): Promise<
             // Re-calculate ranks based on the new mutated array
             filtered = filtered.sort((a, b) => b.xp - a.xp).map((u, index) => ({ ...u, rank: index + 1 }));
 
-            resolve(filtered);
+            // Change line 112 to:
+            resolve(filtered as UserData[]);
         }, 600);
     });
 };
@@ -177,13 +175,13 @@ export default function Leaderboard() {
             <div className=" bg-dashboard-background  text-[0F172A] relative py-10">
                 <div className=" mx-auto    overflow-hidden ">
 
-                    {/* --- Header & Filters --- */}
+
 
                     <div className="p-6  bg-white rounded-2xl  ">
                         <span className="text-sm font-semibold text-[#0F172A] ">Time Period</span>
                         <div className=" mt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
 
-                            {/* Time Period Filter */}
+
 
                             <div className="flex flex-col gap-2">
                                 <div className="flex  gap-2 md:gap-3  rounded-lg">
@@ -203,7 +201,7 @@ export default function Leaderboard() {
                                 </div>
                             </div>
 
-                            {/* Country Dropdown Filter */}
+
                             <div className="relative mt-6 sm:mt-0" ref={dropdownRef}>
                                 <button
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -217,7 +215,7 @@ export default function Leaderboard() {
                                     <span className={`text-neutral-05 text-xs transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}><ChevronDown size={24} /></span>
                                 </button>
 
-                                {/* Dropdown Menu */}
+
                                 {isDropdownOpen && (
                                     <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg py-1 z-50">
                                         {COUNTRIES.map((c) => (
@@ -239,7 +237,7 @@ export default function Leaderboard() {
                         </div>
                     </div>
 
-                    {/* --- Table --- */}
+
                     <div className="overflow-x-auto bg-white border border-[#EFF0F3] rounded-2xl mt-6">
                         <table className="w-full text-left border-collapse whitespace-nowrap">
                             <thead className="bg-[#F8F9FB] ">
@@ -278,7 +276,7 @@ export default function Leaderboard() {
                                             className={`hover:bg-gray-100 cursor-pointer transition-colors duration-300 group ${user.isCurrentUser ? "bg-blue-base/5" : ""
                                                 }`}
                                         >
-                                            {/* Rank */}
+
                                             <td className="py-4 px-6">
                                                 {user.rank === 1 ? <span className="text-2xl" title="1st"><MedalIcon /></span> :
                                                     user.rank === 2 ? <span className="text-2xl" title="2nd"><SilverMedalIcon /></span> :
@@ -286,7 +284,7 @@ export default function Leaderboard() {
                                                             <span className="text-[#475569]   text-lg">#{user.rank}</span>}
                                             </td>
 
-                                            {/* User Info */}
+
                                             <td className="py-4 px-6 flex items-center gap-2">
                                                 <img
                                                     src={`https://i.pravatar.cc/150?u=${user.id}`}
@@ -310,16 +308,15 @@ export default function Leaderboard() {
                                                 </div>
                                             </td>
 
-                                            {/* Languages */}
+
                                             <td className="py-4 px-6">
                                                 <div className="flex gap-1.5">
-                                                  {user.languages.map((lang, index) => (
-                                                            <LanguageBadge key={index} name={lang} className="w-6 h-6 rounded  transition-transform" />
-                                                        ))}
+                                                    {user.languages.map((lang, index) => (
+                                                        <LanguageBadge key={index} name={lang} className="w-6 h-6 rounded  transition-transform" />
+                                                    ))}
                                                 </div>
                                             </td>
 
-                                            {/* Streak */}
                                             <td className="py-4 px-6">
                                                 <div className="flex  items-center gap-2 ">
                                                     <FlameIconV2 />
@@ -334,7 +331,7 @@ export default function Leaderboard() {
                                                 </div>
                                             </td>
 
-                                            {/* XP */}
+
                                             <td className="py-4 px-6 text-right">
                                                 <div className="flex flex-col items-end">
                                                     <span className="font-bold text-[#2563EB] text-base">
@@ -363,14 +360,14 @@ export default function Leaderboard() {
                 </div>
 
 
-                
+
                 {!isLoading && currentUser && (
                     <button
                         onClick={scrollToUser}
                         className="fixed bottom-5 right-8 md:right-[calc((100vw-768px)/2+20px)] lg:right-[calc((100vw-1024px)/2+90px)] xl:right-[calc((100vw-1280px)/2+100px)] 2xl:right-[calc((100vw-1536px)/2+230px)] z-50 group hover:scale-110 transition-transform duration-300 drop-shadow-[0_8px_16px_rgba(59,130,246,0.4)] cursor-pointer"
                         title="Scroll to your rank"
                     >
-                        {/* Outer White Hexagon */}
+
 
 
                         <HexagonRankIcon
