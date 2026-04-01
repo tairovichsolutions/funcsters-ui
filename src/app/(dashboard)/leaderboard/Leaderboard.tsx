@@ -14,6 +14,7 @@ import MedalIcon from "../../../../public/svgs/leaderBoard/MedalIcon";
 import GlobeIcon from "../../../../public/svgs/leaderBoard/GlobeIcon";
 import { ChevronDown } from "lucide-react";
 import HexagonRankIcon from "../../../../public/svgs/leaderBoard/HexagonRankIcon";
+import { LanguageBadge } from "./LanguageBadge";
 
 // --- Types ---
 type Language = "python" | "js";
@@ -312,12 +313,9 @@ export default function Leaderboard() {
                                             {/* Languages */}
                                             <td className="py-4 px-6">
                                                 <div className="flex gap-1.5">
-                                                    {user.languages.includes("python") && (
-                                                        <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded flex items-center justify-center text-[10px] font-bold">Py</div>
-                                                    )}
-                                                    {user.languages.includes("js") && (
-                                                        <div className="w-6 h-6 bg-yellow-100 text-yellow-600 rounded flex items-center justify-center text-[10px] font-bold">JS</div>
-                                                    )}
+                                                  {user.languages.map((lang, index) => (
+                                                            <LanguageBadge key={index} name={lang} className="w-6 h-6 rounded  transition-transform" />
+                                                        ))}
                                                 </div>
                                             </td>
 
@@ -365,7 +363,7 @@ export default function Leaderboard() {
                 </div>
 
 
-                {/* --- Floating Action Button (FAB) --- */}
+                
                 {!isLoading && currentUser && (
                     <button
                         onClick={scrollToUser}
@@ -375,10 +373,10 @@ export default function Leaderboard() {
                         {/* Outer White Hexagon */}
 
 
-<HexagonRankIcon
-        value={currentUser?.rank || '0'} 
-        className="w-[105px] h-[105px] md:w-28 md:h-28 group hover:scale-[1.02] transition-transform duration-300" 
-      />
+                        <HexagonRankIcon
+                            value={currentUser?.rank || '0'}
+                            className="w-[105px] h-[105px] md:w-28 md:h-28 group hover:scale-[1.02] transition-transform duration-300"
+                        />
 
 
 
