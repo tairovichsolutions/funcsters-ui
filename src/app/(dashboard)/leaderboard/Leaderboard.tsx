@@ -367,15 +367,27 @@ export default function Leaderboard() {
                 {!isLoading && currentUser && (
                     <button
                         onClick={scrollToUser}
-                        className="fixed bottom-8 right-8 xl:right-28 z-50 flex items-center justify-center w-14 h-14 bg-blue-500 text-white rounded-full shadow-[0_8px_16px_rgba(59,130,246,0.4)] hover:bg-blue-600 hover:-translate-y-1 transition-all duration-200 group"
+                        className="fixed bottom-8 right-8 md:right-[calc((100vw-768px)/2+50px)] lg:right-[calc((100vw-1024px)/2+110px)] xl:right-[calc((100vw-1280px)/2+130px)] 2xl:right-[calc((100vw-1536px)/2+250px)] z-50 group hover:scale-110 transition-transform duration-300 drop-shadow-[0_8px_16px_rgba(59,130,246,0.4)] cursor-pointer"
                         title="Scroll to your rank"
                     >
-                        <div className="absolute inset-0 bg-blue-500 clip-hexagon -z-10 shadow-lg"></div>
-                        <span className="font-bold text-sm leading-none flex flex-col items-center">
-                            <span>#{currentUser.rank}</span>
-                        </span>
+                        {/* Outer White Hexagon */}
+                        <div
+                            className="w-14 h-14 md:w-16 md:h-16 bg-white flex items-center justify-center shadow-sm"
+                            style={{ clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }}
+                        >
+                            {/* Inner Colored Hexagon */}
+                            <div
+                                className="w-[44px] h-[44px] md:w-[52px] md:h-[52px] flex items-center justify-center bg-blue-500 group-hover:bg-blue-600 transition-colors duration-200 text-white"
+                                style={{ clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }}
+                            >
+                                <span className="font-bold text-sm md:text-base leading-none flex flex-col items-center gap-0.5">
+                                    <span>#{currentUser.rank}</span>
+                                </span>
+                            </div>
+                        </div>
                     </button>
                 )}
+
 
                 <style dangerouslySetInnerHTML={{
                     __html: `
