@@ -2,6 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import GamificationBanner from "./LeaderBoardBanner";
+import LeaderboardBanner from "./LeaderBoardBanner";
+import SecondaryContainer from "@/components/shared/container/SecondaryContainer";
 
 // --- Types ---
 type Language = "python" | "js";
@@ -160,10 +162,10 @@ export default function Leaderboard() {
   };
 
   return (
-    <>
-      <GamificationBanner />
-      <div className="min-h-screen bg-gray-50  text-gray-800 relative py-10">
-        <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden min-h-[600px]">
+    <SecondaryContainer>
+      <LeaderboardBanner />
+      <div className=" bg-dashboard-background  text-gray-800 relative py-10">
+        <div className=" mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden min-h-[600px]">
 
           {/* --- Header & Filters --- */}
           <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
@@ -367,6 +369,6 @@ export default function Leaderboard() {
         }
       `}} />
       </div>
-    </>
+    </SecondaryContainer>
   );
 }

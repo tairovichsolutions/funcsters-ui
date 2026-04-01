@@ -93,6 +93,8 @@
 
 
 @theme {
+
+  --color-blue-base: #0084FF;
   --color-neutral-01: #00010F;
   --color-neutral-03: #0d1a26;
   --color-neutral-04: #070707;
