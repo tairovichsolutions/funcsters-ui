@@ -30,7 +30,7 @@ export const ChallengeCardView = ({
     >
       <div className=" space-y-2">
         <div className=" flex gap-1  justify-between items-center">
-          <h1 className=" font-semibold text-xs lg:text-[13px] line-clamp-1">
+          <h1 className="text-[#0F172A] font-semibold text-xs lg:text-[13px] line-clamp-1">
             {title}
           </h1>
           <DifficultyChip className="text-[10px] px-4 py-[5px] mb-1" level={difficulty} />
@@ -47,11 +47,13 @@ export const ChallengeCardView = ({
         </div>
 
         {userProgress && (
-          <StatusChip
+       <div className="mt-1">
+           <StatusChip
             withText={false}
             className="shrink-0"
             status={userProgress}
           />
+       </div>
         )}
       </div>
     </div>
