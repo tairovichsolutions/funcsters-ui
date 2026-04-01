@@ -77,7 +77,7 @@ export const ChallengesFiltersBarV2 = React.memo(
                 <div className="border rounded-2xl ">
                     <div className="flex   flex-col justify-between items-center ">
 
-                        <div className="bg-white p-4 rounded-t-2xl border-[#EFF0F3] w-full">
+                        <div className="bg-white dark:bg-transparent p-4 rounded-t-2xl border-[#EFF0F3] dark:border-gray-800 w-full">
                             <Input
                                 placeholder="Search challenges..."
                                 inputClass="bg-[#F5F6F8]!  dark:bg-[#FFFFFF0D]! border-searchInputBorder! px-3! lg:w-full  w-full"
@@ -92,11 +92,11 @@ export const ChallengesFiltersBarV2 = React.memo(
                         </div>
 
 
-                        <div className="flex flex-wrap  rounded-b-2xl border border-[#EFF0F3] py-2 p-4  justify-between lg:flex-nowrap  items-center gap-2 w-full">
+                        <div className="flex flex-wrap  rounded-b-2xl border border-[#EFF0F3] dark:border-gray-800 py-2 p-4  justify-between lg:flex-nowrap  items-center gap-2 w-full">
                             <div className="flex flex-wrap justify-between lg:flex-nowrap items-center gap-2 w-full">
-                                <div className="flex items-center rounded-none">
+                                <div className="flex items-center rounded-none gap-2">
                                     <TagSelector
-                                        className="rounded-none px-0! w-max border-0 justify-start bg-transparent! dark:bg-[#FFFFFF0D]!"
+                                        className="rounded-none px-0! w-max border-0 justify-start bg-transparent! !"
                                         label="Difficulty"
                                         tags={Difficulty as any}
                                         value={filters.difficulty}
@@ -107,7 +107,7 @@ export const ChallengesFiltersBarV2 = React.memo(
                                     <div className="h-6 w-[1px] bg-gray-300 dark:bg-white/20" />
 
                                     <TagSelector
-                                        className="rounded-none w-max border-0 justify-start bg-transparent! dark:bg-[#FFFFFF0D]!"
+                                        className="rounded-none  px-0! w-max border-0 justify-start bg-transparent! !"
                                         label="Tags"
                                         tags={tagOptions}
                                         value={filters.tags}
@@ -117,9 +117,9 @@ export const ChallengesFiltersBarV2 = React.memo(
                                     {isAuthenticated && (
                                         <>
                                             {/* Line 2: Only visible if Status is also visible */}
-                                            <div className="h-6 w-[1px] bg-gray-300 dark:bg-white/20" />
+                                            <div className="h-6 w-[1px]  px-0! bg-gray-300 dark:bg-white/20" />
                                             <TagSelector
-                                                className="rounded-none w-max border-0 justify-start bg-transparent! dark:bg-[#FFFFFF0D]!"
+                                                className="rounded-none w-max border-0 justify-start bg-transparent! !"
                                                 label="Status"
                                                 tags={Status as any}
                                                 value={filters.status}

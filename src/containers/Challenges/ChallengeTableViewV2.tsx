@@ -38,10 +38,10 @@ export const ChallengeTableViewV2: React.FC<ChallengeTableViewProps> = ({
             [&_th:last-child]:rounded-r-lg " 
           >
             {/* 3. Added explicit min-w to all headers to lock their sizes */}
-            <TableHead className="w-[280px] min-w-[280px] text-[#212121]!">Title</TableHead>
-            <TableHead className="min-w-[250px] text-[#212121]!">Summary</TableHead>
-            <TableHead className="w-[120px] min-w-[120px] text-[#212121]!">Difficulty</TableHead>
-            <TableHead className="w-[100px] min-w-[100px] text-[#212121]! align-end"><div className=" text-end">
+            <TableHead className="w-[280px] min-w-[280px] text-[#212121]! dark:text-white!">Title</TableHead>
+            <TableHead className="min-w-[250px] text-[#212121]! dark:text-white!">Summary</TableHead>
+            <TableHead className="w-[120px] min-w-[120px] text-[#212121]! dark:text-white!">Difficulty</TableHead>
+            <TableHead className="w-[100px] min-w-[100px] text-[#212121]! dark:text-white! align-end"><div className=" text-end">
                 
                 Status</div></TableHead>
           </TableRow>
