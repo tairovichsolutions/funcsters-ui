@@ -11,6 +11,8 @@ import FlameIconV2 from "../../../../public/svgs/leaderBoard/FlameIconV2";
 import SilverMedalIcon from "../../../../public/svgs/leaderBoard/SilverMedalIcon";
 import BronzeMedalIcon from "../../../../public/svgs/leaderBoard/BronzeMedalIcon";
 import MedalIcon from "../../../../public/svgs/leaderBoard/MedalIcon";
+import GlobeIcon from "../../../../public/svgs/leaderBoard/GlobeIcon";
+import { ChevronDown } from "lucide-react";
 
 // --- Types ---
 type Language = "python" | "js";
@@ -207,10 +209,10 @@ export default function Leaderboard() {
                                     className="flex  px-4 py-3  items-center gap-2 bg-gray-50 hover:bg-gray-100 border border-gray-200  rounded-lg text-sm font-medium transition-colors disabled:opacity-50 min-w-[160px] justify-between"
                                 >
                                     <div className="flex items-center gap-2">
-                                        <span>🌍</span>
+                                        <GlobeIcon />
                                         <span className="truncate max-w-[100px]">{country}</span>
                                     </div>
-                                    <span className={`text-gray-400 text-xs transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}>▼</span>
+                                    <span className={`text-neutral-05 text-xs transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}><ChevronDown size={24} /></span>
                                 </button>
 
                                 {/* Dropdown Menu */}
