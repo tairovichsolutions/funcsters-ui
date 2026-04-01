@@ -183,8 +183,8 @@ export default function Leaderboard() {
 
 
 
-                            <div className="flex flex-col gap-2">
-                                <div className="flex  gap-2 md:gap-3  rounded-lg">
+                            <div className="flex  gap-2  w-full sm:w-max">
+                                <div className="flex  justify-between  w-full sm:w-max gap-2 md:gap-3  rounded-lg">
                                     {["Weekly", "Monthly", "All Time"].map((period) => (
                                         <button
                                             key={period}
@@ -202,11 +202,11 @@ export default function Leaderboard() {
                             </div>
 
 
-                            <div className="relative mt-6 sm:mt-0" ref={dropdownRef}>
+                            <div className="relative w-full sm:w-max    sm:mt-0" ref={dropdownRef}>
                                 <button
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                     // disabled={isLoading}
-                                    className="flex  px-4 py-3  items-center gap-2 bg-gray-50 hover:bg-gray-100 border border-gray-200  rounded-lg text-sm font-medium transition-colors disabled:opacity-50 min-w-[160px] justify-between"
+                                    className="flex w-full sm:w-max    px-4 py-3  items-center gap-2  hover:bg-gray-100 border border-gray-200  rounded-lg text-sm font-medium transition-colors disabled:opacity-50 min-w-[160px] justify-between"
                                 >
                                     <div className="flex items-center gap-2">
                                         <GlobeIcon />
