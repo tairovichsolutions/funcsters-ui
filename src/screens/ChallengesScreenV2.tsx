@@ -68,10 +68,10 @@ export const ChallengesScreenV2: React.FC = () => {
         username={userData?.data?.user?.username}
       /> */}
 
-      <MatricsAndActivityChart
+      {/* <MatricsAndActivityChart
         profileLoading={profileLoading}
         isAuthenticated={isAuthenticated}
-      />
+      /> */}
 
 
 
