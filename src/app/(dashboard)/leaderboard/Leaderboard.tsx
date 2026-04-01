@@ -5,6 +5,12 @@ import React, { useState, useRef, useEffect } from "react";
 import GamificationBanner from "./LeaderBoardBanner";
 import LeaderboardBanner from "./LeaderBoardBanner";
 import SecondaryContainer from "@/components/shared/container/SecondaryContainer";
+import FlameIcon from "../../../../public/svgs/leaderBoard/FlameIcon";
+import FlameIconV2 from "../../../../public/svgs/leaderBoard/FlameIconV2";
+
+import SilverMedalIcon from "../../../../public/svgs/leaderBoard/SilverMedalIcon";
+import BronzeMedalIcon from "../../../../public/svgs/leaderBoard/BronzeMedalIcon";
+import MedalIcon from "../../../../public/svgs/leaderBoard/MedalIcon";
 
 // --- Types ---
 type Language = "python" | "js";
@@ -155,9 +161,9 @@ export default function Leaderboard() {
                 block: "center",
             });
             // Flash effect to highlight the row
-            currentUserRef.current.classList.add("bg-blue-100");
+            currentUserRef.current.classList.add("active");
             setTimeout(() => {
-                currentUserRef.current?.classList.remove("bg-blue-100");
+                currentUserRef.current?.classList.remove("active");
             }, 2000);
         }
     };
@@ -165,11 +171,11 @@ export default function Leaderboard() {
     return (
         <SecondaryContainer>
             <div className=" bg-dashboard-background  text-[0F172A] relative py-10">
-                <div className=" mx-auto  shadow-sm  overflow-hidden ">
+                <div className=" mx-auto    overflow-hidden ">
 
                     {/* --- Header & Filters --- */}
 
-                    <div className="p-6 border-b bg-white rounded-2xl border-gray-100 ">
+                    <div className="p-6  bg-white rounded-2xl  ">
                         <span className="text-sm font-semibold text-[#0F172A] ">Time Period</span>
                         <div className=" mt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
 
@@ -183,7 +189,7 @@ export default function Leaderboard() {
                                             // disabled={isLoading}
                                             onClick={() => setTimePeriod(period as TimePeriod)}
                                             className={`px-4 py-3  text-sm font-medium rounded-md transition-all disabled:opacity-50 ${timePeriod === period
-                                                ? "bg-blue-500 text-white shadow-sm"
+                                                ? "bg-blue-base text-white shadow-sm"
                                                 : "text-[#0F172A]  bg-[#F4F5F8] hover:text-gray-700 hover:bg-gray-200/50"
                                                 }`}
                                         >
@@ -230,10 +236,10 @@ export default function Leaderboard() {
                     </div>
 
                     {/* --- Table --- */}
-                    <div className="overflow-x-auto bg-white rounded-2xl mt-6">
+                    <div className="overflow-x-auto bg-white border border-[#EFF0F3] rounded-2xl mt-6">
                         <table className="w-full text-left border-collapse whitespace-nowrap">
-                            <thead>
-                                <tr className="border-b border-gray-100 text-gray-400 text-sm font-medium">
+                            <thead className="bg-[#F8F9FB] ">
+                                <tr className="border-b border-gray-100 text-[#303030] text-sm font-medium">
                                     <th className="py-4 px-6 w-24">Rank</th>
                                     <th className="py-4 px-6 w-48 ">User</th>
                                     <th className="py-4 px-6 w-48 min-w-[250px]">Languages</th>
@@ -241,7 +247,7 @@ export default function Leaderboard() {
                                     <th className="py-4 px-6 text-right w-32">XP</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-50">
+                            <tbody className="divide-y divide-[#EFF0F3]">
                                 {isLoading ? (
                                     // Skeleton Loader State
                                     Array.from({ length: 8 }).map((_, i) => (
@@ -265,19 +271,19 @@ export default function Leaderboard() {
                                         <tr
                                             key={user.id}
                                             ref={user.isCurrentUser ? currentUserRef : null}
-                                            className={`hover:bg-gray-100 cursor-pointer transition-colors duration-300 group ${user.isCurrentUser ? "bg-blue-50/30" : ""
+                                            className={`hover:bg-gray-100 cursor-pointer transition-colors duration-300 group ${user.isCurrentUser ? "bg-blue-base/5" : ""
                                                 }`}
                                         >
                                             {/* Rank */}
                                             <td className="py-4 px-6">
-                                                {user.rank === 1 ? <span className="text-2xl" title="1st">🥇</span> :
-                                                    user.rank === 2 ? <span className="text-2xl" title="2nd">🥈</span> :
-                                                        user.rank === 3 ? <span className="text-2xl" title="3rd">🥉</span> :
-                                                            <span className="text-[#0F172A]  font-semibold text-lg">#{user.rank}</span>}
+                                                {user.rank === 1 ? <span className="text-2xl" title="1st"><MedalIcon /></span> :
+                                                    user.rank === 2 ? <span className="text-2xl" title="2nd"><SilverMedalIcon /></span> :
+                                                        user.rank === 3 ? <span className="text-2xl" title="3rd"><BronzeMedalIcon /></span> :
+                                                            <span className="text-[#475569]   text-lg">#{user.rank}</span>}
                                             </td>
 
                                             {/* User Info */}
-                                            <td className="py-4 px-6 flex items-center gap-3">
+                                            <td className="py-4 px-6 flex items-center gap-2">
                                                 <img
                                                     src={`https://i.pravatar.cc/150?u=${user.id}`}
                                                     alt={user.name}
@@ -285,16 +291,16 @@ export default function Leaderboard() {
                                                 />
                                                 <div className="flex flex-col">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="font-semibold text-gray-800 text-base">
+                                                        <span className="font-semibold text-[#0F172A] text-sm">
                                                             {user.name}
                                                         </span>
                                                         {user.isCurrentUser && (
-                                                            <span className="text-blue-500 text-xs font-bold tracking-wide">
+                                                            <span className="text-blue-base text-sm  ">
                                                                 (You)
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <span className="text-xs text-[#0F172A] ">
+                                                    <span className="text-xs text-[#64748B] mt-[2px]">
                                                         {user.challengesSolved} challenges solved
                                                     </span>
                                                 </div>
@@ -314,23 +320,26 @@ export default function Leaderboard() {
 
                                             {/* Streak */}
                                             <td className="py-4 px-6">
-                                                <div className="flex flex-col">
-                                                    <div className="flex items-center gap-1.5 text-sm font-semibold text-gray-700">
-                                                        <span className="text-orange-500">🔥</span> {user.streak} days
+                                                <div className="flex  items-center gap-2 ">
+                                                    <FlameIconV2 />
+                                                    <div className="flex flex-col">
+                                                        <div className="flex items-center   text-sm font-semibold text-[#0F172A]">
+                                                            {user.streak} days
+                                                        </div>
+                                                        <span className="text-xs text-[#64748B]  ">
+                                                            Longest: {user.longestStreak}
+                                                        </span>
                                                     </div>
-                                                    <span className="text-xs text-gray-400 ml-5">
-                                                        Longest: {user.longestStreak}
-                                                    </span>
                                                 </div>
                                             </td>
 
                                             {/* XP */}
                                             <td className="py-4 px-6 text-right">
                                                 <div className="flex flex-col items-end">
-                                                    <span className="font-bold text-blue-600 text-base">
+                                                    <span className="font-bold text-[#2563EB] text-base">
                                                         {Math.round(user.xp).toLocaleString()}
                                                     </span>
-                                                    <span className="text-xs text-green-500 font-medium">
+                                                    <span className="text-xs text-[#16A34A] font-medium">
                                                         +{Math.round(user.xpGained)}{" "}
                                                         {{
                                                             "Weekly": "this wk",
