@@ -32,7 +32,7 @@ export const StreakStatsCardV2 = React.memo(({ streakData }: StreakDataType) => 
 
                 {/* Left: Title & Fire Icon */}
                 <div className="flex items-center gap-1">
-                    <div className="w-8 h-8 bg-[#F759000D] dark:bg-red-500/10 rounded-full flex items-center justify-center shadow-sm">
+                    <div className="w-8 h-8 bg-[#FF6028]  rounded-full flex items-center justify-center ">
                         <FlameIconV2 />
                     </div>
                     <h2 className="text-[14px] dark:text-white font-semibold text-[#1a1f2e]">
@@ -53,12 +53,12 @@ export const StreakStatsCardV2 = React.memo(({ streakData }: StreakDataType) => 
             </div>
 
             {/* Main Circular Chart Section */}
-            <div className="relative w-[120px] h-[120px] rounded-full border-[1.5px] border-[#FFD9C7] bg-[#FFF8F5] flex flex-col items-center justify-center">
+            <div className="relative w-[120px] h-[120px] rounded-full border-[1.5px] border-[#FFD9C7] bg-[#F759000D] dark:bg-[#F75900]/60 flex flex-col items-center justify-center">
 
                 {/* Counter Section (Number + Floating Fire + "Days") */}
                 <div className="flex items-baseline mt-2">
                     <div className="relative">
-                        <span className="text-[32px] font-black text-[#FF6220] leading-none tracking-tight block">
+                        <span className="text-[32px] font-black dark:text-white text-[#FF6220] leading-none tracking-tight block">
                             {currentStreak?.count ?? 0}
                         </span>
                         {/* Floating Fire Icon */}
@@ -66,19 +66,19 @@ export const StreakStatsCardV2 = React.memo(({ streakData }: StreakDataType) => 
                         <FlameIconV3 className="absolute -top-1 -right-5 w-4 h-4 object-contain" />
 
                     </div>
-                    <span className="text-[13px] font-semibold text-[#1a1f2e] ml-2">
+                    <span className="text-[13px] font-semibold dark:text-white text-[#1a1f2e] ml-2">
                         Days
                     </span>
                 </div>
 
                 {/* Subtitle */}
-                <p className="text-[#FF6220] text-[13px] font-medium mt-1">
+                <p className="text-[#FF6220] dark:text-white text-[13px] font-medium mt-1">
                     Current
                 </p>
 
                 {/* Overlapping Date Range Badge */}
                 {currentStreak?.startDate && currentStreak?.endDate && (
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 bg-[#FF6220] px-3 py-1.5 rounded-full shadow-sm">
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-[#FF6220] px-3 py-1.5 rounded-full shadow-sm">
                         <p className="text-white font-medium text-[11px] whitespace-nowrap leading-none">
                             {formatDateRange(currentStreak.startDate, currentStreak.endDate)}
                         </p>
