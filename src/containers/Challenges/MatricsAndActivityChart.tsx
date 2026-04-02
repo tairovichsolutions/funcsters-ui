@@ -14,10 +14,12 @@ interface MatricsAndActivityChartProps {
   isAuthenticated: boolean;
 }
 
+
+
 export const MatricsAndActivityChart = React.memo(
   ({ isAuthenticated, profileLoading }: MatricsAndActivityChartProps) => {
     const { data: metricsData, isLoading } = useMetrics();
-
+  console.log({streak:metricsData?.streak},'dddddddddddddddddddddddddddddddd');
     return (
       <div className="grid md:grid-cols-2 xl:grid-cols-4 grid-cols-1 gap-4 relative">
         {isLoading && profileLoading ? (

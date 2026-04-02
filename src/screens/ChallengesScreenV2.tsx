@@ -5,6 +5,7 @@ import { ChallengeProgressCardV2 } from "@/containers/Challenges/ChallengeProgre
 import { ChallengesFiltersBarV2 } from "@/containers/Challenges/ChallengesFiltersBarV2";
 import { ChallengesListSectionV2 } from "@/containers/Challenges/ChallengesListSectionV2";
 import { MatricsAndActivityChart } from "@/containers/Challenges/MatricsAndActivityChart";
+import { StreakStatsCardV2 } from "@/containers/Challenges/StreakStatsCardV2";
 import { useChallengesFilters } from "@/hooks/useChallengesFilters";
 import { useInfiniteChallenges } from "@/queries/useAllChallenges";
 import { useGetUserProfile } from "@/queries/useGetUserProfile";
@@ -67,7 +68,20 @@ export const ChallengesScreenV2: React.FC = () => {
       hard: 25,
       medium: 25,
       total: 100
-    }
+    },
+    streak: {
+    currentStreak: {
+      count: 12,
+      startDate: "2024-03-01",
+      endDate: "2024-03-12",
+    },
+    longestStreak: {
+      count: 24,
+      startDate: "2024-01-05",
+      endDate: "2024-01-29",
+    },
+  },
+
   }
 
 
@@ -80,10 +94,10 @@ export const ChallengesScreenV2: React.FC = () => {
       /> */}
 
 
-      {/* <MatricsAndActivityChart
+      <MatricsAndActivityChart
         profileLoading={profileLoading}
         isAuthenticated={isAuthenticated}
-      /> */}
+      />
 
 
 
@@ -96,7 +110,7 @@ export const ChallengesScreenV2: React.FC = () => {
           <div className="flex flex-col gap-5  overflow-hidden">
             <div className="max-w-full! p-2 flex flex-col gap-4 ">
               <ChallengeProgressCardV2 completedChallenges={metricsData?.completedChallenges} />
-              <ActivityCalendarCardV2/>
+              <ActivityCalendarCardV2 />
             </div>
           </div>
         </aside>
@@ -138,9 +152,9 @@ export const ChallengesScreenV2: React.FC = () => {
 
         {/* RIGHT SIDEBAR */}
         {/* lg: 3 cols | xl: 3rd fraction (2.5) | 2xl: 2 cols */}
-        <aside className="hidden lg:block lg:col-span-3 xl:col-span-1 2xl:col-span-1">
+        <aside className="hidden bg-white rounded-2xl  h-max  border lg:block lg:col-span-3 xl:col-span-1 2xl:col-span-1">
           <div className="flex flex-col gap-5 sticky top-0">
-            <StreakCard />
+            <StreakStatsCardV2 streakData={metricsData?.streak} />
             <LeaderboardCard />
           </div>
         </aside>
