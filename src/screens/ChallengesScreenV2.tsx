@@ -1,18 +1,16 @@
 "use client";
 
-import * as React from "react";
-import type { ChallengesTypes } from "@/types";
-import { useSearchParams } from "next/navigation";
-import { useGetUserProfile } from "@/queries/useGetUserProfile";
-import { useInfiniteChallenges } from "@/queries/useAllChallenges";
-import { GreetingArea } from "@/containers/Challenges/GreetingArea";
-import { useChallengesFilters } from "@/hooks/useChallengesFilters";
-import { ChallengesFiltersBar } from "@/containers/Challenges/ChallengesFiltersBar";
-import { ChallengesListSection } from "@/containers/Challenges/ChallengesListSection";
-import { MatricsAndActivityChart } from "@/containers/Challenges/MatricsAndActivityChart";
-import { Input } from "@/components";
+import { ChallengeProgressCardV2 } from "@/containers/Challenges/ChallengeProgressCardV2";
 import { ChallengesFiltersBarV2 } from "@/containers/Challenges/ChallengesFiltersBarV2";
 import { ChallengesListSectionV2 } from "@/containers/Challenges/ChallengesListSectionV2";
+import { MatricsAndActivityChart } from "@/containers/Challenges/MatricsAndActivityChart";
+import { useChallengesFilters } from "@/hooks/useChallengesFilters";
+import { useInfiniteChallenges } from "@/queries/useAllChallenges";
+import { useGetUserProfile } from "@/queries/useGetUserProfile";
+import { useMetrics } from "@/queries/useMetrics";
+import type { ChallengesTypes } from "@/types";
+import { useSearchParams } from "next/navigation";
+import * as React from "react";
 
 export const ChallengesScreenV2: React.FC = () => {
   const searchParams = useSearchParams();
@@ -50,15 +48,28 @@ export const ChallengesScreenV2: React.FC = () => {
   }, [data]);
 
 
-const expandedChallenges = allChallenges.map(challenge => ({
-  ...challenge,
-  tags: [
-    ...(challenge.tags ?? []), // Fallback to empty array if undefined
-    ...Array(Math.max(0, 5 - (challenge.tags?.length ?? 0))) // Safely check length too
-      .fill(null)
-      .map((_, i) => `Extra Tag ${i + 1}`)
-  ]
-}));
+  const expandedChallenges = allChallenges.map(challenge => ({
+    ...challenge,
+    tags: [
+      ...(challenge.tags ?? []), // Fallback to empty array if undefined
+      ...Array(Math.max(0, 5 - (challenge.tags?.length ?? 0))) // Safely check length too
+        .fill(null)
+        .map((_, i) => `Extra Tag ${i + 1}`)
+    ]
+  }));
+
+  //  const { data: metricsData, isLoading:loading } = useMetrics();
+  const metricsData = {
+    completedChallenges: {
+      easy: 25,
+      expert: 25,
+      hard: 25,
+      medium: 25,
+      total: 100
+    }
+  }
+
+
   return (
     <div className=" flex flex-col gap-5">
       {/* <GreetingArea
@@ -67,6 +78,7 @@ const expandedChallenges = allChallenges.map(challenge => ({
         username={userData?.data?.user?.username}
       /> */}
 
+
       {/* <MatricsAndActivityChart
         profileLoading={profileLoading}
         isAuthenticated={isAuthenticated}
@@ -74,81 +86,27 @@ const expandedChallenges = allChallenges.map(challenge => ({
 
 
 
-<div className="grid grid-cols-1 bg-dashboard-background  lg:grid-cols-12 xl:grid-cols-[2.4fr_6.98fr_2.62fr]  lg:gap-3 xl:gap-4  2xl:gap-6   ">
+      <div className="grid grid-cols-1 bg-dashboard-background lg:grid-cols-12 
+     xl:grid-cols-[minmax(0,2.4fr)_minmax(0,6.98fr)_minmax(0,2.62fr)] 
+     lg:gap-3 xl:gap-4 2xl:gap-6">
 
-  {/* LEFT SIDEBAR */}
-  {/* lg: 3 cols | xl: 1st fraction (2.5) | 2xl: 2 cols */}
-  <aside className="hidden lg:block lg:col-span-3 xl:col-span-1 2xl:col-span-1">
-    <div className="flex flex-col gap-5 sticky top-0">
-      <ProgressCard />
-      <ActivityCalendar />
-    </div>
-  </aside>
-
-  {/* MAIN CENTER CONTENT */}
-  {/* lg: 6 cols | xl: 2nd fraction (7) | 2xl: 8 cols */}
-  {/* min-w-0 prevents children from breaking the grid width */}
-  <main className="col-span-1 lg:col-span-6 xl:col-span-1 2xl:col-span-1 flex flex-col gap-5 min-w-0">
-    
-    {/* STICKY HEADER ZONE */}
-    <div className="sticky top-0 z-20 flex bg-dashboard-background flex-col gap-5">
-   
-      
-      <ChallengesFiltersBarV2
-        remove={remove}
-        setTags={setTags}
-        filters={filters}
-        clearAll={clearAll}
-        setSearch={setSearch}
-        setStatus={setStatus}
-        isFetching={isFetching}
-        currentView={currentView}
-        setDifficulty={setDifficulty}
-        isAuthenticated={isAuthenticated}
-      />
-    </div>
-
-    {/* SCROLLING CONTENT */}
-    <ChallengesListSectionV2
-      isLoading={isLoading}
-      currentView={currentView}
-      // allChallenges={[...allChallenges,...allChallenges,...allChallenges,...allChallenges,]}
-      allChallenges={[...expandedChallenges,]}
-      fetchNextPage={fetchNextPage}
-      hasNextPage={Boolean(hasNextPage)}
-      isFetchingNextPage={isFetchingNextPage}
-    />
-  </main>
-
-  {/* RIGHT SIDEBAR */}
-  {/* lg: 3 cols | xl: 3rd fraction (2.5) | 2xl: 2 cols */}
-  <aside className="hidden lg:block lg:col-span-3 xl:col-span-1 2xl:col-span-1">
-    <div className="flex flex-col gap-5 sticky top-0">
-      <StreakCard />
-      <LeaderboardCard />
-    </div>
-  </aside>
-
-</div>
-
-
-{/* TODO:delet after dashboard done */}
-   <div className="hidden grid-cols-1 lg:grid-cols-12 gap-6 mt-3 container mx-auto ">
-
-        {/* LEFT SIDEBAR: Increased width (Takes 3 out of 12 columns) */}
-        <aside className="hidden lg:block lg:col-span-3">
-          <div className="flex flex-col gap-5 sticky top-5">
-            <ProgressCard />
-            <ActivityCalendar />
+        {/* LEFT SIDEBAR */}
+        <aside className="hidden lg:block bg-white rounded-2xl h-max p-4 lg:col-span-3 xl:col-span-1">
+          <div className="flex flex-col gap-5 sticky top-0 overflow-hidden">
+            <div>
+              <ChallengeProgressCardV2 completedChallenges={metricsData?.completedChallenges} />
+            </div>
           </div>
         </aside>
 
-        {/* MAIN CENTER CONTENT: Adjusted to 6 columns to make room for wider sidebars */}
-        <main className="col-span-1 lg:col-span-6 flex flex-col gap-5">
+        {/* MAIN CENTER CONTENT */}
+        {/* lg: 6 cols | xl: 2nd fraction (7) | 2xl: 8 cols */}
+        {/* min-w-0 prevents children from breaking the grid width */}
+        <main className="col-span-1 lg:col-span-6 xl:col-span-1 2xl:col-span-1 flex flex-col gap-5 min-w-0">
 
-     
-          <div className=" top-5  z-10 flex flex-col gap-5">
-          
+          {/* STICKY HEADER ZONE */}
+          <div className="sticky top-0 z-20 flex bg-dashboard-background flex-col gap-5">
+
 
             <ChallengesFiltersBarV2
               remove={remove}
@@ -165,16 +123,72 @@ const expandedChallenges = allChallenges.map(challenge => ({
           </div>
 
           {/* SCROLLING CONTENT */}
-         
-            <ChallengesListSectionV2
-              isLoading={isLoading}
+          <ChallengesListSectionV2
+            isLoading={isLoading}
+            currentView={currentView}
+            // allChallenges={[...allChallenges,...allChallenges,...allChallenges,...allChallenges,]}
+            allChallenges={[...expandedChallenges,]}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={Boolean(hasNextPage)}
+            isFetchingNextPage={isFetchingNextPage}
+          />
+        </main>
+
+        {/* RIGHT SIDEBAR */}
+        {/* lg: 3 cols | xl: 3rd fraction (2.5) | 2xl: 2 cols */}
+        <aside className="hidden lg:block lg:col-span-3 xl:col-span-1 2xl:col-span-1">
+          <div className="flex flex-col gap-5 sticky top-0">
+            <StreakCard />
+            <LeaderboardCard />
+          </div>
+        </aside>
+
+      </div>
+
+
+      {/* TODO:delet after dashboard done */}
+      <div className="hidden grid-cols-1 lg:grid-cols-12 gap-6 mt-3 container mx-auto ">
+
+        {/* LEFT SIDEBAR: Increased width (Takes 3 out of 12 columns) */}
+        <aside className="hidden lg:block lg:col-span-3">
+          <div className="flex flex-col gap-5 sticky top-5">
+            <ProgressCard />
+            <ActivityCalendar />
+          </div>
+        </aside>
+
+        {/* MAIN CENTER CONTENT: Adjusted to 6 columns to make room for wider sidebars */}
+        <main className="col-span-1 lg:col-span-6 flex flex-col gap-5">
+
+
+          <div className=" top-5  z-10 flex flex-col gap-5">
+
+
+            <ChallengesFiltersBarV2
+              remove={remove}
+              setTags={setTags}
+              filters={filters}
+              clearAll={clearAll}
+              setSearch={setSearch}
+              setStatus={setStatus}
+              isFetching={isFetching}
               currentView={currentView}
-              allChallenges={[...allChallenges,]}
-              fetchNextPage={fetchNextPage}
-              hasNextPage={Boolean(hasNextPage)}
-              isFetchingNextPage={isFetchingNextPage}
+              setDifficulty={setDifficulty}
+              isAuthenticated={isAuthenticated}
             />
-          
+          </div>
+
+          {/* SCROLLING CONTENT */}
+
+          <ChallengesListSectionV2
+            isLoading={isLoading}
+            currentView={currentView}
+            allChallenges={[...allChallenges,]}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={Boolean(hasNextPage)}
+            isFetchingNextPage={isFetchingNextPage}
+          />
+
         </main>
 
         {/* RIGHT SIDEBAR: Increased width (Takes 3 out of 12 columns) */}
