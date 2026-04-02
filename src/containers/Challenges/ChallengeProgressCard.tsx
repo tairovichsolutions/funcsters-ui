@@ -81,7 +81,7 @@ export const ChallengeProgressCard: React.FC<ChallengeProgressCardProps> =
     }, [completedChallenges]);
 
 
-    console.log({slices});
+    
     const totalCompleted = useMemo(() => {
       return (
         completedChallenges?.total ??

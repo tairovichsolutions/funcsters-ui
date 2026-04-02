@@ -1,5 +1,6 @@
 "use client";
 
+import { ActivityCalendarCardV2 } from "@/containers/Challenges/ActivityCalendarCardV2";
 import { ChallengeProgressCardV2 } from "@/containers/Challenges/ChallengeProgressCardV2";
 import { ChallengesFiltersBarV2 } from "@/containers/Challenges/ChallengesFiltersBarV2";
 import { ChallengesListSectionV2 } from "@/containers/Challenges/ChallengesListSectionV2";
@@ -79,10 +80,10 @@ export const ChallengesScreenV2: React.FC = () => {
       /> */}
 
 
-      {/* <MatricsAndActivityChart
+      <MatricsAndActivityChart
         profileLoading={profileLoading}
         isAuthenticated={isAuthenticated}
-      /> */}
+      />
 
 
 
@@ -91,10 +92,11 @@ export const ChallengesScreenV2: React.FC = () => {
      lg:gap-3 xl:gap-4 2xl:gap-6">
 
         {/* LEFT SIDEBAR */}
-        <aside className="hidden sticky top-0 lg:block bg-white rounded-2xl h-max  lg:col-span-3 xl:col-span-1">
+        <aside className="hidden sticky dark:border top-0 lg:block bg-white dark:bg-slate-900 rounded-2xl h-max  lg:col-span-3 xl:col-span-1">
           <div className="flex flex-col gap-5  overflow-hidden">
-            <div className="max-w-full! ">
+            <div className="max-w-full! p-2 flex flex-col gap-4 ">
               <ChallengeProgressCardV2 completedChallenges={metricsData?.completedChallenges} />
+              <ActivityCalendarCardV2/>
             </div>
           </div>
         </aside>
