@@ -91,9 +91,9 @@ export const ChallengesScreenV2: React.FC = () => {
      lg:gap-3 xl:gap-4 2xl:gap-6">
 
         {/* LEFT SIDEBAR */}
-        <aside className="hidden lg:block bg-white rounded-2xl h-max p-4 lg:col-span-3 xl:col-span-1">
-          <div className="flex flex-col gap-5 sticky top-0 overflow-hidden">
-            <div>
+        <aside className="hidden sticky top-0 lg:block bg-white rounded-2xl h-max  lg:col-span-3 xl:col-span-1">
+          <div className="flex flex-col gap-5  overflow-hidden">
+            <div className="max-w-full! ">
               <ChallengeProgressCardV2 completedChallenges={metricsData?.completedChallenges} />
             </div>
           </div>

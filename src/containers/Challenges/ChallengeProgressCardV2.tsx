@@ -46,12 +46,12 @@ const EMPTY_SLICE: ChartSlice = {
 
 const CustomLegend = ({ data }: { data: ChartSlice[] }) => (
   // Reduced minimum width and gap for a tighter layout
-  <div className="grid grid-cols-2 gap-2 w-full min-w-[170px]">
+  <div className="grid grid-cols-[1.4fr_1.8fr]  w-fit flex-wrap gap-[2px] 2xl:gap-2   ">
     {data.map((item) => (
       <div
         key={item.key}
         // Reduced padding to match the smaller 11px text
-        className="flex items-center justify-between bg-[#F3F4F6] px-2.5 py-1 rounded-full whitespace-nowrap gap-1.5"
+        className="flex items-center justify-between bg-[#F3F4F6] p-1  2xl:px-2 rounded-full whitespace-nowrap gap-1.5"
       >
         {/* Set text to 11px as per Figma */}
         <span className="text-[#374151] text-[11px] font-medium leading-none">
@@ -60,7 +60,7 @@ const CustomLegend = ({ data }: { data: ChartSlice[] }) => (
         {/* Scaled down the badge slightly to match the 11px text */}
         <span
           style={{ backgroundColor: item.fill }}
-          className="text-white text-[10px] font-semibold px-1.5 py-[3px] rounded-full leading-none min-w-[20px] text-center"
+          className="text-white text-[8px] font-semibold px-1.5 py-[3px] rounded-full leading-none min-w-[20px] text-center"
         >
           {item.value}
         </span>
@@ -97,18 +97,18 @@ export const ChallengeProgressCardV2: React.FC<ChallengeProgressCardProps> =
     }, [isEmpty, slices]);
 
     return (
-      <div>
+      <div >
         <div className="flex flex-col w-full p-2">
           {/* Scaled down title slightly to match the smaller card */}
-          <h2 className="text-[#111827] text-[18px] font-semibold mb-3">
+          <h2 className="text-[#111827]  text-sm 2xl:text-[18px] font-semibold mb-3">
             Progress
           </h2>
 
           {/* Reduced padding (p-3.5) and gap (gap-4) for a more compact card */}
-          <div className="flex w-max flex-row items-center justify-between border border-[#E5E7EB] rounded-xl p-3.5 bg-white shadow-sm gap-4">
+          <div className="flex w-full flex-row items-center justify-between border border-[#E5E7EB] rounded-xl p-1 2xl:p-3.5 bg-white shadow-sm gap-1">
             
             {/* Left Side: Custom Legend */}
-            <div className="flex-1">
+            <div className="">
               <CustomLegend data={slices} />
             </div>
 
