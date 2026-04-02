@@ -80,10 +80,10 @@ export const ChallengesScreenV2: React.FC = () => {
       /> */}
 
 
-      <MatricsAndActivityChart
+      {/* <MatricsAndActivityChart
         profileLoading={profileLoading}
         isAuthenticated={isAuthenticated}
-      />
+      /> */}
 
 
 

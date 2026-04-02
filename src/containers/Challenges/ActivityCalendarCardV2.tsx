@@ -230,141 +230,141 @@ console.log({cells});
     const GRID_GAP_Y = "gap-y-[6px]";
 
     return (
-        <div className="flex flex-col border bg-white text-slate-900 rounded-xl 2xl:p-3.5 p-1 w-full mx-auto">
+     <div className="flex flex-col border bg-white dark:bg-slate-900 dark:border-slate-800 text-slate-900 dark:text-slate-100 rounded-xl 2xl:p-3.5 p-1 w-full mx-auto">
 
 
-            <div className="relative w-full flex flex-1  flex-col z-10 mt-3">
-                {/* Header - Month Title & Swipe Controls */}
-                <div className="flex flex-row items-center justify-between w-full  pb-3">
+    <div className="relative w-full flex flex-1  flex-col z-10 mt-3">
+        {/* Header - Month Title & Swipe Controls */}
+        <div className="flex flex-row items-center justify-between w-full  pb-3">
 
-                    <div className={` flex text-sm font-semibold  items-center justify-center gap-1 `}>
-                        <p className="text-black  font-inter ">Activities</p>
-                        <h2 className="text-black  font-inter ">{totalActivity}</h2>
-                    </div>
-                    <div className="flex items-center ">
-                        <button
-                            type="button"
-                            onClick={() => changeMonth(-1)}
-                            disabled={!canGoPrev}
-                            className="flex size-6 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                        >
-                            <ChevronLeft className="size-[18px]" strokeWidth={2.5} />
-                        </button>
-                        <span className="font-bold text-xs text-[#878A8C] tracking-tight">
-                            {monthLabel}
-                        </span>
-                        <button
-                            type="button"
-                            onClick={() => changeMonth(1)}
-                            disabled={!canGoNext}
-                            className="flex size-6 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                        >
-                            <ChevronRight className="size-[18px]" strokeWidth={2.5} />
-                        </button>
-                    </div>
-                </div>
-
-                <div className="bg-[#F0F1F6] rounded-sm border px-2">
-                    {/* Week days */}
-                    <div className="mb-4 mt-3 grid grid-cols-7  justify-items-center text-center text-xs  font-bold tracking-wider text-[#0D1A26] uppercase">
-                        {weekDayLabels.map((label) => (
-                            <span key={label}>
-                                {label === "SAT" 
-                                    ? label.slice(0, 2).toUpperCase()
-                                    : label.charAt(0).toUpperCase() }
-                            </span>
-                        ))}
-                    </div>
-
-                    {/* Grid */}
-                    <div className={cn("grid grid-cols-7 justify-items-center bg-[#F0F1F6] ", GRID_GAP_X, GRID_GAP_Y)}>
-                        {loading
-                            ? Array.from({ length: 35 }).map((_, i) => (
-                                <Skeleton
-                                    key={i}
-                                    className={cn(CELL_SIZE, "rounded-full bg-slate-200")}
-                                />
-                            ))
-                            : cells.map((cell, idx) => {
-                                const d = cell.date;
-                                const iso = formatDateKey(d);
-                                const dayNumber = d.getDate();
-
-                                const isCur = isCurrentMonthCell(d);
-                                const activity = isCur ? (cell.item?.count ?? 0) : 0;
-                                const hasActivity = activity > 0;
-
-                                const streak = isCur ? streakMetaByDate[iso] : undefined;
-                                const inGroup = !!streak;
-
-                                const tooltipContent = (
-                                    <div className="flex flex-col gap-0.5 text-white">
-                                        <span className="text-[12px] flex gap-3 justify-between">
-                                            Activity:{" "}
-                                            <span className="font-semibold">{activity}</span>
-                                        </span>
-
-                                        {inGroup && (
-                                            <span className="text-[12px] flex gap-3 justify-between">
-                                                Consistency:{" "}
-                                                <span className="font-semibold">
-                                                    day {streak!.idx} of {streak!.len}
-                                                </span>
-                                            </span>
-                                        )}
-                                    </div>
-                                );
-
-                                const connector = getConnectorProps(idx);
-
-                                return (
-                                    <Tooltip
-                                        key={iso}
-                                        className="text-start"
-                                        content={tooltipContent}
-                                        place="top"
-                                    >
-                                        <div
-                                            className={cn(
-                                                "relative w-full flex items-center justify-center",
-                                                CELL_BOX,
-                                            )}
-                                        >
-                                            {connector && (
-                                                <div
-                                                    className={connector.className}
-                                                    style={connector.style}
-                                                />
-                                            )}
-
-                                            {hasActivity ? (
-                                                <div
-                                                    className={cn(
-                                                        "relative z-1 flex shrink-0 items-center justify-center rounded-full text-[14px] font-semibold",
-                                                        CELL_SIZE,
-                                                        "bg-blue-base text-white cursor-pointer",
-                                                        inGroup ? "text-[#F75900]" : "text-white",
-                                                    )}
-                                                >
-                                                    <span className="leading-none">{dayNumber}</span>
-                                                </div>
-                                            ) : (
-                                                <span
-                                                    className={cn(
-                                                        "relative z-1 text-[14px] font-semibold",
-                                                        isCur ? "text-slate-900" : "text-slate-300",
-                                                    )}
-                                                >
-                                                    {dayNumber}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </Tooltip>
-                                );
-                            })}
-                    </div>
-                </div>
+            <div className={` flex text-sm font-semibold  items-center justify-center gap-1 `}>
+                <p className="text-black dark:text-white font-inter ">Activities</p>
+                <h2 className="text-black dark:text-white font-inter ">{totalActivity}</h2>
+            </div>
+            <div className="flex items-center ">
+                <button
+                    type="button"
+                    onClick={() => changeMonth(-1)}
+                    disabled={!canGoPrev}
+                    className="flex size-6 cursor-pointer items-center justify-center rounded-md text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                    <ChevronLeft className="size-[18px]" strokeWidth={2.5} />
+                </button>
+                <span className="font-bold text-xs text-[#878A8C] dark:text-slate-400 tracking-tight">
+                    {monthLabel}
+                </span>
+                <button
+                    type="button"
+                    onClick={() => changeMonth(1)}
+                    disabled={!canGoNext}
+                    className="flex size-6 cursor-pointer items-center justify-center rounded-md text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                    <ChevronRight className="size-[18px]" strokeWidth={2.5} />
+                </button>
             </div>
         </div>
+
+        <div className="bg-[#F0F1F6] dark:bg-slate-800/50 rounded-sm border dark:border-slate-800 px-2">
+            {/* Week days */}
+            <div className="mb-4 mt-3 grid grid-cols-7  justify-items-center text-center text-xs  font-bold tracking-wider text-[#0D1A26] dark:text-slate-300 uppercase">
+                {weekDayLabels.map((label) => (
+                    <span key={label}>
+                        {label === "SAT" 
+                            ? label.slice(0, 2).toUpperCase()
+                            : label.charAt(0).toUpperCase() }
+                    </span>
+                ))}
+            </div>
+
+            {/* Grid */}
+            <div className={cn("grid grid-cols-7 justify-items-center bg-[#F0F1F6] dark:bg-transparent ", GRID_GAP_X, GRID_GAP_Y)}>
+                {loading
+                    ? Array.from({ length: 35 }).map((_, i) => (
+                        <Skeleton
+                            key={i}
+                            className={cn(CELL_SIZE, "rounded-full bg-slate-200 dark:bg-slate-700")}
+                        />
+                    ))
+                    : cells.map((cell, idx) => {
+                        const d = cell.date;
+                        const iso = formatDateKey(d);
+                        const dayNumber = d.getDate();
+
+                        const isCur = isCurrentMonthCell(d);
+                        const activity = isCur ? (cell.item?.count ?? 0) : 0;
+                        const hasActivity = activity > 0;
+
+                        const streak = isCur ? streakMetaByDate[iso] : undefined;
+                        const inGroup = !!streak;
+
+                        const tooltipContent = (
+                            <div className="flex flex-col gap-0.5 text-white">
+                                <span className="text-[12px] flex gap-3 justify-between">
+                                    Activity:{" "}
+                                    <span className="font-semibold">{activity}</span>
+                                </span>
+
+                                {inGroup && (
+                                    <span className="text-[12px] flex gap-3 justify-between">
+                                        Consistency:{" "}
+                                        <span className="font-semibold">
+                                            day {streak!.idx} of {streak!.len}
+                                        </span>
+                                    </span>
+                                )}
+                            </div>
+                        );
+
+                        const connector = getConnectorProps(idx);
+
+                        return (
+                            <Tooltip
+                                key={iso}
+                                className="text-start"
+                                content={tooltipContent}
+                                place="top"
+                            >
+                                <div
+                                    className={cn(
+                                        "relative w-full flex items-center justify-center",
+                                        CELL_BOX,
+                                    )}
+                                >
+                                    {connector && (
+                                        <div
+                                            className={connector.className}
+                                            style={connector.style}
+                                        />
+                                    )}
+
+                                    {hasActivity ? (
+                                        <div
+                                            className={cn(
+                                                "relative z-1 flex shrink-0 items-center justify-center rounded-full text-[14px] font-semibold",
+                                                CELL_SIZE,
+                                                "bg-blue-base text-white cursor-pointer",
+                                                inGroup ? "text-[#F75900]" : "text-white",
+                                            )}
+                                        >
+                                            <span className="leading-none">{dayNumber}</span>
+                                        </div>
+                                    ) : (
+                                        <span
+                                            className={cn(
+                                                "relative z-1 text-[14px] font-semibold",
+                                                isCur ? "text-slate-900 dark:text-slate-200" : "text-slate-300 dark:text-slate-600",
+                                            )}
+                                        >
+                                            {dayNumber}
+                                        </span>
+                                    )}
+                                </div>
+                            </Tooltip>
+                        );
+                    })}
+            </div>
+        </div>
+    </div>
+</div>
     );
 };
