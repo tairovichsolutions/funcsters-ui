@@ -25,17 +25,17 @@ export const StreakStatsCardV2 = React.memo(({ streakData }: StreakDataType) => 
     const longestStreak = streakData?.longestStreak;
 
     return (
-        <div className="w-full   flex flex-col items-center p-2 2xl:p-4">
+        <div className="w-full   flex flex-col items-center ">
 
             {/* Header Section */}
             <div className="flex items-center justify-between w-full mb-5">
 
                 {/* Left: Title & Fire Icon */}
                 <div className="flex items-center gap-1">
-                    <div className="w-8 h-8 bg-[#FF6220] rounded-full flex items-center justify-center shadow-sm">
+                    <div className="w-8 h-8 bg-[#F759000D] dark:bg-red-500/10 rounded-full flex items-center justify-center shadow-sm">
                         <FlameIconV2 />
                     </div>
-                    <h2 className="text-[14px] font-semibold text-[#1a1f2e]">
+                    <h2 className="text-[14px] dark:text-white font-semibold text-[#1a1f2e]">
                         Streak
                     </h2>
                 </div>
@@ -85,7 +85,7 @@ export const StreakStatsCardV2 = React.memo(({ streakData }: StreakDataType) => 
                     </div>
                 )}
             </div>
-            <div className="h-[1px] w-full bg-[#EDEDF2] my-4" />
+           <div className="h-[1px] w-full bg-[#EDEDF2] dark:bg-[#9494aa] my-4" />
         </div>
     );
 });

@@ -6,6 +6,7 @@ import { ChallengesFiltersBarV2 } from "@/containers/Challenges/ChallengesFilter
 import { ChallengesListSectionV2 } from "@/containers/Challenges/ChallengesListSectionV2";
 import { MatricsAndActivityChart } from "@/containers/Challenges/MatricsAndActivityChart";
 import { StreakStatsCardV2 } from "@/containers/Challenges/StreakStatsCardV2";
+import { XpPointsCardV2 } from "@/containers/Challenges/XpPointsCardV2";
 import { useChallengesFilters } from "@/hooks/useChallengesFilters";
 import { useInfiniteChallenges } from "@/queries/useAllChallenges";
 import { useGetUserProfile } from "@/queries/useGetUserProfile";
@@ -152,10 +153,10 @@ export const ChallengesScreenV2: React.FC = () => {
 
         {/* RIGHT SIDEBAR */}
         {/* lg: 3 cols | xl: 3rd fraction (2.5) | 2xl: 2 cols */}
-        <aside className="hidden bg-white rounded-2xl  h-max  border lg:block lg:col-span-3 xl:col-span-1 2xl:col-span-1">
-          <div className="flex flex-col gap-5 sticky top-0">
+        <aside className="hidden bg-white dark:bg-slate-900 rounded-2xl  h-max  border lg:block lg:col-span-3 xl:col-span-1 2xl:col-span-1">
+          <div className="flex flex-col sticky p-2 2xl:p-4 top-0">
             <StreakStatsCardV2 streakData={metricsData?.streak} />
-            <LeaderboardCard />
+            <XpPointsCardV2 xpData={120} />
           </div>
         </aside>
 
