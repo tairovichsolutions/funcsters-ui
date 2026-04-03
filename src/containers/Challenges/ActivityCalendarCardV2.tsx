@@ -349,7 +349,7 @@ export const ActivityCalendarCardV2: React.FC = () => {
                                                 <span
                                                     className={cn(
                                                         "relative z-1 text-[14px] font-semibold",
-                                                        isCur ? "text-slate-900 dark:text-slate-200" : "text-slate-300 dark:text-slate-600",
+                                                        isCur ? "text-slate-900 dark:text-slate-200" : "text-neutral-04/40 dark:text-slate-600",
                                                     )}
                                                 >
                                                     {dayNumber}

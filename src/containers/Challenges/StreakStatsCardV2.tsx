@@ -1,8 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-import { Assets } from "@/constants/assets";
 import { formatDateRange } from "@/lib/formatDateRange";
 import React from "react";
-import FlameIcon from "../../../public/svgs/leaderBoard/FlameIcon";
 import FlameIconV2 from "../../../public/svgs/leaderBoard/FlameIconV2";
 import FlameIconV3 from "../../../public/svgs/leaderBoard/FlameIconV3";
 import StarBadgeIcon from "../../../public/svgs/leaderBoard/StarBadgeIcon";

@@ -14,6 +14,7 @@ import { useMetrics } from "@/queries/useMetrics";
 import type { ChallengesTypes } from "@/types";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
+import MiniLeaderBoard from "./MiniLeaderBoard";
 
 export const ChallengesScreenV2: React.FC = () => {
   const searchParams = useSearchParams();
@@ -112,6 +113,7 @@ export const ChallengesScreenV2: React.FC = () => {
             <div className="max-w-full! p-2 flex flex-col gap-4 ">
               <ChallengeProgressCardV2 completedChallenges={metricsData?.completedChallenges} />
               <ActivityCalendarCardV2 />
+            
             </div>
           </div>
         </aside>
@@ -157,6 +159,7 @@ export const ChallengesScreenV2: React.FC = () => {
           <div className="flex flex-col sticky p-2 2xl:p-4 top-0">
             <StreakStatsCardV2 streakData={metricsData?.streak} />
             <XpPointsCardV2 xpData={120} />
+             <MiniLeaderBoard/>
           </div>
         </aside>
 
