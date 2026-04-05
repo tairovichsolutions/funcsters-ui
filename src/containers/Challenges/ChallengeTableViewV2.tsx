@@ -93,7 +93,7 @@ export const ChallengeTableViewV2: React.FC<ChallengeTableViewProps> = ({
                   {/* Summary Cell */}
                   <TableCell className="text-muted-foreground align-top py-3 pe-10 3xl:pe-20">
                     <Link
-                      href={Navigation.ChallengesDetail(String(item?.id))}
+                      href={Navigation.ChallengesDetail(String(item?.slug))}
                       className="block w-full max-w-[400px] 2xl:max-w-[500px] truncate hover:underline"
                       title={item?.summary}
                     >
