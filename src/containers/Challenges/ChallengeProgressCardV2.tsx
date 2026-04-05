@@ -99,7 +99,7 @@ export const ChallengeProgressCardV2: React.FC<ChallengeProgressCardProps> =
             Progress
           </h2>
 
-          <div className="flex w-full flex-row items-center justify-between border border-[#E5E7EB] dark:border-slate-700 rounded-xl p-1 2xl:p-3.5 bg-[#fbfbfc] dark:bg-[#192631]  gap-1">
+          <div className="flex w-full flex-row items-center justify-around lg:justify-between border border-[#E5E7EB] dark:border-slate-700 rounded-xl p-1 2xl:p-3.5 bg-[#fbfbfc] dark:bg-[#192631]  gap-1">
             
             <div className="">
               <CustomLegend data={slices} />
