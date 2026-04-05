@@ -67,10 +67,10 @@ export const ChallengeTableViewV2: React.FC<ChallengeTableViewProps> = ({
                     <div className="flex flex-col gap-2 relative">
                       <Link
                         className="hover:underline block w-full truncate"
-                        href={Navigation.ChallengesDetail(String(item?.id))}
+                        href={Navigation.ChallengesDetail(String(item?.slug))}
                         title={item?.title}
                       >
-                        {item?.title}
+                       {item?.title}
                       </Link>
 
                       <div className="flex gap-2 items-center w-max relative z-10">

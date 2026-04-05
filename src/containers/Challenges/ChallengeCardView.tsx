@@ -19,6 +19,8 @@ export const ChallengeCardView = ({
   const router = useRouter();
 
   const handleCardClick = (e: React.MouseEvent) => {
+
+  
     if ((e.target as HTMLElement).closest("[data-stop-nav]")) return;
     router.push(Navigation.ChallengesDetail(String(slug)));
   };

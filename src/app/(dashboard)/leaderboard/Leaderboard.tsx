@@ -32,6 +32,7 @@ interface UserData {
 
 // --- Base Dummy Data ---
 const BASE_DATA = [
+    { id: "8", rank: 8, name: "Rahat Hossain", challengesSolved: 108, languages: ["python", "js"], streak: 21, longestStreak: 45, xp: 320, xpGained: 320, isCurrentUser: true },
     { id: "1", rank: 1, name: "Jane Cooper", challengesSolved: 187, languages: ["python", "js"], streak: 28, longestStreak: 45, xp: 1000000, xpGained: 520 },
     { id: "2", rank: 2, name: "Wade Warren", challengesSolved: 165, languages: ["python", "js"], streak: 27, longestStreak: 45, xp: 485, xpGained: 485 },
     { id: "3", rank: 3, name: "Jerome Bell", challengesSolved: 152, languages: ["python", "js"], streak: 26, longestStreak: 45, xp: 450, xpGained: 450 },
@@ -39,7 +40,6 @@ const BASE_DATA = [
     { id: "5", rank: 5, name: "Robert Fox", challengesSolved: 128, languages: ["python", "js"], streak: 24, longestStreak: 45, xp: 365, xpGained: 365 },
     { id: "6", rank: 6, name: "Floyd Miles", challengesSolved: 124, languages: ["python", "js"], streak: 23, longestStreak: 45, xp: 340, xpGained: 340 },
     { id: "7", rank: 7, name: "Jerome Bell", challengesSolved: 115, languages: ["python", "js"], streak: 22, longestStreak: 45, xp: 325, xpGained: 325 },
-    { id: "8", rank: 8, name: "Rahat Hossain", challengesSolved: 108, languages: ["python", "js"], streak: 21, longestStreak: 45, xp: 320, xpGained: 320, isCurrentUser: true },
     { id: "9", rank: 9, name: "Wade Warren", challengesSolved: 105, languages: ["python", "js"], streak: 20, longestStreak: 45, xp: 295, xpGained: 295 },
     { id: "10", rank: 10, name: "Brooklyn Simmons", challengesSolved: 98, languages: ["python", "js"], streak: 19, longestStreak: 45, xp: 280, xpGained: 280 },
     { id: "11", rank: 11, name: "Emily Chen", challengesSolved: 95, languages: ["python", "js"], streak: 18, longestStreak: 42, xp: 950, xpGained: 310 },
@@ -364,7 +364,7 @@ export default function Leaderboard() {
                 {!isLoading && currentUser && (
                     <button
                         onClick={scrollToUser}
-                        className="fixed bottom-8  md:bottom-1  right-8 md:right-[calc((100vw-768px)/2+20px)] lg:right-[calc((100vw-1024px)/2+90px)] xl:right-[calc((100vw-1280px)/2+100px)] 2xl:right-[calc((100vw-1536px)/2+230px)] z-50 group hover:scale-110 transition-transform duration-300 drop-shadow-[0_8px_16px_rgba(59,130,246,0.4)] cursor-pointer"
+                        className="fixed -bottom-16  md:bottom-1  right-8 md:right-[calc((100vw-768px)/2+20px)] lg:right-[calc((100vw-1024px)/2+90px)] xl:right-[calc((100vw-1280px)/2+100px)] 2xl:right-[calc((100vw-1536px)/2+230px)] z-50 group hover:scale-110 transition-transform duration-300 drop-shadow-[0_8px_16px_rgba(59,130,246,0.4)] cursor-pointer"
                         title="Scroll to your rank"
                     >
 

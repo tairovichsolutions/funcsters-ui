@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import MedalIcon from "../../public/svgs/leaderBoard/MedalIcon";
 import SilverMedalIcon from "../../public/svgs/leaderBoard/SilverMedalIcon";
 import BronzeMedalIcon from "../../public/svgs/leaderBoard/BronzeMedalIcon";
+import Link from "next/link";
 
 type MiniLeaderBoardEntry = {
   id: string;
@@ -56,7 +57,7 @@ export default function MiniLeaderBoard() {
         Leaderboard
       </h2>
 
-      {/* Navigation Tabs */}
+      
       <div className="flex border bg-[#F4F5F8] border-[#DFE0E7] rounded-lg dark:bg-gray-800 dark:border-gray-700 mb-2">
         {tabs.map((tab, index) => (
           <button
@@ -80,7 +81,7 @@ export default function MiniLeaderBoard() {
         ))}
       </div>
 
-      {/* Leaderboard List & Skeletons */}
+      
       <ul className="flex flex-col">
         {isLoading
           ? // Skeleton Loaders
@@ -106,7 +107,7 @@ export default function MiniLeaderBoard() {
               className="flex items-center justify-between py-3.5 border-b border-[#F3F4F6] dark:border-gray-800 last:border-0"
             >
               <div className="flex items-center gap-3.5">
-                {/* Rank Indication */}
+                
                 <div className="w-6 flex justify-center items-center">
                   {user.rank === 1 && <span className=" drop-shadow-sm"><MedalIcon className="w-7 h-7" /></span>}
                   {user.rank === 2 && <span className=" drop-shadow-sm"><SilverMedalIcon className="w-7 h-7" /></span>}
@@ -118,7 +119,7 @@ export default function MiniLeaderBoard() {
                   )}
                 </div>
 
-                {/* Avatar and Name */}
+                
                 <div className="flex items-center gap-3">
                   <img
                     src={user.avatarUrl}
@@ -131,7 +132,7 @@ export default function MiniLeaderBoard() {
                 </div>
               </div>
 
-              {/* XP Value */}
+              
               <span className="text-[13px] font-semibold text-blue-base dark:text-[#3B82F6]">
                 {user.xp} XP
               </span>
@@ -139,10 +140,11 @@ export default function MiniLeaderBoard() {
           ))}
       </ul>
 
-      {/* Footer Action */}
-      <button className="w-full mt-3 py-2.5 text-[#0D1A26] border-[#DFE0E7] bg-[#F4F5F8] dark:bg-gray-800 hover:bg-[#EBEDF2] dark:hover:bg-gray-700/80 dark:text-gray-300 text-[13px] font-medium rounded-lg transition-colors border dark:border-gray-700">
-        View Full LeaderBoard
-      </button>
+      
+      <Link href={'/leaderboard'}>
+        <button className="w-full mt-3 py-2.5 text-[#0D1A26] border-[#DFE0E7] bg-[#F4F5F8] dark:bg-gray-800 hover:bg-[#EBEDF2] dark:hover:bg-gray-700/80 dark:text-gray-300 text-[13px] font-medium rounded-lg transition-colors border dark:border-gray-700">
+          View Full LeaderBoard
+        </button></Link>
     </div>
   );
 }

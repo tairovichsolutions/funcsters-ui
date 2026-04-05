@@ -72,17 +72,17 @@ export const ChallengesScreenV2: React.FC = () => {
       total: 100
     },
     streak: {
-    currentStreak: {
-      count: 12,
-      startDate: "2024-03-01",
-      endDate: "2024-03-12",
+      currentStreak: {
+        count: 12,
+        startDate: "2024-03-01",
+        endDate: "2024-03-12",
+      },
+      longestStreak: {
+        count: 24,
+        startDate: "2024-01-05",
+        endDate: "2024-01-29",
+      },
     },
-    longestStreak: {
-      count: 24,
-      startDate: "2024-01-05",
-      endDate: "2024-01-29",
-    },
-  },
 
   }
 
@@ -96,11 +96,13 @@ export const ChallengesScreenV2: React.FC = () => {
       /> */}
 
 
-      <MatricsAndActivityChart
-        profileLoading={profileLoading}
-        isAuthenticated={isAuthenticated}
-      />
+      <div className="lg:hidden">
+        <MatricsAndActivityChart
+          profileLoading={profileLoading}
+          isAuthenticated={isAuthenticated}
+        />
 
+      </div>
 
 
       <div className="grid grid-cols-1 bg-dashboard-background lg:grid-cols-12 
@@ -113,7 +115,7 @@ export const ChallengesScreenV2: React.FC = () => {
             <div className="max-w-full! p-2 flex flex-col gap-4 ">
               <ChallengeProgressCardV2 completedChallenges={metricsData?.completedChallenges} />
               <ActivityCalendarCardV2 />
-            
+
             </div>
           </div>
         </aside>
@@ -159,7 +161,7 @@ export const ChallengesScreenV2: React.FC = () => {
           <div className="flex flex-col sticky p-2 2xl:p-4 top-0">
             <StreakStatsCardV2 streakData={metricsData?.streak} />
             <XpPointsCardV2 xpData={120} />
-             <MiniLeaderBoard/>
+            <MiniLeaderBoard />
           </div>
         </aside>
 
@@ -167,9 +169,9 @@ export const ChallengesScreenV2: React.FC = () => {
 
 
       {/* TODO:delet after dashboard done */}
-      <div className="hidden grid-cols-1 lg:grid-cols-12 gap-6 mt-3 container mx-auto ">
+      {/*   <div className="hidden grid-cols-1 lg:grid-cols-12 gap-6 mt-3 container mx-auto ">
 
-        {/* LEFT SIDEBAR: Increased width (Takes 3 out of 12 columns) */}
+      
         <aside className="hidden lg:block lg:col-span-3">
           <div className="flex flex-col gap-5 sticky top-5">
             <ProgressCard />
@@ -177,7 +179,7 @@ export const ChallengesScreenV2: React.FC = () => {
           </div>
         </aside>
 
-        {/* MAIN CENTER CONTENT: Adjusted to 6 columns to make room for wider sidebars */}
+        
         <main className="col-span-1 lg:col-span-6 flex flex-col gap-5">
 
 
@@ -198,7 +200,7 @@ export const ChallengesScreenV2: React.FC = () => {
             />
           </div>
 
-          {/* SCROLLING CONTENT */}
+          
 
           <ChallengesListSectionV2
             isLoading={isLoading}
@@ -211,7 +213,7 @@ export const ChallengesScreenV2: React.FC = () => {
 
         </main>
 
-        {/* RIGHT SIDEBAR: Increased width (Takes 3 out of 12 columns) */}
+      RIGHT SIDEBAR: Increased width (Takes 3 out of 12 columns)
         <aside className="hidden lg:block lg:col-span-3 ">
           <div className="flex flex-col gap-5 sticky top-5 ">
             <StreakCard />
@@ -219,7 +221,7 @@ export const ChallengesScreenV2: React.FC = () => {
           </div>
         </aside>
 
-      </div>
+      </div> */}
 
 
 
