@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   request: Request,
-  { params }: { params: { requestId: string; partnerId: string } }
+  { params }: { params: Promise<{ requestId: string; partnerId: string }> }
 ) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;

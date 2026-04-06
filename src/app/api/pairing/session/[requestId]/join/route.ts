@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request, { params }: { params: { requestId: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ requestId: string }> }) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
   const p = await params;

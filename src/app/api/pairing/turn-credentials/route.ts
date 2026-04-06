@@ -1,13 +1,9 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ requestId: string; partnerId: string }> }
-) {
+export async function GET() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
-  const p = await params;
 
   if (!accessToken) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -15,9 +11,9 @@ export async function POST(
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/pairing/request/${p.requestId}/approve/${p.partnerId}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/pairing/turn-credentials`,
       {
-        method: "POST",
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -28,6 +24,6 @@ export async function POST(
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
   } catch (e) {
-    return NextResponse.json({ message: "Failed to approve partner" }, { status: 502 });
+    return NextResponse.json({ message: "Failed to fetch TURN credentials" }, { status: 502 });
   }
 }
