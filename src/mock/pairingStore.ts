@@ -64,6 +64,7 @@ class PairingDemoStore extends EventTarget {
 
   private client: Client | null = null;
   private lobbySubscription: any = null;
+  private subscriptions: Map<string, any> = new Map();
   private offerSub: any = null;
   private approvedSub: any = null;
   private declinedSub: any = null;
@@ -138,7 +139,7 @@ class PairingDemoStore extends EventTarget {
            const payload = JSON.parse(msg.body);
            this.setState({ 
              requestId: payload.id,
-             requestExpiry: Date.now() + 60 * 1000 // 1 minute to join after approval
+             requestExpiry: new Date(payload.expiresAt).getTime()
            });
            this.setPermission(true);
            this.initSessionSubscription(payload.id);
@@ -181,6 +182,8 @@ class PairingDemoStore extends EventTarget {
       if (this.approvedSub) this.approvedSub.unsubscribe();
       if (this.declinedSub) this.declinedSub.unsubscribe();
       if (this.sessionSub) this.sessionSub.unsubscribe();
+      this.subscriptions.forEach(sub => sub.unsubscribe());
+      this.subscriptions.clear();
       if (this.client) this.client.deactivate();
       this.setState({ isConnected: false });
     } catch (e) {
@@ -202,6 +205,27 @@ class PairingDemoStore extends EventTarget {
     if (this.sessionSub) this.sessionSub.unsubscribe();
     
     console.log("Subscribing to session topic:", `/topic/session/${requestId}`);
+    
+    // 1. Session-Specific Notifications (JOIN_REQUEST, etc.)
+    if (this._state.requestId) {
+      const sessionTopic = `/topic/pairing/notifications/${this._state.requestId}`;
+      this.subscriptions.set(sessionTopic, this.client.subscribe(sessionTopic, (msg) => {
+        const payload = JSON.parse(msg.body);
+        if (payload.type === "JOIN_REQUEST") {
+          this.rehydrateActiveRequest();
+        }
+      }));
+    }
+
+    // 2. Personal Notifications (DECLINED, etc.)
+    const userQueue = `/user/topic/pairing/request`;
+    this.subscriptions.set(userQueue, this.client.subscribe(userQueue, (msg) => {
+      const payload = JSON.parse(msg.body);
+      if (payload.type === "SESSION_ENDED") {
+        this.cancelRequest();
+      }
+    }));
+
     this.sessionSub = this.client.subscribe(`/topic/session/${requestId}`, (msg) => {
       const payload = JSON.parse(msg.body);
       if (payload.type === "SESSION_ENDED") {
