@@ -405,6 +405,18 @@ class PairingDemoStore extends EventTarget {
       dataChannel: null,
     });
   }
+
+  async getTurnCredentials() {
+    try {
+      const res = await apiClient.get("/api/pairing/turn-credentials");
+      return res.data.data;
+    } catch (e) {
+      console.error("Failed to fetch TURN credentials, falling back to STUN only", e);
+      return {
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+      };
+    }
+  }
 }
 
 export const pairingStore = new PairingDemoStore();
