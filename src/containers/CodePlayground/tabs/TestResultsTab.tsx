@@ -6,12 +6,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { TestCase } from "@/types";
+import { ApiTestResult } from "@/types/run-code-type";
 import { KeyValueBox } from "./KeyValueBox";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { InputKeyValues } from "./InputKeyValues";
 
-export const TestResultsTab = React.memo(({ tests }: { tests: TestCase[] }) => {
+export const TestResultsTab = React.memo(({ tests }: { tests: ApiTestResult[] }) => {
   return (
     <Accordion type="multiple" className="w-full ">
       {tests?.map((test, i) => {

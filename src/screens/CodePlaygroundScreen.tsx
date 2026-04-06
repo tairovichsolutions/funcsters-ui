@@ -183,20 +183,23 @@ export const CodePlaygroundScreen = memo(() => {
         return;
       }
 
-      const failed = res?.data?.data?.testRunSummary?.failed ?? 0;
+      const responseData = res?.data?.data;
+      if (!responseData) return;
 
-      if (failed === 0) {
+      const status = responseData?.status;
+      const failed = responseData?.testRunSummary?.failed ?? 0;
+
+      if (status === 'succeeded' && failed === 0 && responseData?.testRunSummary) {
         const shouldShowXp = !viewedSolution && userProgress !== "COMPLETED";
         setEarnedXp(shouldShowXp ? xpCount : 0);
 
         if (shouldShowXp || showSuccessModal) {
           setSubmitModalOpen(true);
         }
-        setResults(null);
-        setResults(res.data.data);
+        setResults(responseData);
         updateUserProgress?.(languageId, "COMPLETED");
       } else {
-        setResults(null);
+        setResults(responseData);
       }
     } catch (err: any) {
       console.error(err);

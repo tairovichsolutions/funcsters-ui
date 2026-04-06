@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type ApiTestResult = {
   test: number;
-  input: {
-    arr: number[];
-  };
+  input: Record<string, any>;
   debug: string;
-  actual: number;
+  actual: any;
   passed: boolean;
-  expected: number;
+  expected: any;
   error: string | null;
 };
 
@@ -19,11 +17,17 @@ export type ApiTestRunSummary = {
 };
 
 export type RunCodeApiResponse = {
-  message: string;
-  statusCode: number;
-  description: string;
-  stderr: string | null;
+  id: string | null;
+  status: string;
+  message: string | null;
+  languageName: string | null;
+  languageVersion: string | null;
+  exitCode: number | null;
+  signal: string | null;
+  cpuTime: number | null;
+  wallTime: number | null;
+  memory: number | null;
+  errorOutput: string | null;
   executedAt: string | null;
-  compileOutput: string | null;
   testRunSummary: ApiTestRunSummary | null;
 };
