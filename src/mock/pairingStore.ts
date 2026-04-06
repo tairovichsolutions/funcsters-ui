@@ -291,14 +291,11 @@ class PairingDemoStore extends EventTarget {
       requestId: parseInt(requestId), // Store backend request ID
     });
 
-    // Send the join offer via WebSocket!
-    if (this.client && this.client.connected) {
-       this.client.publish({ destination: `/app/pairing/offer/${requestId}`, body: "{}" });
-    } else {
-       // Quick wait hack if connecting
-       setTimeout(() => {
-           this.client?.publish({ destination: `/app/pairing/offer/${requestId}`, body: "{}" });
-       }, 500);
+    // Send the join offer via REST API to ensure delivery
+    try {
+        await apiClient.post(`/api/pairing/request/${requestId}/offer`);
+    } catch (e) {
+        console.error("Failed to send join offer", e);
     }
   }
   
