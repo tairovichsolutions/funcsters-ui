@@ -83,71 +83,108 @@ class PairingDemoStore extends EventTarget {
     this.dispatchEvent(new Event("change"));
   }
 
-  // We MUST make initStompClient async because it needs to fetch the token from the proxy.
-  private async initStompClient() {
-    if (this.client && this.client.active) return;
-    
-    let token = "";
-    try {
-      const { data } = await apiClient.get("/api/auth/token");
-      token = data.accessToken;
-    } catch(e) {
-      console.error("Could not fetch WebSocket STOMP token", e);
-      return;
+  // Returns a Promise that resolves only AFTER the STOMP connection is fully established.
+  // This is critical in production where SockJS+SSL+nginx can take 1-3s to handshake,
+  // while REST calls complete much faster — causing a race where subscriptions are
+  // attempted before the client is connected.
+  private initStompClient(): Promise<void> {
+    // Already fully connected — resolve immediately
+    if (this.client && this.client.connected) {
+      console.log("[STOMP] Already connected, reusing existing client");
+      return Promise.resolve();
     }
 
-    let baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8091";
-    // strip everything after /api if present, or just use the base
-    let wsBaseUrl = baseUrl;
-    if (baseUrl.includes("/api")) {
-      wsBaseUrl = baseUrl.split("/api")[0];
+    // Client is activating but not yet connected — wait for it
+    if (this.client && this.client.active) {
+      console.log("[STOMP] Client is activating, waiting for connection...");
+      return new Promise<void>((resolve) => {
+        const check = setInterval(() => {
+          if (this.client?.connected) {
+            clearInterval(check);
+            console.log("[STOMP] Connection established (waited)");
+            resolve();
+          }
+        }, 100);
+        // Safety timeout — don't wait forever
+        setTimeout(() => { clearInterval(check); resolve(); }, 10000);
+      });
     }
-    
-    const socketUrl = `${wsBaseUrl}/ws`.replace(/([^:]\/)\/+/g, "$1"); // remove double slashes except after protocol
-    console.log("[STOMP] Initializing connection to:", socketUrl);
-    
-    this.client = new Client({
-      webSocketFactory: () => new SockJS(socketUrl),
-      connectHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
-      debug: (str) => console.log("[STOMP Debug]: " + str),
-      reconnectDelay: 5000,
-      onConnect: () => {
-        console.log("[STOMP] Connected Successfully!");
-        this.setState({ isConnected: true, connectionError: null });
-        
-        // Listen to Lobby
-        this.lobbySubscription = this.client?.subscribe("/topic/lobby", (msg) => {});
 
-        // Re-subscribe to request-specific topics on reconnect
-        if (this._state.requestId) {
-            if (this._state.mode === "broadcast") {
-                this.subscribeToOffers(this._state.requestId);
-            } else if (this._state.mode === "join") {
-                this.subscribeToResponse(this._state.requestId);
-            }
-            if (this._state.hasPermission) {
-                console.log("Re-subscribing to live session topic", this._state.requestId);
-                this.initSessionSubscription(this._state.requestId);
-            }
-        }
-      },
-      onStompError: (frame) => {
-        console.error("[STOMP] Protocol Error", frame);
-        this.setState({ isConnected: false, connectionError: "STOMP protocol error" });
-      },
-      onWebSocketError: (event) => {
-        console.error("[STOMP] WebSocket Error", event);
-        this.setState({ isConnected: false, connectionError: "WebSocket connection failed" });
-      },
-      onDisconnect: () => {
-        console.log("[STOMP] Disconnected");
-        this.setState({ isConnected: false });
+    // Fresh connection needed
+    return new Promise<void>(async (resolve) => {
+      let token = "";
+      try {
+        const { data } = await apiClient.get("/api/auth/token");
+        token = data.accessToken;
+      } catch(e) {
+        console.error("Could not fetch WebSocket STOMP token", e);
+        resolve();
+        return;
       }
+
+      let baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8091";
+      let wsBaseUrl = baseUrl;
+      if (baseUrl.includes("/api")) {
+        wsBaseUrl = baseUrl.split("/api")[0];
+      }
+      
+      const socketUrl = `${wsBaseUrl}/ws`.replace(/([^:]\/)\/+/g, "$1");
+      console.log("[STOMP] Initializing connection to:", socketUrl);
+      
+      // Safety timeout — resolve even if connection never establishes
+      const timeout = setTimeout(() => {
+        console.warn("[STOMP] Connection timeout — resolving anyway");
+        resolve();
+      }, 15000);
+
+      this.client = new Client({
+        webSocketFactory: () => new SockJS(socketUrl),
+        connectHeaders: {
+          Authorization: `Bearer ${token}`,
+        },
+        debug: (str) => console.log("[STOMP Debug]: " + str),
+        reconnectDelay: 5000,
+        onConnect: () => {
+          console.log("[STOMP] Connected Successfully!");
+          clearTimeout(timeout);
+          this.setState({ isConnected: true, connectionError: null });
+          
+          // Listen to Lobby
+          this.lobbySubscription = this.client?.subscribe("/topic/lobby", (msg) => {});
+
+          // Re-subscribe to request-specific topics on reconnect
+          if (this._state.requestId) {
+              if (this._state.mode === "broadcast") {
+                  this.subscribeToOffers(this._state.requestId);
+              } else if (this._state.mode === "join") {
+                  this.subscribeToResponse(this._state.requestId);
+              }
+              if (this._state.hasPermission) {
+                  console.log("Re-subscribing to live session topic", this._state.requestId);
+                  this.initSessionSubscription(this._state.requestId);
+              }
+          }
+
+          resolve();
+        },
+        onStompError: (frame) => {
+          console.error("[STOMP] Protocol Error", frame);
+          clearTimeout(timeout);
+          this.setState({ isConnected: false, connectionError: "STOMP protocol error" });
+          resolve();
+        },
+        onWebSocketError: (event) => {
+          console.error("[STOMP] WebSocket Error", event);
+          this.setState({ isConnected: false, connectionError: "WebSocket connection failed" });
+        },
+        onDisconnect: () => {
+          console.log("[STOMP] Disconnected");
+          this.setState({ isConnected: false });
+        }
+      });
+      
+      this.client.activate();
     });
-    
-    this.client.activate();
   }
 
   private stopStompClient() {
