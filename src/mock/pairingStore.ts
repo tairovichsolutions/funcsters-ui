@@ -117,45 +117,20 @@ class PairingDemoStore extends EventTarget {
         console.log("[STOMP] Connected Successfully!");
         this.setState({ isConnected: true, connectionError: null });
         
-        this.offerSub = this.client?.subscribe("/user/queue/pairing/offer", (msg) => {
-           if (this._state.mode !== "broadcast") return;
-           const payload = JSON.parse(msg.body);
-           const req: PairRequestType = {
-               id: payload.partnerId.toString(),
-               name: payload.partnerUsername,
-               username: payload.partnerUsername,
-               avatarUrl: payload.partnerAvatarUrl || `https://ui-avatars.com/api/?name=${payload.partnerUsername}`,
-               occupation: "Developer",
-               country: "Earth",
-               xp: 0,
-               languages: ["TypeScript"],
-               programmingLanguage: "TypeScript",
-           };
-           this.setState({ incomingRequests: [...this._state.incomingRequests, req] });
-        });
-
-        this.approvedSub = this.client?.subscribe("/user/queue/pairing/approved", (msg) => {
-           if (this._state.mode !== "join") return;
-           const payload = JSON.parse(msg.body);
-           this.setState({ 
-             requestId: payload.id,
-             requestExpiry: new Date(payload.expiresAt).getTime()
-           });
-           this.setPermission(true);
-           this.initSessionSubscription(payload.id);
-        });
-
-        this.declinedSub = this.client?.subscribe("/user/queue/pairing/declined", (msg) => {
-           this.cancelRequest();
-        });
-        
-        // Listen to Lobby if we are broadcasting
+        // Listen to Lobby
         this.lobbySubscription = this.client?.subscribe("/topic/lobby", (msg) => {});
 
-        // Re-subscribe to active session topic if rehydrated
-        if (this._state.requestId && this._state.hasPermission) {
-            console.log("Re-subscribing to live session topic", this._state.requestId);
-            this.initSessionSubscription(this._state.requestId);
+        // Re-subscribe to request-specific topics on reconnect
+        if (this._state.requestId) {
+            if (this._state.mode === "broadcast") {
+                this.subscribeToOffers(this._state.requestId);
+            } else if (this._state.mode === "join") {
+                this.subscribeToResponse(this._state.requestId);
+            }
+            if (this._state.hasPermission) {
+                console.log("Re-subscribing to live session topic", this._state.requestId);
+                this.initSessionSubscription(this._state.requestId);
+            }
         }
       },
       onStompError: (frame) => {
@@ -236,6 +211,60 @@ class PairingDemoStore extends EventTarget {
     });
   }
 
+  // Subscribe to join offers for a specific request (host listens for partners wanting to join)
+  private subscribeToOffers(requestId: number) {
+    if (this.offerSub) { this.offerSub.unsubscribe(); this.offerSub = null; }
+    if (!this.client || !this.client.connected) {
+        console.warn("[PairingStore] Cannot subscribe to offers: STOMP not connected");
+        return;
+    }
+    console.log(`[PairingStore] Subscribing to /topic/pairing/offers/${requestId}`);
+    this.offerSub = this.client.subscribe(`/topic/pairing/offers/${requestId}`, (msg) => {
+        if (this._state.mode !== "broadcast") return;
+        const payload = JSON.parse(msg.body);
+        console.log("[PairingStore] Received join offer:", payload);
+        const req: PairRequestType = {
+            id: payload.partnerId.toString(),
+            name: payload.partnerUsername,
+            username: payload.partnerUsername,
+            avatarUrl: payload.partnerAvatarUrl || `https://ui-avatars.com/api/?name=${payload.partnerUsername}`,
+            occupation: "Developer",
+            country: "Earth",
+            xp: 0,
+            languages: ["TypeScript"],
+            programmingLanguage: "TypeScript",
+        };
+        this.setState({ incomingRequests: [...this._state.incomingRequests, req] });
+    });
+  }
+
+  // Subscribe to approval/decline responses for a specific request (partner listens for host's decision)
+  private subscribeToResponse(requestId: number) {
+    if (this.approvedSub) { this.approvedSub.unsubscribe(); this.approvedSub = null; }
+    if (this.declinedSub) { this.declinedSub.unsubscribe(); this.declinedSub = null; }
+    if (!this.client || !this.client.connected) {
+        console.warn("[PairingStore] Cannot subscribe to response: STOMP not connected");
+        return;
+    }
+    console.log(`[PairingStore] Subscribing to /topic/pairing/response/${requestId}`);
+    this.approvedSub = this.client.subscribe(`/topic/pairing/response/${requestId}`, (msg) => {
+        const payload = JSON.parse(msg.body);
+        console.log("[PairingStore] Received pairing response:", payload);
+        if (payload.type === "APPROVED") {
+            if (this._state.mode !== "join") return;
+            const dto = payload.data;
+            this.setState({ 
+              requestId: dto.id,
+              requestExpiry: new Date(dto.expiresAt).getTime()
+            });
+            this.setPermission(true);
+            this.initSessionSubscription(dto.id);
+        } else if (payload.type === "DECLINED") {
+            this.cancelRequest();
+        }
+    });
+  }
+
   async startBroadcast(id: string, slug: string, title: string, payloadData?: any) {
     try {
       const focusList = payloadData?.focuses || [];
@@ -269,6 +298,9 @@ class PairingDemoStore extends EventTarget {
         targetUser: null,
         requestId: data.id,
       });
+
+      // Subscribe to offers for THIS specific request
+      this.subscribeToOffers(data.id);
     } catch (e) {
       console.error("Failed to start broadcast", e);
     }
@@ -290,6 +322,9 @@ class PairingDemoStore extends EventTarget {
       hasPermission: false, 
       requestId: parseInt(requestId), // Store backend request ID
     });
+
+    // Subscribe to approval/decline responses for this request
+    this.subscribeToResponse(parseInt(requestId));
 
     // Send the join offer via REST API to ensure delivery
     try {
@@ -395,6 +430,13 @@ class PairingDemoStore extends EventTarget {
           hasPermission: data.status === "ACTIVE",
           sessionStarted: data.isPartnerJoined || false,
         });
+
+        // Set up request-specific subscriptions based on role
+        if (isHost && (data.status === "OPEN" || data.status === "PENDING")) {
+            this.subscribeToOffers(data.id);
+        } else if (!isHost && (data.status === "OPEN" || data.status === "PENDING")) {
+            this.subscribeToResponse(data.id);
+        }
 
         if (data.status === "ACTIVE") {
             this.initSessionSubscription(data.id);
