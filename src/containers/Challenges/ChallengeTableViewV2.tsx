@@ -24,11 +24,8 @@ export const ChallengeTableViewV2: React.FC<ChallengeTableViewProps> = ({
   const hasItems = items && items.length > 0;
 
   return (
-    // 1. Changed to 'overflow-x-auto' to allow horizontal scrolling on small screens
     <div className="overflow-x-auto overflow-y-hidden w-full">
-      
-      {/* 2. Added 'min-w-[800px]' so the table refuses to squish smaller than 800px, triggering the scrollbar */}
-      <Table className="w-full min-w-[800px] table-fixed">
+      <Table className="w-full xl:min-w-0 min-w-[800px]  table-fixed">
         <TableHeader className="bg-white!  dark:bg-[#FFFFFF0D]! overflow-hidden">
           <TableRow
             className="border-b-0! 
@@ -37,13 +34,14 @@ export const ChallengeTableViewV2: React.FC<ChallengeTableViewProps> = ({
             [&_th:first-child]:rounded-l-lg 
             [&_th:last-child]:rounded-r-lg " 
           >
-            {/* 3. Added explicit min-w to all headers to lock their sizes */}
-            <TableHead className="w-[280px] min-w-[280px] text-[#212121]! dark:text-white!">Title</TableHead>
-            <TableHead className="min-w-[250px] text-[#212121]! dark:text-white!">Summary</TableHead>
-            <TableHead className="w-[120px] min-w-[120px] text-[#212121]! dark:text-white!">Difficulty</TableHead>
-            <TableHead className="w-[100px] min-w-[100px] text-[#212121]! dark:text-white! align-end"><div className=" text-end">
-                
-                Status</div></TableHead>
+            <TableHead className="w-[70px] min-w-[70px] text-[#212121]! dark:text-white!">Title</TableHead>
+            {/* Increased width slightly to give tags more room */}
+            <TableHead className="min-w-[120px] w-[120px] text-[#212121]! dark:text-white!">Summary</TableHead>
+            <TableHead className="w-[60px] min-w-[60px] text-[#212121]! dark:text-white!">Difficulty</TableHead>
+            <TableHead className="w-[60px] min-w-[60px] text-[#212121]! dark:text-white!">Tags</TableHead>
+            <TableHead className="w-[20px] min-w-[20px] text-[#212121]! dark:text-white! align-end">
+              <div className=" text-end">Status</div>
+            </TableHead>
           </TableRow>
         </TableHeader>
 
@@ -62,33 +60,18 @@ export const ChallengeTableViewV2: React.FC<ChallengeTableViewProps> = ({
                     not-even:[&_td:first-child]:rounded-l-lg 
                     not-even:[&_td:last-child]:rounded-r-lg"
                 >
-                  {/* Title & Tags Cell */}
-                  <TableCell className="font-medium align-top py-3 pr-4 overflow-visible">
-                    <div className="flex flex-col gap-2 relative">
-                      <Link
-                        className="hover:underline block w-full truncate"
-                        href={Navigation.ChallengesDetail(String(item?.slug))}
-                        title={item?.title}
-                      >
-                       {item?.title}
-                      </Link>
-
-                      <div className="flex gap-2 items-center w-max relative z-10">
-                        {tags?.slice(0, 5).map((tag: string) => (
-                          <TagChip className="rounded-full! text-[10px]! px-2! py-1! text-[#005092]" key={tag}>{tag}</TagChip>
-                        ))}
-
-                        {tags?.length > 5 && (
-                          <button
-                            className="inline-flex shrink-0 items-center rounded-sm font-semibold bg-[#F9FAFB] dark:bg-primary/20 border border-[#E5E7EB] dark:border-primary/20 px-2 py-1 text-sm"
-                            aria-label={`Show ${tags?.length - 5} more tags`}
-                          >
-                            +{tags?.length - 5}
-                          </button>
-                        )}
-                      </div>
-                    </div>
+                  {/* Title Cell */}
+                  <TableCell className="font-medium align-top py-3 pr-4">
+                    <Link
+                      className="hover:underline block w-full truncate"
+                      href={Navigation.ChallengesDetail(String(item?.slug))}
+                      title={item?.title}
+                    >
+                     {item?.title}
+                    </Link>
                   </TableCell>
+
+                
 
                   {/* Summary Cell */}
                   <TableCell className="text-muted-foreground align-top py-3 pe-10 3xl:pe-20">
@@ -105,7 +88,24 @@ export const ChallengeTableViewV2: React.FC<ChallengeTableViewProps> = ({
                   <TableCell className="align-top py-3 truncate">
                     <DifficultyChip level={item?.difficulty} />
                   </TableCell>
+  {/* Tags Cell - Fixed Overflow */}
+                  <TableCell className="align-top py-3 pr-4">
+                    {/* Replaced w-max with flex-wrap and removed overflow-visible */}
+                    <div className="flex w-max  gap-2 items-center">
+                      {tags?.slice(0, 1).map((tag: string) => (
+                        <TagChip className="rounded-full! text-[10px]! px-2! py-1! text-[#005092]" key={tag}>{tag}</TagChip>
+                      ))}
 
+                      {tags?.length > 1 && (
+                        <button
+                          className="inline-flex w-max shrink-0 items-center rounded-sm font-semibold bg-[#F9FAFB] dark:bg-primary/20 border border-[#E5E7EB] dark:border-primary/20 p-1  text-xs"
+                          aria-label={`Show ${tags?.length - 1} more tags`}
+                        >
+                          +{tags?.length - 1}
+                        </button>
+                      )}
+                    </div>
+                  </TableCell>
                   {/* Status Cell */}
                   <TableCell className="align-top  py-3 truncate">
                     {item?.userProgress ? (
@@ -122,7 +122,7 @@ export const ChallengeTableViewV2: React.FC<ChallengeTableViewProps> = ({
           ) : (
             <TableRow>
               <TableCell
-                colSpan={4}
+                colSpan={5}
                 className="h-24 text-center text-muted-foreground"
               >
                 No results.
@@ -134,3 +134,5 @@ export const ChallengeTableViewV2: React.FC<ChallengeTableViewProps> = ({
     </div>
   );
 };
+
+

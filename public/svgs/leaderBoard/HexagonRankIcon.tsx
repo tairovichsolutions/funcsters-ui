@@ -31,7 +31,6 @@ const HexagonRankIcon = ({ value, ...props }: HexagonRankIconProps) => (
           suppressHydrationWarning
         >
           <tspan x="48.5" dy="0" fontSize="12" fontWeight="bold">#{value}</tspan>
-          <tspan x="48.5" dy="13" fontSize="10" fontWeight="normal">Your Rank</tspan>
         </text>
       </g>
     </g>
