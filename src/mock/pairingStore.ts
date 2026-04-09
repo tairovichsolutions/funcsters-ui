@@ -270,7 +270,10 @@ class PairingDemoStore extends EventTarget {
       const preferredLangs = payloadData?.programmingLanguages || ["JavaScript"];
       const spokenLangs = payloadData?.spokenLanguages || ["English"];
 
-      await this.initStompClient();
+      // Start STOMP in background — don't block the REST call.
+      // It will connect and set up subscriptions well before anyone from the lobby can join.
+      this.initStompClient();
+
       const res = await apiClient.post("/api/pairing/request", {
         challengeId: parseInt(id),
         focusAreas: mappedFocuses,
@@ -448,6 +451,10 @@ class PairingDemoStore extends EventTarget {
   }
 
   async cancelRequest() {
+    // Clean up session timer from localStorage
+    if (this._state.requestId) {
+      try { localStorage.removeItem(`pairing-session-timer-${this._state.requestId}`); } catch {}
+    }
     if (this._state.requestId && this._state.mode === "broadcast") {
         try {
             await apiClient.delete(`/api/pairing/request/${this._state.requestId}`);

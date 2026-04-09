@@ -101,9 +101,52 @@ export const ChallengesWorkSpaceHeader = () => {
   }, [isPartnerRequested]);
 
   const [isMuted, setIsMuted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(45 * 60);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
   
+  // ─── Session timer (45 min) — persists across page refresh via localStorage ───
+  const SESSION_DURATION = 45 * 60; // seconds
+  const timerKey = requestId ? `pairing-session-timer-${requestId}` : null;
+
+  const getStoredTimeLeft = (): number => {
+    if (!timerKey) return SESSION_DURATION;
+    const stored = localStorage.getItem(timerKey);
+    if (stored) {
+      const endTime = parseInt(stored, 10);
+      const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+      return remaining > 0 ? remaining : 0;
+    }
+    return SESSION_DURATION; // not started yet
+  };
+
+  const [timeLeft, setTimeLeft] = useState(SESSION_DURATION);
+
+  // When session actually starts, set the end time in localStorage (only once)
+  useEffect(() => {
+    if (hasPermission && sessionStarted && timerKey) {
+      if (!localStorage.getItem(timerKey)) {
+        const endTime = Date.now() + SESSION_DURATION * 1000;
+        localStorage.setItem(timerKey, endTime.toString());
+      }
+      // Restore from localStorage
+      setTimeLeft(getStoredTimeLeft());
+    }
+  }, [hasPermission, sessionStarted, timerKey]);
+
+  // Countdown effect — reads from localStorage end time for accuracy
+  useEffect(() => {
+    if (hasPermission && sessionStarted && timeLeft > 0 && timerKey) {
+      const timer = setInterval(() => {
+        const remaining = getStoredTimeLeft();
+        setTimeLeft(remaining);
+        if (remaining <= 0) {
+          clearInterval(timer);
+          localStorage.removeItem(timerKey);
+        }
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [hasPermission, sessionStarted, timeLeft > 0, timerKey]);
+
   // Wire up the WebRTC voice chat + DataChannel automatically when session activates
   useAudioCall(hasPermission ? requestId : null, isMuted, sessionStarted);
 
@@ -150,15 +193,6 @@ export const ChallengesWorkSpaceHeader = () => {
     setIsRulesModalOpen(false);
     router.replace("/lobby");
   };
-
-  useEffect(() => {
-    if (hasPermission && sessionStarted && timeLeft > 0) {
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [hasPermission, sessionStarted, timeLeft]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
