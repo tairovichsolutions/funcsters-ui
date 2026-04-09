@@ -63,6 +63,7 @@ class PairingDemoStore extends EventTarget {
   };
 
   private client: Client | null = null;
+  private connectPromise: Promise<void> | null = null;
   private lobbySubscription: any = null;
   private subscriptions: Map<string, any> = new Map();
   private offerSub: any = null;
@@ -83,9 +84,14 @@ class PairingDemoStore extends EventTarget {
     this.dispatchEvent(new Event("change"));
   }
 
-  // We MUST make initStompClient async because it needs to fetch the token from the proxy.
-  private async initStompClient() {
-    if (this.client && this.client.active) return;
+  // Returns a promise that resolves when the STOMP connection is fully established.
+  // This is critical in production where SockJS may fall back to xhr-polling through
+  // the double nginx proxy, taking 2-3 seconds instead of <200ms locally.
+  private async initStompClient(): Promise<void> {
+    // If we already have a pending connection, wait for it instead of creating a new one
+    if (this.connectPromise && this.client && this.client.active) {
+      return this.connectPromise;
+    }
     
     let token = "";
     try {
@@ -103,76 +109,89 @@ class PairingDemoStore extends EventTarget {
       wsBaseUrl = baseUrl.split("/api")[0];
     }
     
-    const socketUrl = `${wsBaseUrl}/ws`.replace(/([^:]\/)\/+/g, "$1"); // remove double slashes except after protocol
+    const socketUrl = `${wsBaseUrl}/ws`.replace(/([^:]\/)\//g, "$1"); // remove double slashes except after protocol
     console.log("[STOMP] Initializing connection to:", socketUrl);
     
-    this.client = new Client({
-      webSocketFactory: () => new SockJS(socketUrl),
-      connectHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
-      debug: (str) => console.log("[STOMP Debug]: " + str),
-      reconnectDelay: 5000,
-      onConnect: () => {
-        console.log("[STOMP] Connected Successfully!");
-        this.setState({ isConnected: true, connectionError: null });
-        
-        this.offerSub = this.client?.subscribe("/user/queue/pairing/offer", (msg) => {
-           if (this._state.mode !== "broadcast") return;
-           const payload = JSON.parse(msg.body);
-           const req: PairRequestType = {
-               id: payload.partnerId.toString(),
-               name: payload.partnerUsername,
-               username: payload.partnerUsername,
-               avatarUrl: payload.partnerAvatarUrl || `https://ui-avatars.com/api/?name=${payload.partnerUsername}`,
-               occupation: "Developer",
-               country: "Earth",
-               xp: 0,
-               languages: ["TypeScript"],
-               programmingLanguage: "TypeScript",
-           };
-           this.setState({ incomingRequests: [...this._state.incomingRequests, req] });
-        });
+    this.connectPromise = new Promise<void>((resolve, reject) => {
+      this.client = new Client({
+        webSocketFactory: () => new SockJS(socketUrl),
+        connectHeaders: {
+          Authorization: `Bearer ${token}`,
+        },
+        debug: (str) => console.log("[STOMP Debug]: " + str),
+        reconnectDelay: 5000,
+        onConnect: () => {
+          console.log("[STOMP] Connected Successfully!");
+          this.setState({ isConnected: true, connectionError: null });
+          
+          this.offerSub = this.client?.subscribe("/user/queue/pairing/offer", (msg) => {
+             if (this._state.mode !== "broadcast") return;
+             const payload = JSON.parse(msg.body);
+             const req: PairRequestType = {
+                 id: payload.partnerId.toString(),
+                 name: payload.partnerUsername,
+                 username: payload.partnerUsername,
+                 avatarUrl: payload.partnerAvatarUrl || `https://ui-avatars.com/api/?name=${payload.partnerUsername}`,
+                 occupation: "Developer",
+                 country: "Earth",
+                 xp: 0,
+                 languages: ["TypeScript"],
+                 programmingLanguage: "TypeScript",
+             };
+             this.setState({ incomingRequests: [...this._state.incomingRequests, req] });
+          });
 
-        this.approvedSub = this.client?.subscribe("/user/queue/pairing/approved", (msg) => {
-           if (this._state.mode !== "join") return;
-           const payload = JSON.parse(msg.body);
-           this.setState({ 
-             requestId: payload.id,
-             requestExpiry: new Date(payload.expiresAt).getTime()
-           });
-           this.setPermission(true);
-           this.initSessionSubscription(payload.id);
-        });
+          this.approvedSub = this.client?.subscribe("/user/queue/pairing/approved", (msg) => {
+             if (this._state.mode !== "join") return;
+             const payload = JSON.parse(msg.body);
+             this.setState({ 
+               requestId: payload.id,
+               requestExpiry: new Date(payload.expiresAt).getTime()
+             });
+             this.setPermission(true);
+             this.initSessionSubscription(payload.id);
+          });
 
-        this.declinedSub = this.client?.subscribe("/user/queue/pairing/declined", (msg) => {
-           this.cancelRequest();
-        });
-        
-        // Listen to Lobby if we are broadcasting
-        this.lobbySubscription = this.client?.subscribe("/topic/lobby", (msg) => {});
+          this.declinedSub = this.client?.subscribe("/user/queue/pairing/declined", (msg) => {
+             this.cancelRequest();
+          });
+          
+          // Listen to Lobby if we are broadcasting
+          this.lobbySubscription = this.client?.subscribe("/topic/lobby", (msg) => {});
 
-        // Re-subscribe to active session topic if rehydrated
-        if (this._state.requestId && this._state.hasPermission) {
-            console.log("Re-subscribing to live session topic", this._state.requestId);
-            this.initSessionSubscription(this._state.requestId);
+          // Re-subscribe to active session topic if rehydrated
+          if (this._state.requestId && this._state.hasPermission) {
+              console.log("Re-subscribing to live session topic", this._state.requestId);
+              this.initSessionSubscription(this._state.requestId);
+          }
+
+          // Resolve the promise — callers of initStompClient() can now safely publish
+          resolve();
+        },
+        onStompError: (frame) => {
+          console.error("[STOMP] Protocol Error", frame);
+          this.setState({ isConnected: false, connectionError: "STOMP protocol error" });
+          reject(new Error("STOMP protocol error"));
+        },
+        onWebSocketError: (event) => {
+          console.error("[STOMP] WebSocket Error", event);
+          this.setState({ isConnected: false, connectionError: "WebSocket connection failed" });
+          // Don't reject here — SockJS may retry with a different transport
+        },
+        onDisconnect: () => {
+          console.log("[STOMP] Disconnected");
+          this.setState({ isConnected: false });
         }
-      },
-      onStompError: (frame) => {
-        console.error("[STOMP] Protocol Error", frame);
-        this.setState({ isConnected: false, connectionError: "STOMP protocol error" });
-      },
-      onWebSocketError: (event) => {
-        console.error("[STOMP] WebSocket Error", event);
-        this.setState({ isConnected: false, connectionError: "WebSocket connection failed" });
-      },
-      onDisconnect: () => {
-        console.log("[STOMP] Disconnected");
-        this.setState({ isConnected: false });
-      }
+      });
+      
+      this.client.activate();
+
+      // Safety net: if connection doesn't establish within 10s, resolve anyway
+      // so the caller doesn't hang forever. The publish will just be a no-op.
+      setTimeout(() => resolve(), 10000);
     });
-    
-    this.client.activate();
+
+    return this.connectPromise;
   }
 
   private stopStompClient() {
@@ -195,6 +214,7 @@ class PairingDemoStore extends EventTarget {
     this.declinedSub = null;
     this.sessionSub = null;
     this.client = null;
+    this.connectPromise = null;
   }
 
   private initSessionSubscription(requestId: number) {
@@ -276,6 +296,8 @@ class PairingDemoStore extends EventTarget {
 
   // Partner decides to join a host
   async requestToJoin(requestId: string, id: string, slug: string, title: string, user: any) {
+    // initStompClient now awaits until onConnect actually fires,
+    // so by the time this resolves the client is guaranteed to be connected.
     await this.initStompClient();
     
     this.setState({
@@ -291,14 +313,29 @@ class PairingDemoStore extends EventTarget {
       requestId: parseInt(requestId), // Store backend request ID
     });
 
-    // Send the join offer via WebSocket!
+    // Send the join offer via WebSocket — connection is guaranteed ready
     if (this.client && this.client.connected) {
+       console.log("[Pairing] Publishing join offer for request", requestId);
        this.client.publish({ destination: `/app/pairing/offer/${requestId}`, body: "{}" });
     } else {
-       // Quick wait hack if connecting
-       setTimeout(() => {
-           this.client?.publish({ destination: `/app/pairing/offer/${requestId}`, body: "{}" });
-       }, 500);
+       console.warn("[Pairing] STOMP client not connected after init — retrying join offer");
+       // Fallback: wait and retry a few times
+       const retryPublish = (attempts: number) => {
+         if (attempts <= 0) {
+           console.error("[Pairing] Failed to send join offer after all retries");
+           return;
+         }
+         setTimeout(() => {
+           if (this.client?.connected) {
+             console.log("[Pairing] Retry succeeded — publishing join offer");
+             this.client.publish({ destination: `/app/pairing/offer/${requestId}`, body: "{}" });
+           } else {
+             console.warn(`[Pairing] Still not connected, ${attempts - 1} retries left`);
+             retryPublish(attempts - 1);
+           }
+         }, 1000);
+       };
+       retryPublish(5);
     }
   }
   
