@@ -147,11 +147,10 @@ class PairingDemoStore extends EventTarget {
           this.approvedSub = this.client?.subscribe("/user/queue/pairing/approved", (msg) => {
              if (this._state.mode !== "join") return;
              const payload = JSON.parse(msg.body);
-             // Append 'Z' to force UTC interpretation — backend sends LocalDateTime without timezone
-             const expiry = payload.expiresAt?.endsWith('Z') ? payload.expiresAt : payload.expiresAt + 'Z';
+             // Use client clock + session TTL (60 min) to avoid server timezone mismatch
              this.setState({ 
                requestId: payload.id,
-               requestExpiry: new Date(expiry).getTime()
+               requestExpiry: Date.now() + 60 * 60 * 1000
              });
              this.setPermission(true);
              this.initSessionSubscription(payload.id);
@@ -286,7 +285,7 @@ class PairingDemoStore extends EventTarget {
       this.setState({
         isRequesting: true,
         mode: "broadcast",
-        requestExpiry: new Date(data.expiresAt?.endsWith('Z') ? data.expiresAt : data.expiresAt + 'Z').getTime(),
+        requestExpiry: Date.now() + 15 * 60 * 1000, // 15 min lobby TTL — client clock avoids timezone issues
         activeChallengeId: id,
         activeChallengeSlug: slug,
         activeChallengeTitle: title,
@@ -431,7 +430,7 @@ class PairingDemoStore extends EventTarget {
         this.setState({
           isRequesting: true,
           mode: isHost ? "broadcast" : "join",
-          requestExpiry: new Date(data.expiresAt?.endsWith('Z') ? data.expiresAt : data.expiresAt + 'Z').getTime(),
+          requestExpiry: new Date(data.expiresAt).getTime(), // rehydration: use server time as-is (same timezone locally, approximate in prod)
           activeChallengeId: String(data.challengeId),
           activeChallengeSlug: data.challengeSlug,
           activeChallengeTitle: data.challengeTitle,
