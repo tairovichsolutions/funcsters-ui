@@ -249,7 +249,7 @@ class PairingDemoStore extends EventTarget {
       const spokenLangs = payloadData?.spokenLanguages || ["English"];
 
       await this.initStompClient();
-      const res = await apiClient.post("/api/pairing/request", {
+      const res = await apiClient.post("/api/v1/pairing/request", {
         challengeId: parseInt(id),
         focusAreas: mappedFocuses,
         preferredLanguages: preferredLangs,
@@ -306,7 +306,7 @@ class PairingDemoStore extends EventTarget {
    async acceptPartner(partnerId: string) {
        if (!this._state.requestId) return;
        try {
-           const res = await apiClient.post(`/api/pairing/request/${this._state.requestId}/approve/${partnerId}`);
+           const res = await apiClient.post(`/api/v1/pairing/request/${this._state.requestId}/approve/${partnerId}`);
            const data: PairingRequestDto = res.data.data;
            this.setPermission(true);
            this.setState({ sessionStarted: data.isPartnerJoined });
@@ -319,7 +319,7 @@ class PairingDemoStore extends EventTarget {
   async declinePartner(partnerId: string) {
       if (!this._state.requestId) return;
       try {
-          await apiClient.post(`/api/pairing/request/${this._state.requestId}/decline/${partnerId}`);
+          await apiClient.post(`/api/v1/pairing/request/${this._state.requestId}/decline/${partnerId}`);
       } catch (e) {
           console.error(e);
       }
@@ -331,7 +331,7 @@ class PairingDemoStore extends EventTarget {
       if (!this._state.requestId) return;
       
       try {
-          await apiClient.post(`/api/pairing/session/${this._state.requestId}/end`);
+          await apiClient.post(`/api/v1/pairing/session/${this._state.requestId}/end`);
           this.cancelRequest();
       } catch (e) {
           console.error("Failed to end session via API", e);
@@ -342,7 +342,7 @@ class PairingDemoStore extends EventTarget {
 
   async joinSession(requestId: number) {
       try {
-          await apiClient.post(`/api/pairing/session/${requestId}/join`);
+          await apiClient.post(`/api/v1/pairing/session/${requestId}/join`);
       } catch (e) {
           console.error("Failed to signal session join", e);
       }
@@ -361,7 +361,7 @@ class PairingDemoStore extends EventTarget {
 
   async rehydrateActiveRequest() {
     try {
-      const res = await apiClient.get("/api/pairing/my-request");
+      const res = await apiClient.get("/api/v1/pairing/my-request");
       const data: PairingRequestDto = res.data.data;
       if (data) {
         const myUserId = getCookie("userId");
@@ -411,7 +411,7 @@ class PairingDemoStore extends EventTarget {
   async cancelRequest() {
     if (this._state.requestId && this._state.mode === "broadcast") {
         try {
-            await apiClient.delete(`/api/pairing/request/${this._state.requestId}`);
+            await apiClient.delete(`/api/v1/pairing/request/${this._state.requestId}`);
         } catch (e) {
             console.error(e);
         }
@@ -432,7 +432,7 @@ class PairingDemoStore extends EventTarget {
 
   async getTurnCredentials() {
     try {
-      const res = await apiClient.get("/api/pairing/turn-credentials");
+      const res = await apiClient.get("/api/v1/pairing/turn-credentials");
       return res.data.data;
     } catch (e) {
       console.error("Failed to fetch TURN credentials, falling back to STUN only", e);
