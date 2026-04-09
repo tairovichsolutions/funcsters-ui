@@ -94,25 +94,23 @@ class PairingDemoStore extends EventTarget {
     }
     
     let token = "";
-    let apiBaseUrl = "";
     try {
       const { data } = await apiClient.get("/api/auth/token");
       token = data.accessToken;
-      apiBaseUrl = data.apiBaseUrl || "";
     } catch(e) {
       console.error("Could not fetch WebSocket STOMP token", e);
       return;
     }
 
-    // Use the server-provided apiBaseUrl (runtime env var) instead of
-    // process.env.NEXT_PUBLIC_API_BASE_URL which may not be baked into the
-    // client bundle if the Dockerfile doesn't properly pass the build arg.
-    let wsBaseUrl = apiBaseUrl || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8091";
-    if (wsBaseUrl.includes("/api")) {
-      wsBaseUrl = wsBaseUrl.split("/api")[0];
+    // Connect WebSocket to the SAME origin as the page.
+    // In production: funcsters.io/ws → nginx proxies to backend:8091/ws
+    // Locally: localhost:3000/ws won't work, so fall back to backend directly.
+    let socketUrl: string;
+    if (typeof window !== "undefined" && !window.location.hostname.includes("localhost")) {
+      socketUrl = `${window.location.origin}/ws`;
+    } else {
+      socketUrl = "http://localhost:8091/ws";
     }
-    
-    const socketUrl = `${wsBaseUrl}/ws`.replace(/([^:]\/)\//g, "$1");
     console.log("[STOMP] Initializing connection to:", socketUrl);
     
     this.connectPromise = new Promise<void>((resolve, reject) => {
