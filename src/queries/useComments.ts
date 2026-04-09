@@ -108,7 +108,7 @@ export const useReplies = (rootId: string | number | null, enabledFlag: boolean)
         repliesCount: 0,
       },
 
-      // 4. Heavily Downvoted (Tests negative score and red downvote fill)
+      //
       {
         id: Number(`${rootId}104`),
         comment: "I completely disagree. I think this approach is entirely wrong.",
@@ -120,14 +120,14 @@ export const useReplies = (rootId: string | number | null, enabledFlag: boolean)
           avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Chris"
         },
         upvotesCount: 1,
-        downvotesCount: 15, // Score will show as -14
-        currentUserVote: "DOWNVOTE", // Tests the red downvote fill
+        downvotesCount: 15,
+        currentUserVote: "DOWNVOTE",
         deleted: false,
         submissionId: 789,
         repliesCount: 0,
       },
 
-      // 5. Very Long Reply (Tests the 6-line truncation and 'Read more' button)
+     
       {
         id: Number(`${rootId}105`),
         comment: "reply exceeds six lines of text, it should automatically hide the overflow and display a 'Read more' button. Clicking that button toggles the `isExpanded` state, allowing the user to read this entire massive block of text without leaving the page or ruining the indented layout of the reply chain. Let's see if it wraps properly!",
@@ -145,7 +145,7 @@ export const useReplies = (rootId: string | number | null, enabledFlag: boolean)
         repliesCount: 0,
       },
 
-      // 6. Reply with ITS OWN Replies (Tests deep nesting/recursion)
+     
       {
         id: Number(`${rootId}106`),
         comment: "Wait, can replies have their own replies? Let's find out.",
@@ -161,18 +161,18 @@ export const useReplies = (rootId: string | number | null, enabledFlag: boolean)
         currentUserVote: null,
         deleted: false,
         submissionId: 789,
-        repliesCount: 2, // This will show the "2 replies" dropdown button inside the reply!
+        repliesCount: 2,
       },
 
-      // 7. "My Own" Reply (Tests the Edit and Delete buttons)
-      // NOTE: To test this, you must change `id: 9999` to whatever ID is currently stored in your `getCookie("userId")`
+     
+     
       {
         id: Number(`${rootId}107`),
         comment: "This is my own reply. I should see the Edit (Pencil) and Delete (Trash) buttons here, and the voting arrows should be disabled.",
         createdAt: new Date().toISOString(), 
         createdAgo: "Just now",
         user: {
-          id: 9999, // <--- CHANGE THIS TO MATCH YOUR LOGGED-IN USER ID
+          id: 9999, 
           name: "My Account",
           avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Me"
         },
@@ -187,7 +187,7 @@ export const useReplies = (rootId: string | number | null, enabledFlag: boolean)
   };
 
   return useQuery({
-    // Replace 'GetReplies' with QueryKey.GetReplies if you use an enum
+
     queryKey: ['GetReplies', rootId], 
     queryFn: fetchReplies,
     enabled: !!rootId && enabledFlag,

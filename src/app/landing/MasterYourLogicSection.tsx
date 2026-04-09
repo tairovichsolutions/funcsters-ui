@@ -73,8 +73,7 @@ export default function MasterYourLogicSection() {
       
         <div className="relative w-full ">
         
-          {/* --- LEFT FLOATING ICON --- */}
-          {/* Changed to: left-0 -translate-x-1/2 */}
+   
           <div className="absolute left-10   2xl:left-0 top-24 -translate-x-1/2 float-icon-1 bg-white border border-blue-500 hidden lg:flex rounded-md shadow-sm p-3  flex-col items-center justify-center z-10 w-16 float-icon-1">
             <Zap className="w-5 h-5 text-gray-700 mb-1" />
             <span className="text-[10px] font-bold text-gray-700">+450XP</span>
@@ -90,7 +89,6 @@ export default function MasterYourLogicSection() {
             <BrainCircuit className="w-6 h-6 text-gray-600" />
           </div>
 
-          {/* --- CENTRAL IMAGE --- */}
           <div className="w-full bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden relative z-0">
             <Image 
               src={Assets.Images.landingPage.banner4}
@@ -137,171 +135,3 @@ export default function MasterYourLogicSection() {
   );
 }
 
-
-
-// import React from 'react';
-// import { 
-//   Search, 
-//   Grid, 
-//   List, 
-//   CheckCircle2, 
-//   Clock, 
-//   Zap, 
-//   Network, 
-//   BrainCircuit,
-//   ChevronDown
-// } from 'lucide-react';
-
-// export default function MasterYourLogicSection() {
-//   const challenges = [
-//     {
-//       id: 1,
-//       title: 'Two Sum',
-//       summary: 'Given an array of integers nums and an integer ta...',
-//       difficulty: 'Easy',
-//       tags: ['Arrays', 'Hash Table'],
-//       status: 'Complete',
-//     },
-//     {
-//       id: 2,
-//       title: 'Path Sum',
-//       summary: 'Given an array of integers nums and an integer ta...',
-//       difficulty: 'Hard',
-//       tags: ['Arrays', 'Hash Table'],
-//       status: 'In Progress',
-//     },
-//     {
-//       id: 3,
-//       title: 'Longest Palindrom',
-//       summary: 'Given an array of integers nums and an integer ta...',
-//       difficulty: 'Medium',
-//       tags: ['Arrays', 'Hash Table'],
-//       status: 'In Progress',
-//     },
-//   ];
-
-//   return (
-//     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8 font-sans">
-      
-//       {/* Main Wrapper - set to relative to contain absolute floating icons */}
-//       <div className="relative w-full max-w-5xl">
-        
-//         {/* --- FLOATING ICONS --- */}
-        
-//         {/* Left Floating Icon (+450XP) */}
-//         <div className="absolute -left-16 top-24 bg-white border border-blue-200 rounded-md shadow-sm p-3 flex flex-col items-center justify-center z-10 w-16">
-//           <Zap className="w-5 h-5 text-gray-700 mb-1" />
-//           <span className="text-[10px] font-bold text-gray-700">+450XP</span>
-//         </div>
-
-//         {/* Right Floating Icon Top (Recursion Tree) */}
-//         <div className="absolute -right-16 -top-4 bg-white border border-blue-200 rounded-md shadow-sm p-3 flex flex-col items-center justify-center z-10 w-20">
-//           <Network className="w-5 h-5 text-gray-600 mb-1" />
-//           <span className="text-[9px] font-medium text-gray-600 text-center leading-tight">Recursion Tree</span>
-//         </div>
-
-//         {/* Right Floating Icon Middle (Brain Circuit) */}
-//         <div className="absolute -right-14 top-1/2 -translate-y-1/2 bg-white border border-blue-200 rounded-md shadow-sm p-3 flex items-center justify-center z-10">
-//           <BrainCircuit className="w-6 h-6 text-gray-600" />
-//         </div>
-
-//         {/* --- MAIN CARD --- */}
-//         <div className="bg-white rounded-xl shadow-sm border border-gray-100 w-full overflow-hidden">
-          
-//           {/* Top Bar / Filters */}
-//           <div className="p-6 border-b border-gray-50 flex flex-wrap gap-4 items-center justify-between">
-//             {/* Search */}
-//             <div className="relative w-full max-w-sm">
-//               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-//               <input 
-//                 type="text" 
-//                 placeholder="Search challenges..." 
-//                 className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-//               />
-//             </div>
-
-//             {/* Dropdowns & Toggles */}
-//             <div className="flex items-center gap-3">
-//               <button className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-md hover:bg-gray-50">
-//                 All Difficulty <ChevronDown className="w-4 h-4 text-gray-400" />
-//               </button>
-//               <button className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-md hover:bg-gray-50">
-//                 Tags <ChevronDown className="w-4 h-4 text-gray-400" />
-//               </button>
-//               <button className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-md hover:bg-gray-50">
-//                 Status <ChevronDown className="w-4 h-4 text-gray-400" />
-//               </button>
-              
-//               <div className="flex items-center ml-2 bg-gray-50 rounded-md border border-gray-200 p-0.5">
-//                 <button className="p-1.5 text-gray-400 hover:text-gray-600 rounded">
-//                   <Grid className="w-4 h-4" />
-//                 </button>
-//                 <button className="p-1.5 bg-blue-500 text-white rounded shadow-sm">
-//                   <List className="w-4 h-4" />
-//                 </button>
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* Table Area */}
-//           <div className="p-6">
-//             <div className="w-full text-left border-collapse">
-//               {/* Table Header */}
-//               <div className="grid grid-cols-12 gap-4 pb-4 text-xs font-semibold text-gray-400 border-b border-gray-50 mb-2 px-4">
-//                 <div className="col-span-2">Title</div>
-//                 <div className="col-span-4">Summary</div>
-//                 <div className="col-span-2">Difficulty</div>
-//                 <div className="col-span-2">Tags</div>
-//                 <div className="col-span-2">Status</div>
-//               </div>
-
-//               {/* Table Body */}
-//               <div className="space-y-2">
-//                 {challenges.map((challenge) => (
-//                   <div key={challenge.id} className="grid grid-cols-12 gap-4 items-center py-3 px-4 rounded-lg bg-gray-50/50 hover:bg-gray-50 transition-colors">
-//                     <div className="col-span-2 text-sm font-medium text-gray-800">
-//                       {challenge.title}
-//                     </div>
-//                     <div className="col-span-4 text-xs text-gray-400 truncate pr-4">
-//                       {challenge.summary}
-//                     </div>
-//                     <div className="col-span-2">
-//                       <span className={`px-3 py-1 text-[11px] font-medium rounded-full ${
-//                         challenge.difficulty === 'Easy' ? 'bg-green-100/50 text-green-600 border border-green-100' :
-//                         challenge.difficulty === 'Medium' ? 'bg-amber-100/50 text-amber-600 border border-amber-100' :
-//                         'bg-red-100/50 text-red-500 border border-red-100'
-//                       }`}>
-//                         {challenge.difficulty}
-//                       </span>
-//                     </div>
-//                     <div className="col-span-2 flex gap-2">
-//                       {challenge.tags.map(tag => (
-//                         <span key={tag} className="px-2 py-1 text-[10px] font-medium text-blue-600 bg-blue-50 rounded">
-//                           {tag}
-//                         </span>
-//                       ))}
-//                     </div>
-//                     <div className="col-span-2 flex items-center text-xs font-medium">
-//                       {challenge.status === 'Complete' ? (
-//                         <div className="flex items-center text-green-600 gap-1.5">
-//                           <CheckCircle2 className="w-4 h-4" />
-//                           <span>Complete</span>
-//                         </div>
-//                       ) : (
-//                         <div className="flex items-center text-amber-500 gap-1.5">
-//                           <Clock className="w-4 h-4" />
-//                           <span>In Progress</span>
-//                         </div>
-//                       )}
-//                     </div>
-//                   </div>
-//                 ))}
-//               </div>
-//             </div>
-//           </div>
-
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }

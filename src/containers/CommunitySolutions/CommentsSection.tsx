@@ -1,17 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { Link2, Image as ImageIcon, List, Smile, AtSign, Send } from "lucide-react";
-import { cn } from "@/lib";
-import { Button } from "@/components/ui/button";
-import { DisplayAvatar } from "@/components/ui/display-avatar";
 import { TagSelector } from "@/components";
-import { CommentItem, CommentType } from "./CommentItem";
-import { SortKey } from "@/queries/useCommunitySolutions"; 
-import { useRootComments } from "@/queries/useComments";
-import { useCreateComment } from "@/mutations/useCommentsMutations";
-import { useQueryClient } from "@tanstack/react-query";
 import TextEditorPrimary from "@/components/shared/textEditor/TextEditorPrimary";
+import { cn } from "@/lib";
+import { useCreateComment } from "@/mutations/useCommentsMutations";
+import { useRootComments } from "@/queries/useComments";
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { CommentItem, CommentType } from "./CommentItem";
 
 const FILTER_OPTIONS: { id: string; label: string }[] = [
   { id: "Most Recent", label: "Most Recent" },

@@ -26,7 +26,7 @@ const HeroSection = () => {
                 </span>
               </div>
 
-              {/* Main Heading */}
+       
 
               <PrimaryHeader
                 eyebrowColor="text-orange-500 font-medium"
@@ -43,18 +43,18 @@ const HeroSection = () => {
 
 
               <div className="relative flex w-full max-w-lg overflow-hidden pt-2">
-                {/* Optional: Edge fade gradients for a cleaner look */}
+              
                 <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#f8f9fb] to-transparent z-10 pointer-events-none"></div>
                 <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#f8f9fb] to-transparent z-10 pointer-events-none"></div>
 
 
                 <div className="flex   cursor-default">
-                  {/* Render the list twice for a seamless infinite loop */}
+         
                  <FeaturesMarquee speed={50} />
                 </div>
               </div>
 
-              {/* CTA Button */}
+     
               <div className="pt-4">
                 <button className="bg-[#0084ff] hover:bg-blue-600 transition-colors text-white text-base font-semibold px-8 py-3.5 rounded-lg shadow-sm">
                   Get Started

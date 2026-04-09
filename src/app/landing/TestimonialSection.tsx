@@ -1,15 +1,13 @@
 'use client';
 
-import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 // 1. Import Autoplay here
-import { Navigation, Autoplay } from 'swiper/modules';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Assets } from '@/constants/assets';
-import 'swiper/css';
-import 'swiper/css/navigation';
 import SecondaryContainer from '@/components/shared/container/SecondaryContainer';
 import PrimaryHeader from '@/components/shared/Headers/PrimaryHeader';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import { Autoplay, Navigation } from 'swiper/modules';
 
 const testimonials = [
   {
