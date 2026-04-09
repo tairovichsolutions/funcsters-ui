@@ -409,25 +409,25 @@ class PairingDemoStore extends EventTarget {
   }
 
   async cancelRequest() {
-    if (this._state.requestId && this._state.mode === "broadcast") {
-        try {
-            await apiClient.delete(`/api/v1/pairing/request/${this._state.requestId}`);
-        } catch (e) {
-            console.error(e);
-        }
-    }
-    this.stopStompClient();
-    this.setState({
-      isRequesting: false,
-      requestExpiry: 0,
-      mode: null,
-      targetUser: null,
-      incomingRequests: [],
-      hasPermission: false,
-      sessionStarted: false,
-      requestId: null,
-      dataChannel: null,
-    });
+    // if (this._state.requestId && this._state.mode === "broadcast") {
+    //     try {
+    //         await apiClient.delete(`/api/v1/pairing/request/${this._state.requestId}`);
+    //     } catch (e) {
+    //         console.error(e);
+    //     }
+    // }
+    // this.stopStompClient();
+    // this.setState({
+    //   isRequesting: false,
+    //   requestExpiry: 0,
+    //   mode: null,
+    //   targetUser: null,
+    //   incomingRequests: [],
+    //   hasPermission: false,
+    //   sessionStarted: false,
+    //   requestId: null,
+    //   dataChannel: null,
+    // });
   }
 
   async getTurnCredentials() {
