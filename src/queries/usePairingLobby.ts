@@ -12,10 +12,11 @@ export const usePairingLobby = () => {
   return useQuery({
     queryKey: ["pairing-lobby"],
     queryFn: async () => {
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8091/api";
-      const response = await apiClient.get<ApiResponse<PairingRequestDto[]>>(`${baseUrl}/v1/pairing/lobby`);
+      // Route through Next.js proxy (consistent with all other pairing endpoints)
+      const response = await apiClient.get<ApiResponse<PairingRequestDto[]>>(`/api/pairing/lobby`);
       return response.data.data;
     },
     refetchInterval: 5000, // Poll every 5s for new lobby requests
   });
 };
+

@@ -144,9 +144,11 @@ class PairingDemoStore extends EventTarget {
           this.approvedSub = this.client?.subscribe("/user/queue/pairing/approved", (msg) => {
              if (this._state.mode !== "join") return;
              const payload = JSON.parse(msg.body);
+             // Append 'Z' to force UTC interpretation — backend sends LocalDateTime without timezone
+             const expiry = payload.expiresAt?.endsWith('Z') ? payload.expiresAt : payload.expiresAt + 'Z';
              this.setState({ 
                requestId: payload.id,
-               requestExpiry: new Date(payload.expiresAt).getTime()
+               requestExpiry: new Date(expiry).getTime()
              });
              this.setPermission(true);
              this.initSessionSubscription(payload.id);
@@ -281,7 +283,7 @@ class PairingDemoStore extends EventTarget {
       this.setState({
         isRequesting: true,
         mode: "broadcast",
-        requestExpiry: new Date(data.expiresAt).getTime(),
+        requestExpiry: new Date(data.expiresAt?.endsWith('Z') ? data.expiresAt : data.expiresAt + 'Z').getTime(),
         activeChallengeId: id,
         activeChallengeSlug: slug,
         activeChallengeTitle: title,
@@ -426,7 +428,7 @@ class PairingDemoStore extends EventTarget {
         this.setState({
           isRequesting: true,
           mode: isHost ? "broadcast" : "join",
-          requestExpiry: new Date(data.expiresAt).getTime(),
+          requestExpiry: new Date(data.expiresAt?.endsWith('Z') ? data.expiresAt : data.expiresAt + 'Z').getTime(),
           activeChallengeId: String(data.challengeId),
           activeChallengeSlug: data.challengeSlug,
           activeChallengeTitle: data.challengeTitle,
