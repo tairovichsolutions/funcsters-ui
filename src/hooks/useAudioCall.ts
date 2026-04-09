@@ -54,6 +54,8 @@ export function useAudioCall(
       const credentials = await pairingStore.getTurnCredentials();
       if (isCancelled) return;
 
+      console.log("[WebRTC] ICE servers config:", JSON.stringify(credentials.iceServers));
+
       // ─── 2. Create RTCPeerConnection with relay support ───
       const pc = new RTCPeerConnection({
         iceServers: credentials.iceServers,
@@ -92,10 +94,13 @@ export function useAudioCall(
       // ─── 4. ICE candidate handler ───
       pc.onicecandidate = (event) => {
         if (event.candidate && client.connected) {
+          console.log("[WebRTC] ICE candidate:", event.candidate.type, event.candidate.protocol, event.candidate.address);
           client.publish({
             destination: `/app/session/${sessionId}/signal`,
             body: JSON.stringify({ senderId: myId, type: "candidate", data: event.candidate }),
           });
+        } else if (!event.candidate) {
+          console.log("[WebRTC] ICE gathering complete");
         }
       };
 
@@ -112,10 +117,17 @@ export function useAudioCall(
 
       pc.onconnectionstatechange = () => {
         console.log("[WebRTC] Connection state:", pc.connectionState);
+        if (pc.connectionState === "failed") {
+          console.error("[WebRTC] P2P connection FAILED — TURN server may be unreachable");
+        }
       };
 
       pc.oniceconnectionstatechange = () => {
         console.log("[WebRTC] ICE connection state:", pc.iceConnectionState);
+      };
+
+      pc.onicegatheringstatechange = () => {
+        console.log("[WebRTC] ICE gathering state:", pc.iceGatheringState);
       };
 
       // ─── 6. Listen for WebRTC signals via STOMP ───
