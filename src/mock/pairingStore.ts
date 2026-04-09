@@ -94,22 +94,25 @@ class PairingDemoStore extends EventTarget {
     }
     
     let token = "";
+    let apiBaseUrl = "";
     try {
       const { data } = await apiClient.get("/api/auth/token");
       token = data.accessToken;
+      apiBaseUrl = data.apiBaseUrl || "";
     } catch(e) {
       console.error("Could not fetch WebSocket STOMP token", e);
       return;
     }
 
-    let baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8091";
-    // strip everything after /api if present, or just use the base
-    let wsBaseUrl = baseUrl;
-    if (baseUrl.includes("/api")) {
-      wsBaseUrl = baseUrl.split("/api")[0];
+    // Use the server-provided apiBaseUrl (runtime env var) instead of
+    // process.env.NEXT_PUBLIC_API_BASE_URL which may not be baked into the
+    // client bundle if the Dockerfile doesn't properly pass the build arg.
+    let wsBaseUrl = apiBaseUrl || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8091";
+    if (wsBaseUrl.includes("/api")) {
+      wsBaseUrl = wsBaseUrl.split("/api")[0];
     }
     
-    const socketUrl = `${wsBaseUrl}/ws`.replace(/([^:]\/)\//g, "$1"); // remove double slashes except after protocol
+    const socketUrl = `${wsBaseUrl}/ws`.replace(/([^:]\/)\//g, "$1");
     console.log("[STOMP] Initializing connection to:", socketUrl);
     
     this.connectPromise = new Promise<void>((resolve, reject) => {
@@ -188,9 +191,9 @@ class PairingDemoStore extends EventTarget {
       
       this.client.activate();
 
-      // Safety net: if connection doesn't establish within 10s, resolve anyway
-      // so the caller doesn't hang forever. The publish will just be a no-op.
-      setTimeout(() => resolve(), 10000);
+      // Safety net: resolve after 3s so the caller isn't blocked forever.
+      // The real connection may still establish via onConnect later.
+      setTimeout(() => resolve(), 3000);
     });
 
     return this.connectPromise;

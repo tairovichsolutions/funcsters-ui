@@ -9,5 +9,9 @@ export async function GET() {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json({ accessToken });
+  // Return the API base URL from server-side runtime env so the client
+  // doesn't depend on NEXT_PUBLIC_API_BASE_URL being baked at build time
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8091/api";
+
+  return NextResponse.json({ accessToken, apiBaseUrl });
 }
