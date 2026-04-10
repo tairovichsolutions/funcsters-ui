@@ -19,6 +19,8 @@ export const ChallengeCardView = ({
   const router = useRouter();
 
   const handleCardClick = (e: React.MouseEvent) => {
+
+  
     if ((e.target as HTMLElement).closest("[data-stop-nav]")) return;
     router.push(Navigation.ChallengesDetail(String(slug)));
   };
@@ -26,17 +28,17 @@ export const ChallengeCardView = ({
   return (
     <div
       onClick={handleCardClick}
-      className="challenges-card-class cursor-pointer! bg-white dark:bg-[#FFFFFF0D]! dark:hover:bg-gray-700/15 hover:scale-[1.02] hover:shadow-xs  transition-all duration-300 h-40 w-full  gap-2 flex flex-col justify-between"
+      className="challenges-card-class cursor-pointer! px-4 py-5 bg-white dark:bg-[#FFFFFF0D]! dark:hover:bg-gray-700/15 hover:scale-[1.02] hover:shadow-xs  transition-all duration-300 h-40 w-full  gap-2 flex flex-col justify-between"
     >
       <div className=" space-y-2">
-        <div className=" flex gap-2  justify-between items-center">
-          <h1 className=" font-semibold text-base lg:text-[19px] line-clamp-1">
+        <div className=" flex gap-1  justify-between items-center">
+          <h1 className="text-[#0F172A] dark:text-current font-semibold text-xs lg:text-[13px] line-clamp-1">
             {title}
           </h1>
-          <DifficultyChip level={difficulty} />
+          <DifficultyChip className="text-[10px] px-4 py-[5px] mb-1" level={difficulty} />
         </div>
 
-        <p className="text-sm font-light line-clamp-2 text-content-primary ">
+        <p className="text-[13px] 2xl:text-sm font-light line-clamp-2 dark:text-current text-[#797981] ">
           {summary}
         </p>
       </div>
@@ -47,11 +49,13 @@ export const ChallengeCardView = ({
         </div>
 
         {userProgress && (
-          <StatusChip
+       <div className="mt-1">
+           <StatusChip
             withText={false}
             className="shrink-0"
             status={userProgress}
           />
+       </div>
         )}
       </div>
     </div>

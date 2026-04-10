@@ -94,7 +94,7 @@ export default function TagScroller({ tags }: { tags: string[] }) {
         className="flex gap-2 pe-2 flex-nowrap overflow-x-auto hide-scrollbar scroll-smooth"
       >
         {tags.map((tag) => (
-          <TagChip key={tag} variant="blue" className="text-nowrap">
+          <TagChip key={tag}  variant="blue"  className=" text-nowrap rounded-full! text-[10px]! px-2! py-1! text-[#005092]">
             {tag}
           </TagChip>
         ))}

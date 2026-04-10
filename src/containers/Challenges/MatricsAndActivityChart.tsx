@@ -14,6 +14,8 @@ interface MatricsAndActivityChartProps {
   isAuthenticated: boolean;
 }
 
+
+
 export const MatricsAndActivityChart = React.memo(
   ({ isAuthenticated, profileLoading }: MatricsAndActivityChartProps) => {
     const { data: metricsData, isLoading } = useMetrics();
