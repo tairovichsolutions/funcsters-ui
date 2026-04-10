@@ -1,11 +1,12 @@
-import { Suspense } from "react";
 import { CustomLoading } from "@/components/ui/custom-loading";
-import { ChallengesScreen } from "@/screens/ChallengesScreen";
+import ChallengesScreenV2 from "@/screens/ChallengesScreenV2";
+import { Suspense } from "react";
 
 export default function Page() {
   return (
     <Suspense fallback={<CustomLoading />}>
-      <ChallengesScreen />
+      <ChallengesScreenV2 />
+      {/* <ChallengesScreen /> */}
     </Suspense>
   );
 }
