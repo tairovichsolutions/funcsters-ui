@@ -334,6 +334,16 @@ export const MonacoCodeEditer = ({
           // Full state sync as backup (handles missed messages)
           const state = Y.encodeStateAsUpdate(doc);
           sendOverChannel(0, state);
+
+          // ─── Diagnostic: compare Y.Text vs editor model ───
+          const ytext = doc.getText("monaco");
+          const ytextStr = ytext.toString();
+          const modelStr = editor.getModel()?.getValue() || "";
+          console.log("[YJS DIAG] Y.Text len:", ytextStr.length,
+            "| Editor len:", modelStr.length,
+            "| Match:", ytextStr === modelStr,
+            "| Binding exists:", !!binding,
+            "| Y.Text preview:", JSON.stringify(ytextStr.substring(0, 60)));
         }
       }, 3000); // Slightly more frequent for better sync
 
