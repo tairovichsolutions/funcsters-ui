@@ -55,8 +55,11 @@ export const ViewSwitch = React.memo(
         >
           <LayoutGrid
             size={18}
+            fill={value === "card" ? "#008CFF" : "#008CFF"}
+            color={value === "card" ? "#ffffff" : "#008CFF"}
             className={cn(
-              value === "card" ? "text-white" : "text-black dark:text-white! "
+              "transition-colors",
+              value === "card" ? "text-white" : "text-black dark:text-white"
             )}
           />
         </button>

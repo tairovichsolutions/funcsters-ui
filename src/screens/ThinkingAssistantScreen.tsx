@@ -14,9 +14,10 @@ import { ProblemIntuition, CodeSkeleton } from "@/containers/ThinkingAssistant";
 import { MDMarkdown } from "@/components/MDMarkdown";
 import { useTheme } from "next-themes";
 import GPTLikeInput from "./inputdara";
-import { ArrowUp, Loader2 } from "lucide-react";
+import { ArrowUp, ChevronRight, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DisplayAvatar } from "@/components/ui";
+import RevealImage from "./RevealImage";
 
 const stripContext = (content: string) => {
   const marker = "--- USER MESSAGE ---";
@@ -72,10 +73,11 @@ export const ThinkingAssistantScreen = () => {
   }, [messages, isLoading]);
 
   const handleSend = async (text: string) => {
-    if (!isAuthenticated) {
-      openModal("loginRequiredModal");
-      return;
-    }
+    //TODO:jahid login thinking
+    // if (!isAuthenticated) {
+    //   openModal("loginRequiredModal");
+    //   return;
+    // }
     if (!text.trim() || isLoading) return;
     await sendMessage(text);
   };
@@ -154,7 +156,7 @@ export const ThinkingAssistantScreen = () => {
       {/* <CodeSkeleton /> */}
       {/* Chat Messages Area - Only show when chat IS active */}
       {isChatActive && (
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6 custom-scrollbar ">
           {messages.map((msg, index) => {
             const isUser = msg.role === "user";
             return (
@@ -177,9 +179,9 @@ export const ThinkingAssistantScreen = () => {
 
                 <div
                   className={cn(
-                    "max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm break-all",
+                    "max-w-[85%]  rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm break-all",
                     isUser
-                      ? "bg-primary text-primary-foreground rounded-tr-none"
+                      ? "bg-primary  text-primary-foreground rounded-tr-none"
                       : "bg-muted/50 text-foreground border border-border/50 rounded-tl-none"
                   )}
                 >
@@ -201,23 +203,551 @@ export const ThinkingAssistantScreen = () => {
             );
           })}
 
-          {isLoading && (
-            <div className="flex w-full gap-3 justify-start animate-pulse">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 p-1">
+          {/* {isLoading && (
+            // <div className="flex w-full gap-3 justify-start animate-pulse">
+            //   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 p-1">
+            //     <img
+            //       src={Assets.Svgs.IntelligenceLogo}
+            //       className="w-full h-full object-contain"
+            //       alt="AI"
+            //     />
+            //   </div>
+            //   <div className="bg-muted/30 px-4 py-3 rounded-2xl rounded-tl-none border border-border/30">
+            //     <span className="text-xs text-muted-foreground flex items-center gap-2">
+            //       <Loader2 className="w-3 h-3 animate-spin text-primary" />
+            //       Thinking...
+            //     </span>
+            //   </div>
+            // </div>
+            <div className="flex w-full gap-3 justify-start items-center ">
+             <div className="relative w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 overflow-hidden">
+
+              
                 <img
                   src={Assets.Svgs.IntelligenceLogo}
-                  className="w-full h-full object-contain"
-                  alt="AI"
+                  className="absolute inset-0 w-full h-full object-contain p-1"
+                  alt="AI Sharp Base"
                 />
-              </div>
-              <div className="bg-muted/30 px-4 py-3 rounded-2xl rounded-tl-none border border-border/30">
-                <span className="text-xs text-muted-foreground flex items-center gap-2">
-                  <Loader2 className="w-3 h-3 animate-spin text-primary" />
-                  Thinking...
-                </span>
+
+              
+                <img
+                  src={Assets.Svgs.IntelligenceLogo}
+                  className="absolute inset-0 w-full h-full object-contain p-1 blur-[2px] opacity-80"
+                  style={{
+                    animation: 'blurLens 2s ease-in-out infinite alternate'
+                  }}
+                  alt="AI Blurred Lens"
+                />
+
+             
+                <style>{`
+    @keyframes blurLens {
+
+      0% { clip-path: circle(35% at 0% 50%); }
+      100% { clip-path: circle(35% at 100% 50%); }
+    }
+  `}</style>
+
+              </div> 
+                   <div className="w-8 h-8 rounded-full bg-primary/10 animate-pulse flex items-center justify-center shrink-0 border border-primary/20 p-1">
+                 <img
+                   src={Assets.Svgs.IntelligenceLogo}
+                   className="w-full h-full object-contain"
+                   alt="AI"
+                 />
+               </div>
+              <div className=" rounded-2xl">
+                <div className="relative text-base borer overflow-hidden text-neutral-05 ">
+
+                  <div className="flex gap-12 items-center justify-center">
+                    Thinking...
+                    <span>
+                      <img
+                        src={isDark ? Assets.Svgs.arrowLeftSvgDark : Assets.Svgs.ArrowLeftSvg}
+                        alt="Arrow icon"
+                        className="size-4 group-hover:translate-x-0.5 transition-transform"
+                      />
+                    </span>
+                  </div>
+
+                  <span className="shimmer  s1"></span>
+                  <span className="shimmer  s2"></span>
+                  <span className="shimmer  s3"></span>
+                  <span className="shimmer  s4"></span>
+                </div>
               </div>
             </div>
+
+          )} */}
+          {isLoading && (
+            <div className="flex w-full gap-3 justify-start items-center ">
+              {/* <div className="relative w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 overflow-hidden">
+
+              
+                <img
+                  src={Assets.Svgs.IntelligenceLogo}
+                  className="absolute inset-0 w-full h-full object-contain p-1"
+                  alt="AI Sharp Base"
+                />
+
+              
+                <img
+                  src={Assets.Svgs.IntelligenceLogo}
+                  className="absolute inset-0 w-full h-full object-contain p-1 blur-[2px] opacity-80"
+                  style={{
+                    animation: 'blurLens 2s ease-in-out infinite alternate'
+                  }}
+                  alt="AI Blurred Lens"
+                />
+
+             
+                <style>{`
+    @keyframes blurLens {
+
+      0% { clip-path: circle(35% at 0% 50%); }
+      100% { clip-path: circle(35% at 100% 50%); }
+    }
+  `}</style>
+
+              </div> */}
+                   <div className="w-8 h-8 rounded-full bg-primary/10 animate-pulse flex items-center justify-center shrink-0 border border-primary/20 p-1">
+                 <img
+                   src={Assets.Svgs.IntelligenceLogo}
+                   className="w-full h-full object-contain"
+                   alt="AI"
+                 />
+               </div>
+              <div className=" rounded-2xl animate-pulse">
+                <div className="relative text-base borer overflow-hidden text-neutral-05 ">
+                    <div className="text-gray-500 text-base ">
+          Thinking<span className="dots"></span>
+        </div>      <style jsx>{`
+        .spinner {
+          width: 100%;
+          height: 100%;
+          border: 4px solid transparent;
+          border-top: 4px solid #0056b3;
+          border-radius: 50%;
+          animation: spin 1s linear infinite, morphOut 0.5s forwards 2s;
+        }
+
+        .thinking-icon {
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          transform: scale(0.5);
+          animation: morphIn 0.5s forwards 2.2s;
+        }
+
+        .dots::after {
+          content: "";
+          animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        @keyframes morphOut {
+          to {
+            opacity: 0;
+            transform: scale(0.5) rotate(360deg);
+          }
+        }
+
+        @keyframes morphIn {
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        @keyframes dots {
+          0%, 20% { content: ""; }
+          40% { content: "."; }
+          60% { content: ".."; }
+          80% { content: "..."; }
+        }
+
+        /* 🔥 Image reveal effect */
+        @keyframes blurLens {
+          0% {
+            opacity: 0;
+            filter: blur(20px);
+            transform: scale(1.2);
+          }
+          100% {
+            opacity: 1;
+            filter: blur(0);
+            transform: scale(1);
+          }
+        }
+
+        .animate-blurLens {
+          animation: blurLens 0.6s ease forwards;
+        }
+      `}</style>
+{/* 
+                  <div className="flex gap-12 items-center justify-center">
+                    Thinking...
+                    <span>
+                      <img
+                        src={isDark ? Assets.Svgs.arrowLeftSvgDark : Assets.Svgs.ArrowLeftSvg}
+                        alt="Arrow icon"
+                        className="size-4 group-hover:translate-x-0.5 transition-transform"
+                      />
+                    </span>
+                  </div>
+
+                  <span className="shimmer  s1"></span>
+                  <span className="shimmer  s2"></span>
+                  <span className="shimmer  s3"></span>
+                  <span className="shimmer  s4"></span> */}
+                </div>
+              </div>
+            </div>
+
           )}
+          {!isLoading && (
+            <div className="hidden w-full gap-3 justify-start items-center ">
+              {/* <div className="relative w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 overflow-hidden">
+
+              
+                <img
+                  src={Assets.Svgs.IntelligenceLogo}
+                  className="absolute inset-0 w-full h-full object-contain p-1"
+                  alt="AI Sharp Base"
+                />
+
+              
+                <img
+                  src={Assets.Svgs.IntelligenceLogo}
+                  className="absolute inset-0 w-full h-full object-contain p-1 blur-[2px] opacity-80"
+                  style={{
+                    animation: 'blurLens 2s ease-in-out infinite alternate'
+                  }}
+                  alt="AI Blurred Lens"
+                />
+
+             
+                <style>{`
+    @keyframes blurLens {
+
+      0% { clip-path: circle(35% at 0% 50%); }
+      100% { clip-path: circle(35% at 100% 50%); }
+    }
+  `}</style>
+
+              </div> */}
+                   <div className="w-8 h-8 rounded-full bg-primary/10 animate-pulse flex items-center justify-center shrink-0 border border-primary/20 p-1">
+                 <img
+                   src={Assets.Svgs.IntelligenceLogo}
+                   className="w-full h-full object-contain"
+                   alt="AI"
+                 />
+               </div>
+              <div className=" rounded-2xl animate-pulse">
+                <div className="relative text-base borer overflow-hidden text-neutral-05 ">
+                    <div className="text-gray-500 text-base ">
+          Thinking<span className="dots"></span>
+        </div>      <style jsx>{`
+        .spinner {
+          width: 100%;
+          height: 100%;
+          border: 4px solid transparent;
+          border-top: 4px solid #0056b3;
+          border-radius: 50%;
+          animation: spin 1s linear infinite, morphOut 0.5s forwards 2s;
+        }
+
+        .thinking-icon {
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          transform: scale(0.5);
+          animation: morphIn 0.5s forwards 2.2s;
+        }
+
+        .dots::after {
+          content: "";
+          animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        @keyframes morphOut {
+          to {
+            opacity: 0;
+            transform: scale(0.5) rotate(360deg);
+          }
+        }
+
+        @keyframes morphIn {
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        @keyframes dots {
+          0%, 20% { content: ""; }
+          40% { content: "."; }
+          60% { content: ".."; }
+          80% { content: "..."; }
+        }
+
+        /* 🔥 Image reveal effect */
+        @keyframes blurLens {
+          0% {
+            opacity: 0;
+            filter: blur(20px);
+            transform: scale(1.2);
+          }
+          100% {
+            opacity: 1;
+            filter: blur(0);
+            transform: scale(1);
+          }
+        }
+
+        .animate-blurLens {
+          animation: blurLens 0.6s ease forwards;
+        }
+      `}</style>
+{/* 
+                  <div className="flex gap-12 items-center justify-center">
+                    Thinking...
+                    <span>
+                      <img
+                        src={isDark ? Assets.Svgs.arrowLeftSvgDark : Assets.Svgs.ArrowLeftSvg}
+                        alt="Arrow icon"
+                        className="size-4 group-hover:translate-x-0.5 transition-transform"
+                      />
+                    </span>
+                  </div>
+
+                  <span className="shimmer  s1"></span>
+                  <span className="shimmer  s2"></span>
+                  <span className="shimmer  s3"></span>
+                  <span className="shimmer  s4"></span> */}
+                </div>
+              </div>
+            </div>
+
+          )}
+          
+         {/* Replace this: */}
+{/* <img src={img} alt={title} /> */}
+
+{/* With this: */}
+
+
+<div className=" gap-3 hidden relative items-center animate-pulse">
+  <RevealImage    />
+  <div className="text-gray-500 text-base ">
+          Thinking<span className="dots"></span>
+        </div>      <style jsx>{`
+        .spinner {
+          width: 100%;
+          height: 100%;
+          border: 4px solid transparent;
+          border-top: 4px solid #0056b3;
+          border-radius: 50%;
+          animation: spin 1s linear infinite, morphOut 0.5s forwards 2s;
+        }
+
+        .thinking-icon {
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          transform: scale(0.5);
+          animation: morphIn 0.5s forwards 2.2s;
+        }
+
+        .dots::after {
+          content: "";
+          animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        @keyframes morphOut {
+          to {
+            opacity: 0;
+            transform: scale(0.5) rotate(360deg);
+          }
+        }
+
+        @keyframes morphIn {
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        @keyframes dots {
+          0%, 20% { content: ""; }
+          40% { content: "."; }
+          60% { content: ".."; }
+          80% { content: "..."; }
+        }
+
+        /* 🔥 Image reveal effect */
+        @keyframes blurLens {
+          0% {
+            opacity: 0;
+            filter: blur(20px);
+            transform: scale(1.2);
+          }
+          100% {
+            opacity: 1;
+            filter: blur(0);
+            transform: scale(1);
+          }
+        }
+
+        .animate-blurLens {
+          animation: blurLens 0.6s ease forwards;
+        }
+      `}</style>
+</div>
+ <div className=" w-full gap-3 hidden justify-start items-center ">
+            
+             <RevealImage    />
+              <div className=" rounded-2xl">
+                <div className="relative text-base borer overflow-hidden text-neutral-05 ">
+
+                  <div className="flex gap-12 items-center justify-center">
+                    Thinking...
+                    <span>
+                      <img
+                        src={isDark ? Assets.Svgs.arrowLeftSvgDark : Assets.Svgs.ArrowLeftSvg}
+                        alt="Arrow icon"
+                        className="size-4 group-hover:translate-x-0.5 transition-transform"
+                      />
+                    </span>
+                  </div>
+
+                  <span className="shimmer  s1"></span>
+                  <span className="shimmer  s2"></span>
+                  <span className="shimmer  s3"></span>
+                  <span className="shimmer  s4"></span>
+                </div>
+              </div>
+            </div>
+
+          {/* <div className="relative w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 overflow-hidden">
+  
+
+  <img
+    src={Assets.Svgs.IntelligenceLogo}
+    className="absolute inset-0 w-full h-full object-contain p-1 blur-[3px] opacity-40"
+    alt="AI Blurred"
+  />
+
+
+  <img
+    src={Assets.Svgs.IntelligenceLogo}
+    className="absolute inset-0 w-full h-full object-contain p-1"
+    style={{
+      animation: 'pureReveal 2s ease-in-out infinite alternate'
+    }}
+    alt="AI Sharp Reveal"
+  />
+
+
+  <style>{`
+    @keyframes pureReveal {
+
+      0% { clip-path: circle(35% at 0% 50%); }
+      100% { clip-path: circle(35% at 100% 50%); }
+    }
+  `}</style>
+
+</div> */}
+          {/* <div className="flex w-full gap-3 justify-start items-center ">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 p-1">
+              <img
+                src={Assets.Svgs.IntelligenceLogo}
+                className="w-full h-full object-contain"
+                alt="AI"
+              />
+            </div>
+            <div className=" px-4  rounded-2xl">
+          <div className="relative text-base borer overflow-hidden text-neutral-05 ">
+          
+              <div className="flex gap-12 items-center justify-center">
+                Thinking...
+                <span>
+                  <img
+                    src={isDark ? Assets.Svgs.arrowLeftSvgDark : Assets.Svgs.ArrowLeftSvg}
+                    alt="Arrow icon"
+                    className="size-4 group-hover:translate-x-0.5 transition-transform"
+                  />
+                </span>
+              </div>
+
+              <span className="shimmer bg-blue-500 s1"></span>
+              <span className="shimmer bg-blue-500 s2"></span>
+              <span className="shimmer bg-blue-500 s3"></span>
+              <span className="shimmer bg-blue-500 s4"></span>
+            </div>
+            </div>
+          </div>
+
+
+          
+
+          <div className="flex items-center justify-center h-40">
+            <div className="relative text-base  text-neutral-05 overflow-hidden">
+                 <div className="flex gap-12 items-center justify-center">
+                Thinking...
+                <span>
+                  <img
+                    src={isDark ? Assets.Svgs.arrowLeftSvgDark : Assets.Svgs.ArrowLeftSvg}
+                    alt="Arrow icon"
+                    className="size-4 group-hover:translate-x-0.5 transition-transform"
+                  />
+                </span>
+              </div>
+
+              <span className="shimmer bg-blue-500 s1"></span>
+              <span className="shimmer bg-blue-500 s2"></span>
+              <span className="shimmer bg-blue-500 s3"></span>
+              <span className="shimmer bg-blue-500 s4"></span>
+            </div>
+          </div>
+
+
+
+          
+          <div className="flex items-center justify-center h-40">
+            <div className="relative text-base  text-neutral-05 ">
+          
+              <div className="flex gap-12 items-center justify-center">
+                Thinking...
+                <span>
+                  <img
+                    src={isDark ? Assets.Svgs.arrowLeftSvgDark : Assets.Svgs.ArrowLeftSvg}
+                    alt="Arrow icon"
+                    className="size-4 group-hover:translate-x-0.5 transition-transform"
+                  />
+                </span>
+              </div>
+
+              <span className="float-shimmer bg-blue-500 s1"></span>
+              <span className="float-shimmer bg-blue-500 s2"></span>
+              <span className="float-shimmer bg-blue-500 s3"></span>
+              <span className="float-shimmer bg-blue-500 s4"></span>
+            </div>
+          </div> */}
           <div ref={messagesEndRef} />
         </div>
       )}

@@ -35,7 +35,7 @@ export const TagChip = ({
   return (
     <span
       className={cn(
-        "rounded-[6px] w-fit leading-none! h-fit inline-flex items-center select-none",
+        "rounded-[6px] w-fit leading-none! h-fit inline-flex items-center elect-none",
         SIZE[size],
         THEME[variant],
         className

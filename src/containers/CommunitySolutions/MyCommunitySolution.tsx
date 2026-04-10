@@ -3,12 +3,13 @@ import React from "react";
 import { CommunitySolutionsCard } from "./CommunitySolutionsCard";
 
 export const MyCommunitySolution = React.memo(
-  ({ myCommunitySolutionData }: any) => {
+  ({ myCommunitySolutionData, onViewAllComments }: any) => {
     return (
       <div>
         <CommunitySolutionsCard
           mySolution={true}
           data={myCommunitySolutionData}
+          onViewAllComments={() => onViewAllComments?.(myCommunitySolutionData)}
         />
       </div>
     );

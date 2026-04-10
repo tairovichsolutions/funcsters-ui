@@ -15,7 +15,6 @@ export const Hero = () => {
         src="/images/group.png"
         className="absolute inset-0 mt-10 w-full h-full object-cover opacity-10 z-0 "
       />
-
       <div className="flex justify-center items-center text-center flex-col space-y-3 relative z-10">
         <TextFadeAnimation
           delay={0.1}
