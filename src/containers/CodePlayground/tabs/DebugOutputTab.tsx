@@ -7,9 +7,9 @@ import {
 import { cn } from "@/lib";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { KeyValueBox } from "./KeyValueBox";
-import { TestCase } from "@/types";
+import { ApiTestResult } from "@/types/run-code-type";
 
-export const DebugOutputTab = ({ tests }: { tests: TestCase[] }) => {
+export const DebugOutputTab = ({ tests }: { tests: ApiTestResult[] }) => {
   return (
     <Accordion type="multiple" className="w-full ">
       {tests?.map((test, i) => {

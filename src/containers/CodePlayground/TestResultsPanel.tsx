@@ -65,20 +65,16 @@ export const TestResultsPanel = React.memo(({ results }: any) => {
         <Scrollable className="h-full!">
           <TabsContent value="results" className="p-1">
             {compileOutputData ? (
-              compileOutputData?.statusCode === 3 ? (
+              compileOutputData?.status === 'succeeded' && TestResultsPanelData ? (
                 <TestResultsTab tests={TestResultsPanelData?.results ?? []} />
               ) : (
                 <div className="p-2 space-y-2">
                   <h2 className="text-base text-red-500">
-                    {compileOutputData?.description}
+                    {compileOutputData?.message || compileOutputData?.status}
                   </h2>
-                  <p className="text-sm text-red-500">
-                    {compileOutputData?.compileOutput}
-                  </p>
-
-                  {compileOutputData?.message && (
-                    <p className=" text-sm text-red-500">
-                      {compileOutputData?.message}
+                  {compileOutputData?.errorOutput && (
+                    <p className="text-sm text-red-500 whitespace-pre-wrap">
+                      {compileOutputData?.errorOutput}
                     </p>
                   )}
                 </div>
@@ -92,20 +88,16 @@ export const TestResultsPanel = React.memo(({ results }: any) => {
 
           <TabsContent value="debug" className="p-1">
             {compileOutputData ? (
-              compileOutputData?.statusCode === 3 ? (
+              compileOutputData?.status === 'succeeded' && TestResultsPanelData ? (
                 <DebugOutputTab tests={TestResultsPanelData?.results ?? []} />
               ) : (
                 <div className="p-2 space-y-2">
                   <h2 className="text-base text-red-500">
-                    {compileOutputData?.description}
+                    {compileOutputData?.message || compileOutputData?.status}
                   </h2>
-                  <p className="text-sm text-red-500">
-                    {compileOutputData?.compileOutput}
-                  </p>
-
-                  {compileOutputData?.message && (
-                    <p className=" text-sm text-red-500">
-                      {compileOutputData?.message}
+                  {compileOutputData?.errorOutput && (
+                    <p className="text-sm text-red-500 whitespace-pre-wrap">
+                      {compileOutputData?.errorOutput}
                     </p>
                   )}
                 </div>
