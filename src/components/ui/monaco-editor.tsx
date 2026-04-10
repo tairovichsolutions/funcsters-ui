@@ -177,7 +177,6 @@ export const MonacoCodeEditer = ({
 
       console.log("[YJS] Initializing collaboration for session", pairingSessionId, "mode:", pairingMode, "DC state:", dataChannel.readyState);
 
-      let binding: any = null;
       let destroyed = false;
       let heartbeatInterval: NodeJS.Timeout;
       
@@ -294,11 +293,20 @@ export const MonacoCodeEditer = ({
       });
 
       // Setup YJS <-> Monaco binding
+      // IMPORTANT: We use bindingRef (a ref, not a local variable) so that cleanup
+      // can ALWAYS find and destroy the binding, even if it was created after
+      // cleanup started (due to the async import).
+      const bindingRef = { current: null as any };
+
       const setupBinding = async () => {
         if (destroyed) return;
         try {
           const { MonacoBinding } = await import("y-monaco");
-          if (destroyed) return;
+          if (destroyed) {
+            // Cleanup already ran while we were importing.
+            // Don't create the binding.
+            return;
+          }
           
           const ytext = doc.getText("monaco");
           
@@ -314,8 +322,23 @@ export const MonacoCodeEditer = ({
 
           const model = editor.getModel();
           if (model && !destroyed) {
-              binding = new MonacoBinding(ytext, model, new Set([editor]), awareness);
+              const newBinding = new MonacoBinding(ytext, model, new Set([editor]), awareness);
+              bindingRef.current = newBinding;
               console.log("[YJS] MonacoBinding created successfully");
+
+              // After binding is created, force-sync the model to Y.Text content.
+              // This handles the case where updates arrived BEFORE the binding existed.
+              const ytextStr = ytext.toString();
+              if (model.getValue() !== ytextStr) {
+                console.log("[YJS] Post-binding reconciliation: updating editor to match Y.Text");
+                model.setValue(ytextStr);
+              }
+
+              // Request a fresh sync from the peer now that our binding is ready
+              if (dataChannel.readyState === "open") {
+                console.log("[YJS] Post-binding: requesting sync from peer");
+                sendOverChannel(2, new Uint8Array(0));
+              }
           }
         } catch (error) {
           console.error("[YJS] Initialization error", error);
@@ -334,18 +357,8 @@ export const MonacoCodeEditer = ({
           // Full state sync as backup (handles missed messages)
           const state = Y.encodeStateAsUpdate(doc);
           sendOverChannel(0, state);
-
-          // ─── Diagnostic: compare Y.Text vs editor model ───
-          const ytext = doc.getText("monaco");
-          const ytextStr = ytext.toString();
-          const modelStr = editor.getModel()?.getValue() || "";
-          console.log("[YJS DIAG] Y.Text len:", ytextStr.length,
-            "| Editor len:", modelStr.length,
-            "| Match:", ytextStr === modelStr,
-            "| Binding exists:", !!binding,
-            "| Y.Text preview:", JSON.stringify(ytextStr.substring(0, 60)));
         }
-      }, 3000); // Slightly more frequent for better sync
+      }, 3000);
 
       return () => {
         console.log(`[YJS] Cleaning up session ${pairingSessionId}`);
@@ -354,21 +367,19 @@ export const MonacoCodeEditer = ({
         // Clear our local state from awareness so remaining remote peers update their UI
         try { awareness.setLocalState(null); } catch (e) {}
 
-        if (binding) {
+        // Destroy binding — using bindingRef so we always find it, even if
+        // it was created asynchronously after the effect body finished.
+        const currentBinding = bindingRef.current;
+        if (currentBinding) {
           try { 
-            // FIX: y-monaco has a bug in its destroy() method where it fails to flatten 
-            // the decorations map before passing it to Monaco, leaving ghost cursors on the screen indefinitely.
-            // We manually flatten and clear the decorations here first, AND we query the editor 
-            // directly to brute-force wipe any remaining YJS artifacts.
             const model = internalEditorRef.current?.getModel?.();
             if (model) {
               const decoIds: string[] = [];
-              if (binding.decorations) {
-                for (const ids of binding.decorations.values()) {
+              if (currentBinding._decorations) {
+                for (const ids of currentBinding._decorations.values()) {
                   decoIds.push(...(Array.isArray(ids) ? ids : [ids]));
                 }
               }
-              // Brute force backup: query active decorations and destroy any yRemoteSelection
               const allDecorations = model.getAllDecorations();
               for (const deco of allDecorations) {
                  if (deco.options.className?.includes('yRemoteSelection')) {
@@ -377,10 +388,11 @@ export const MonacoCodeEditer = ({
               }
               internalEditorRef.current?.deltaDecorations(decoIds, []);
             }
-            binding.destroy(); 
+            currentBinding.destroy(); 
           } catch (e) { 
             console.error("[YJS] Error clearing decorations", e);
           }
+          bindingRef.current = null;
         }
         if (heartbeatInterval) clearInterval(heartbeatInterval);
         doc.off("update", handleDocUpdate);
