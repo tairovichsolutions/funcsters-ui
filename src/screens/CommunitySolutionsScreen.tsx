@@ -18,9 +18,6 @@ import { AlertBanner, TagSelector, UnlockSolutionCard } from "@/components";
 import { useMyCommunitySolutions } from "@/queries/useMyCommunitySolutions";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
 import { CommunitySolutionCardSkeleton } from "@/skeletons/CommunitySolutionCardSkeleton";
-import { ArrowLeft } from "lucide-react";
-import { CommunitySolutionType } from "@/types";
-import { CommunitySolutionsCard } from "@/containers/CommunitySolutions/CommunitySolutionsCard";
 
 type UserProgress = "TODO" | "IN_PROGRESS" | "COMPLETED";
 
@@ -39,7 +36,6 @@ export const CommunitySolutionsScreen = React.memo(() => {
   const [openUnlockModal, setOpenUnlockModal] = useState(false);
 
   const [selectedFilter, setSelectedFilter] = useState<SortKey>("top_rated");
-  const [nestedSolution, setNestedSolution] = useState<CommunitySolutionType | null>(null);
 
   const { id } = useParams<{ id: string }>();
 
@@ -120,28 +116,6 @@ export const CommunitySolutionsScreen = React.memo(() => {
   const selectedLabel =
     VOTE_OPTIONS.find((x) => x.id === selectedFilter)?.label ?? "Most Votes";
 
-  if (nestedSolution) {
-    return (
-      <div
-        className="space-y-4 w-full h-full pb-5"
-        data-scroll-restoration-id="container-nested"
-      >
-        <ScrollRestoration />
-        <button
-          onClick={() => setNestedSolution(null)}
-          className="flex items-center text-sm font-semibold text-[#005092] hover:underline"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back
-        </button>
-        <CommunitySolutionsCard
-          data={nestedSolution}
-          isNestedView={true}
-          mySolution={mySolutionData?.data?.solutionInfo?.solutionId === nestedSolution.solutionInfo?.solutionId}
-        />
-      </div>
-    );
-  }
-
   return (
     <div
       className="space-y-4 w-full h-full "
@@ -159,10 +133,7 @@ export const CommunitySolutionsScreen = React.memo(() => {
       {mySolutionLoading ? (
         <CommunitySolutionCardSkeleton />
       ) : canViewSolutions && mySolutionData?.data?.solutionInfo ? (
-        <MyCommunitySolution 
-          myCommunitySolutionData={mySolutionData.data} 
-          onViewAllComments={setNestedSolution}
-        />
+        <MyCommunitySolution myCommunitySolutionData={mySolutionData.data} />
       ) : (
         <AlertBanner />
       )}
@@ -194,7 +165,6 @@ export const CommunitySolutionsScreen = React.memo(() => {
       ) : (
         <AllCommunitySolution
           allSolutionData={allSolutionData?.data?.community}
-          onViewAllComments={setNestedSolution}
         />
       )}
     </div>

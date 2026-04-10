@@ -1,4 +1,5 @@
 import "./globals.css";
+
 import type { Metadata } from "next";
 import { localFontVars } from "@/fonts/local-fonts";
 import { googleFontVars } from "@/fonts/google-fonts";

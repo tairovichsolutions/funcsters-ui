@@ -100,7 +100,7 @@ const Layout = ({ children }: LayoutProps) => {
   }, [list, setLanguages]);
 
   return (
-    <div className="flex h-screen flex-col bg-background   text-foreground">
+    <div className="flex h-screen flex-col bg-background text-foreground">
       <ChallengesWorkSpaceHeader />
 
       <div className="flex-1 overflow-hidden py-4 px-12">

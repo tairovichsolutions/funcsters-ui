@@ -181,7 +181,7 @@ export const MonacoCodeEditer = React.memo(
               inherit: true,
               rules: [],
               colors: {
-                "editor.background": "#0D1A26",  
+                "editor.background": "#0D1A26",
               },
             });
 

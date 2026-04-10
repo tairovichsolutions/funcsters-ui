@@ -24,7 +24,6 @@ export const ChallengesDetailScreen = () => {
   const { data: userData } = useGetUserProfile();
   const isAuthenticated = userData?.data?.authenticated || false;
   const challengesDetailData = data?.data ?? data;
-  console.log({challengesDetailData});
 
   const axiosError =
     error && typeof error === "object" && "response" in error
@@ -69,7 +68,7 @@ export const ChallengesDetailScreen = () => {
         ? `You already solved this challenge in ${completedLanguagesCount} language, so you earn ${xpCount} XP.`
         : `Complete this challenge to earn ${xpCount} XP.`;
   return (
-    <div className="">
+    <div>
       <div className="flex w-full  items-center justify-between gap-2 ">
         <div className="flex-1 min-w-0">
           <TitleWithTooltipIfTruncated title={challengesDetailData?.title} />
@@ -101,7 +100,7 @@ export const ChallengesDetailScreen = () => {
         </div>
       </div>
 
-      <div className="mt-5 space-y-5 pb-5  ">
+      <div className="mt-5 space-y-5 pb-5 ">
         <MDMarkdown source={challengesDetailData?.instructions} />
         <div className="flex gap-2 flex-wrap">
           {challengesDetailData?.tags?.map((tag: string, i: number) => (

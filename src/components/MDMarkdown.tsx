@@ -1,10 +1,8 @@
-/* eslint-disable unused-imports/no-unused-vars */
 import { useTheme } from "next-themes";
 import MDEditor from "@uiw/react-md-editor";
 
 export const MDMarkdown = ({ source }: { source: string }) => {
   const { resolvedTheme } = useTheme();
-
   return (
     <div
       data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
@@ -12,11 +10,11 @@ export const MDMarkdown = ({ source }: { source: string }) => {
     >
       <MDEditor.Markdown
         source={source}
-        className="m-0! p-0! bg-transparent! min-h-0! text-sm text-md-editor-text
+        className="m-0! p-0! min-h-0! bg-transparent! text-sm text-md-editor-text
           [&_ol]:list-decimal [&_ol]:pl-0! [&_ol]:ml-4! [&_ol]:my-2
           [&_ul]:list-disc [&_ul]:pl-0! [&_ul]:ml-4! [&_ul]:my-2
           [&_li]:my-0.5 [&_li]:pl-1
-          [&_p]:mb-2 [&_p]:last:mb-0 [&_p]:leading-relaxed 
+          [&_p]:mb-2 [&_p]:last:mb-0 [&_p]:leading-relaxed
           [&_pre]:my-2 [&_pre]:p-3! [&_pre]:rounded-md [&_pre]:bg-muted/30
           [&_pre_code]:p-0! [&_pre_code]:bg-transparent!
           [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:bg-muted/50
