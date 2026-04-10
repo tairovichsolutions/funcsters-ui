@@ -214,9 +214,17 @@ export const MonacoCodeEditer = ({
         const type = data[0];
         const payload = data.slice(1);
         if (type === 0) {
+            console.log("[YJS] Received doc update from peer, size:", payload.length);
             Y.applyUpdate(doc, payload, "webrtc");
         } else if (type === 1) {
             awarenessProtocols.applyAwarenessUpdate(awareness, payload, "webrtc");
+        } else if (type === 2) {
+            // Sync request: peer is asking us to send our full state
+            console.log("[YJS] Received sync request from peer, sending full state");
+            const state = Y.encodeStateAsUpdate(doc);
+            sendOverChannel(0, state);
+            const awarenessState = awarenessProtocols.encodeAwarenessUpdate(awareness, [doc.clientID]);
+            sendOverChannel(1, awarenessState);
         }
       };
 
@@ -232,14 +240,26 @@ export const MonacoCodeEditer = ({
         sendOverChannel(1, awarenessState);
       };
 
+      // Send a sync request (type 2) asking the peer to send their full state.
+      // This handles the race condition where the peer's state was sent
+      // BEFORE our message listener was registered and was lost.
+      const requestSync = () => {
+        if (destroyed) return;
+        console.log("[YJS] Requesting sync from peer");
+        sendOverChannel(2, new Uint8Array(0));
+      };
+
       const handleDCOpen = () => {
         console.log("[YJS] DataChannel opened, syncing state");
         syncFullState();
+        // Also request the peer's state in case they sent before we were ready
+        setTimeout(() => requestSync(), 500);
       };
 
       if (dataChannel.readyState === "open") {
-          // Already open — sync immediately
+          // Already open — sync immediately + request peer's state
           syncFullState();
+          setTimeout(() => requestSync(), 500);
       } else {
           // Wait for it to open
           dataChannel.addEventListener("open", handleDCOpen);
