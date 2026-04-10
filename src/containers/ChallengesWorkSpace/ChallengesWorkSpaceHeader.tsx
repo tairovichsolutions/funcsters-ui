@@ -134,7 +134,7 @@ export const ChallengesWorkSpaceHeader = () => {
 
   // Countdown effect — reads from localStorage end time for accuracy
   useEffect(() => {
-    if (hasPermission && sessionStarted && timeLeft > 0 && timerKey) {
+    if (hasPermission && sessionStarted && timerKey) {
       const timer = setInterval(() => {
         const remaining = getStoredTimeLeft();
         setTimeLeft(remaining);
@@ -145,7 +145,7 @@ export const ChallengesWorkSpaceHeader = () => {
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [hasPermission, sessionStarted, timeLeft > 0, timerKey]);
+  }, [hasPermission, sessionStarted, timerKey]);
 
   // Wire up the WebRTC voice chat + DataChannel automatically when session activates
   useAudioCall(hasPermission ? requestId : null, isMuted, sessionStarted);

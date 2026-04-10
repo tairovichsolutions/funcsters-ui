@@ -32,6 +32,21 @@ export function useAudioCall(
   // Track if we've successfully established so we don't spam signaling
   const offerReceived = useRef(false);
 
+  // Handle local mute
+  useEffect(() => {
+    if (localStream.current) {
+        localStream.current.getAudioTracks().forEach(t => t.enabled = !isMuted);
+    }
+    // Also update current senders for robustness
+    if (peerConnection.current) {
+        peerConnection.current.getSenders().forEach(sender => {
+            if (sender.track && sender.track.kind === 'audio') {
+                sender.track.enabled = !isMuted;
+            }
+        });
+    }
+  }, [isMuted]);
+
   useEffect(() => {
     let isCancelled = false;
 
@@ -49,6 +64,10 @@ export function useAudioCall(
 
     console.log("[useAudioCall] Starting WebRTC setup for session", sessionId, "mode:", pairingStore.state.mode);
 
+    // Audio element ref for the remote stream to prevent echos and ghost plays
+    const remoteAudio = new Audio();
+    remoteAudio.autoplay = true;
+
     const startConnection = async () => {
       // ─── 1. Fetch dynamic TURN relay credentials ───
       const credentials = await pairingStore.getTurnCredentials();
@@ -59,20 +78,15 @@ export function useAudioCall(
       // ─── 2. Create RTCPeerConnection with relay support ───
       const pc = new RTCPeerConnection({
         iceServers: credentials.iceServers,
+        iceTransportPolicy: 'all', // Ensure we use relay if needed
       });
       peerConnection.current = pc;
 
-      // ─── 3. Setup DataChannel (independent of microphone) ───
+      // ─── 3. Setup DataChannel ───
       if (pairingStore.state.mode === "broadcast") {
         const dc = pc.createDataChannel("yjs", { ordered: true });
         dc.binaryType = "arraybuffer";
         console.log("[WebRTC] Host created DataChannel 'yjs', state:", dc.readyState);
-        dc.addEventListener("open", () => {
-          console.log("[WebRTC] Host DataChannel opened!");
-        });
-        dc.addEventListener("error", (e: any) => {
-          console.warn("[WebRTC] Host DataChannel error:", e.error?.message || e.message || "Connection interrupted");
-        });
         pairingStore.setDataChannel(dc);
       } else {
         pc.ondatachannel = (event) => {
@@ -80,12 +94,6 @@ export function useAudioCall(
                 const dc = event.channel;
                 dc.binaryType = "arraybuffer";
                 console.log("[WebRTC] Joiner received DataChannel 'yjs', state:", dc.readyState);
-                dc.addEventListener("open", () => {
-                  console.log("[WebRTC] Joiner DataChannel opened!");
-                });
-                dc.addEventListener("error", (e: any) => {
-                  console.warn("[WebRTC] Joiner DataChannel error:", e.error?.message || e.message || "Connection interrupted");
-                });
                 pairingStore.setDataChannel(dc);
             }
         };
@@ -94,47 +102,40 @@ export function useAudioCall(
       // ─── 4. ICE candidate handler ───
       pc.onicecandidate = (event) => {
         if (event.candidate && client.connected) {
-          console.log("[WebRTC] ICE candidate:", event.candidate.type, event.candidate.protocol, event.candidate.address);
           client.publish({
             destination: `/app/session/${sessionId}/signal`,
             body: JSON.stringify({ senderId: myId, type: "candidate", data: event.candidate }),
           });
-        } else if (!event.candidate) {
-          console.log("[WebRTC] ICE gathering complete");
         }
       };
 
-      // ─── 5. Remote track handler (for audio) ───
-      const pendingCandidates: any[] = [];
+      // ─── 5. Remote track handler ───
       pc.ontrack = (event) => {
+          console.log("[WebRTC] Received remote track:", event.track.kind);
           if (event.streams && event.streams[0]) {
               setRemoteStream(event.streams[0]);
-              const audio = new Audio();
-              audio.srcObject = event.streams[0];
-              audio.play().catch(console.error);
+              remoteAudio.srcObject = event.streams[0];
+              // Note: Browser might block autoplay without user interaction
+              remoteAudio.play().catch(err => {
+                  console.warn("[WebRTC] Remote audio autoplay blocked, waiting for interaction", err);
+              });
           }
       };
 
       pc.onconnectionstatechange = () => {
         console.log("[WebRTC] Connection state:", pc.connectionState);
         if (pc.connectionState === "failed") {
-          console.error("[WebRTC] P2P connection FAILED — TURN server may be unreachable");
+          console.error("[WebRTC] P2P connection FAILED — Restarting ICE...");
+          // No automatic restart for now to avoid loops, but logged
         }
       };
 
-      pc.oniceconnectionstatechange = () => {
-        console.log("[WebRTC] ICE connection state:", pc.iceConnectionState);
-      };
-
-      pc.onicegatheringstatechange = () => {
-        console.log("[WebRTC] ICE gathering state:", pc.iceGatheringState);
-      };
-
-      // ─── 6. Listen for WebRTC signals via STOMP ───
+      // ─── 6. Listen for WebRTC signals ───
+      const pendingCandidates: any[] = [];
       signalSubRef.current = client.subscribe(`/topic/session/${sessionId}/signal`, async (msg) => {
         try {
           const signal: SignalMessage = JSON.parse(msg.body);
-          if (signal.senderId === myId) return; // ignore own
+          if (signal.senderId === myId) return;
 
           if (signal.type === "offer") {
              if (isCancelled) return;
@@ -159,7 +160,7 @@ export function useAudioCall(
              pendingCandidates.length = 0;
           } else if (signal.type === "candidate") {
              if (isCancelled) return;
-             if (!pc.remoteDescription || pc.remoteDescription.type === "rollback") {
+             if (!pc.remoteDescription) {
                  pendingCandidates.push(signal.data);
              } else {
                  await pc.addIceCandidate(new RTCIceCandidate(signal.data));
@@ -167,17 +168,13 @@ export function useAudioCall(
           } else if (signal.type === "request-offer" && pairingStore.state.mode === "broadcast") {
              if (isCancelled || pc.signalingState !== "stable") return;
              console.log("[WebRTC] Received request-offer, sending offer");
-             try {
-                 const offer = await pc.createOffer();
-                 await pc.setLocalDescription(offer);
-                 if (client.connected) {
-                     client.publish({
-                         destination: `/app/session/${sessionId}/signal`,
-                         body: JSON.stringify({ senderId: myId, type: "offer", data: offer }),
-                     });
-                 }
-             } catch (e) {
-                 console.warn("Generating offer on request failed:", e);
+             const offer = await pc.createOffer();
+             await pc.setLocalDescription(offer);
+             if (client.connected) {
+                 client.publish({
+                     destination: `/app/session/${sessionId}/signal`,
+                     body: JSON.stringify({ senderId: myId, type: "offer", data: offer }),
+                 });
              }
           }
         } catch (e) {
@@ -185,54 +182,55 @@ export function useAudioCall(
         }
       });
 
-      // ─── 7. Try to add audio track ───
-      navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      // ─── 7. Add local audio track ───
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true
+            } 
+        });
         if (isCancelled) {
             stream.getTracks().forEach(t => t.stop());
             return;
         }
         localStream.current = stream;
-        if (isMuted) {
-            stream.getAudioTracks().forEach(t => t.enabled = false);
-        }
+        stream.getAudioTracks().forEach(t => t.enabled = !isMuted);
         stream.getTracks().forEach((track) => pc.addTrack(track, stream));
-        console.log("[WebRTC] Audio track added to peer connection");
-      }).catch((e) => {
-        console.warn("[WebRTC] Microphone unavailable, continuing without audio:", e.message);
-      });
+        console.log("[WebRTC] Local audio added, muted:", isMuted);
+      } catch (e: any) {
+        console.warn("[WebRTC] Microphone unavailable:", e.message);
+      }
 
-      // ─── 8. Offer / Answer initiation ───
+      // ─── 8. Offer initiation ───
       if (pairingStore.state.mode === "broadcast") {
           setTimeout(async () => {
               if (isCancelled || pc.signalingState !== "stable") return;
-              try {
-                  console.log("[WebRTC] Host sending initial offer");
-                  const offer = await pc.createOffer();
-                  await pc.setLocalDescription(offer);
-                  if (client.connected) {
-                      client.publish({
-                          destination: `/app/session/${sessionId}/signal`,
-                          body: JSON.stringify({ senderId: myId, type: "offer", data: offer })
-                      });
-                  }
-              } catch (e) {
-                  console.warn("[WebRTC] Initial offer failed:", e);
+              console.log("[WebRTC] Host sending initial offer");
+              const offer = await pc.createOffer();
+              await pc.setLocalDescription(offer);
+              if (client.connected) {
+                  client.publish({
+                      destination: `/app/session/${sessionId}/signal`,
+                      body: JSON.stringify({ senderId: myId, type: "offer", data: offer })
+                  });
               }
-          }, 1000);
+          }, 1500);
       } else {
           const reqInterval = setInterval(() => {
               if (isCancelled || offerReceived.current || pc.connectionState === "connected") {
                   clearInterval(reqInterval);
                   return;
               }
-              if (pc.signalingState === "stable" && client.connected) {
-                  console.log("[WebRTC] Joiner requesting offer from host");
+              if (client.connected) {
+                  console.log("[WebRTC] Joiner requesting offer...");
                   client.publish({
                       destination: `/app/session/${sessionId}/signal`,
                       body: JSON.stringify({ senderId: myId, type: "request-offer", data: null })
                   });
               }
-          }, 2000);
+          }, 3000);
       }
     };
 
@@ -241,20 +239,14 @@ export function useAudioCall(
     return () => {
       console.log("[useAudioCall] Cleaning up for session", sessionId);
       isCancelled = true;
+      remoteAudio.pause();
+      remoteAudio.srcObject = null;
       if (localStream.current) localStream.current.getTracks().forEach(t => t.stop());
       if (peerConnection.current) peerConnection.current.close();
       if (signalSubRef.current) signalSubRef.current.unsubscribe();
       pairingStore.setDataChannel(null);
     };
-  // sessionStarted is now a dependency — effect re-fires when it goes true
   }, [sessionId, sessionStarted]);
-
-  // Handle local mute
-  useEffect(() => {
-    if (localStream.current) {
-        localStream.current.getAudioTracks().forEach(t => t.enabled = !isMuted);
-    }
-  }, [isMuted]);
 
   return { remoteStream };
 }

@@ -385,6 +385,7 @@ class PairingDemoStore extends EventTarget {
   async joinSession(requestId: number) {
       try {
           await apiClient.post(`/api/pairing/session/${requestId}/join`);
+          this.setState({ sessionStarted: true });
       } catch (e) {
           console.error("Failed to signal session join", e);
       }
