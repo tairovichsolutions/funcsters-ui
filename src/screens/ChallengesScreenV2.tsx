@@ -52,15 +52,7 @@ export const ChallengesScreenV2: React.FC = () => {
   }, [data]);
 
 
-  const expandedChallenges = allChallenges.map(challenge => ({
-    ...challenge,
-    tags: [
-      ...(challenge.tags ?? []), // Fallback to empty array if undefined
-      ...Array(Math.max(0, 5 - (challenge.tags?.length ?? 0))) // Safely check length too
-        .fill(null)
-        .map((_, i) => `Extra Tag ${i + 1}`)
-    ]
-  }));
+
 
   //  const { data: metricsData, isLoading:loading } = useMetrics();
   const metricsData = {
@@ -148,7 +140,7 @@ export const ChallengesScreenV2: React.FC = () => {
             isLoading={isLoading}
             currentView={currentView}
             // allChallenges={[...allChallenges,...allChallenges,...allChallenges,...allChallenges,]}
-            allChallenges={[...expandedChallenges,]}
+            allChallenges={[...allChallenges,]}
             fetchNextPage={fetchNextPage}
             hasNextPage={Boolean(hasNextPage)}
             isFetchingNextPage={isFetchingNextPage}
