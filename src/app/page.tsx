@@ -1,9 +1,9 @@
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-import { redirect } from "next/navigation";
-import { LandingPageScreen } from "@/screens/LandingPageScreen";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import Landing from "./landing/page";
 
 export default async function Home() {
   const cookieStore = await cookies();
@@ -14,7 +14,8 @@ export default async function Home() {
 
   return (
     <div className="scroll-smooth bg-black bg-[url('/images/landing-page-bg.png')] bg-cover font-magseva h-full w-full">
-      <LandingPageScreen />
+      <Landing/>
+      {/* <LandingPageScreen /> */}
     </div>
   );
 }
