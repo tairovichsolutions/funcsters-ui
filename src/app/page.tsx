@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Landing from "./landing/page";
 const navItems = [
-  { name: "Home", href: "/landing" },
+  { name: "Home", href: "/" },
   { name: "Challenges", href: "/challenges" },
 ];
 export default async function Home() {
