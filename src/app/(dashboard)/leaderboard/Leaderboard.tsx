@@ -12,6 +12,7 @@ import HexagonRankIcon from "../../../../public/svgs/leaderBoard/HexagonRankIcon
 import MedalIcon from "../../../../public/svgs/leaderBoard/MedalIcon";
 import SilverMedalIcon from "../../../../public/svgs/leaderBoard/SilverMedalIcon";
 import { LanguageBadge } from "./LanguageBadge";
+import CountryDropdown from "./CountryDropDown";
 
 // --- Types ---
 type Language = "python" | "js";
@@ -200,9 +201,9 @@ export default function Leaderboard() {
                                     ))}
                                 </div>
                             </div>
+<CountryDropdown/>
 
-
-                            <div className="relative w-full sm:w-max    sm:mt-0" ref={dropdownRef}>
+                            <div className="relative hidden w-full sm:w-max    sm:mt-0" ref={dropdownRef}>
                                 <button
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                     // disabled={isLoading}
