@@ -8,6 +8,7 @@ import { CommunityGuidelinesModal } from "@/features/pair/components/CommunityGu
 import { LeaveSessionConfirm } from "@/features/pair/components/LeaveSessionConfirm";
 import { SessionTimer } from "@/features/pair/components/SessionTimer";
 import { useCurrentUser } from "@/features/pair/hooks/useCurrentUser";
+import { useMyActiveSession } from "@/features/pair/hooks/usePairQueries";
 import { usePairSession } from "@/features/pair/providers/PairSessionProvider";
 import { MonacoCodeEditer } from "@/components/ui/monaco-editor";
 
@@ -31,6 +32,7 @@ export default function PairSessionPage() {
   const sessionIdFromUrl = Number(params.id);
 
   const { data: currentUser } = useCurrentUser();
+  const { isLoading: sessionLoading } = useMyActiveSession();
   const {
     session,
     connectionState,
@@ -79,16 +81,21 @@ export default function PairSessionPage() {
 
   // Redirect when arriving with no active session or a different session id.
   useEffect(() => {
-    if (session === null) return; // still loading
-    if (session && session.id !== sessionIdFromUrl) {
+    if (sessionLoading) return;
+    if (!session) {
+      // Query settled, no active session — kick back to lobby.
+      router.replace("/pair/lobby");
+      return;
+    }
+    if (session.id !== sessionIdFromUrl) {
       router.replace(`/pair/session/${session.id}`);
     }
-  }, [session, sessionIdFromUrl, router]);
+  }, [sessionLoading, session, sessionIdFromUrl, router]);
 
-  if (!session) {
+  if (sessionLoading || !session) {
     return (
       <div className="flex h-[80vh] items-center justify-center text-sm text-muted-foreground">
-        Loading session…
+        {sessionLoading ? "Loading session…" : "No active session — redirecting…"}
       </div>
     );
   }

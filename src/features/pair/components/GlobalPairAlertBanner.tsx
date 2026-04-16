@@ -38,6 +38,7 @@ export function GlobalPairAlertBanner() {
     return (
       <BroadcastingBanner
         requestId={myRequest.id}
+        challengeId={myRequest.challengeId}
         challengeTitle={myRequest.challengeTitle}
         expiresAtEpochMs={myRequest.expiresAtEpochMs}
       />
@@ -126,15 +127,20 @@ function JoinPendingBanner({ joinId, expiresAtEpochMs }: { joinId: number; expir
 
 function BroadcastingBanner({
   requestId,
+  challengeId,
   challengeTitle,
   expiresAtEpochMs,
 }: {
   requestId: number;
+  challengeId: number;
   challengeTitle: string;
   expiresAtEpochMs: number;
 }) {
   const remaining = useCountdown(expiresAtEpochMs);
   const cancel = useCancelPairRequest();
+  // Return user to their challenge detail where the PairProgramButton
+  // renders in "Broadcasting" mode and opens the incoming-joins sidebar.
+  const challengeHref = `/challenges/${challengeId}/detail`;
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4">
@@ -151,7 +157,7 @@ function BroadcastingBanner({
           </div>
           <div className="mt-1 truncate text-sm text-blue-900 dark:text-blue-100">
             Waiting for a pair on{" "}
-            <Link href={`/pair/request/${requestId}`} className="font-medium underline-offset-2 hover:underline">
+            <Link href={challengeHref} className="font-medium underline-offset-2 hover:underline">
               “{challengeTitle}”
             </Link>
           </div>
@@ -164,7 +170,7 @@ function BroadcastingBanner({
           Cancel Request
         </button>
         <Link
-          href={`/pair/request/${requestId}`}
+          href={challengeHref}
           className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
         >
           View Incoming

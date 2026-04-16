@@ -60,11 +60,17 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
   const { data: iceServers } = useIceServers();
   const leaveMutation = useLeaveSession();
 
-  const enabled = session != null && session.status !== "ENDED";
+  // STOMP should connect + subscribe as soon as we have any non-ended session so
+  // the joiner's signal subscription is ready before the host sends OFFER.
+  const hasSession = session != null && session.status !== "ENDED";
+  // WebRTC peer connection only activates when both peers have committed
+  // (status === ACTIVE). Activating in AWAITING_GUIDELINES would make the host
+  // publish an OFFER that the joiner's not-yet-created pc cannot consume.
+  const webrtcEnabled = session != null && session.status === "ACTIVE";
   const sessionId = session?.id ?? null;
   const isHost = session?.hostUsername === currentUsername;
 
-  const stomp = useStompPair({ enabled });
+  const stomp = useStompPair({ enabled: hasSession });
 
   const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -102,7 +108,7 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
   );
 
   const rtc = useWebRTCSession({
-    enabled: enabled && stomp.connected,
+    enabled: webrtcEnabled && stomp.connected,
     isInitiator: isHost,
     iceServers: iceServers,
     sendSignal,
