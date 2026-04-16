@@ -29,8 +29,10 @@ export function useCurrentUser() {
     queryFn: async (): Promise<UserDto | null> => {
       const userId = readCookie("userId");
       if (!userId) return null;
-      const { data } = await apiClient.get<UserDto>(`/api/users/${userId}`);
-      return data;
+      const { data } = await apiClient.get<{ authenticated: boolean; user?: UserDto }>(
+        `/api/users/${userId}`
+      );
+      return data.authenticated && data.user ? data.user : null;
     },
     staleTime: 5 * 60_000,
     gcTime: 30 * 60_000,
