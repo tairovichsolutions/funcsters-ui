@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { editor as monacoEditor } from "monaco-editor";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import { useIceServers, useLeaveSession, useMyActiveSession } from "../hooks/usePairQueries";
 import { useStompPair } from "../hooks/useStompPair";
 import { useWebRTCSession } from "../hooks/useWebRTCSession";
@@ -50,11 +51,11 @@ export function usePairSession() {
 
 interface PairSessionProviderProps {
   children: React.ReactNode;
-  /** The logged-in user's own username — used to decide host vs. joiner role. */
-  currentUsername: string;
 }
 
-export function PairSessionProvider({ children, currentUsername }: PairSessionProviderProps) {
+export function PairSessionProvider({ children }: PairSessionProviderProps) {
+  const { data: currentUser } = useCurrentUser();
+  const currentUsername = currentUser?.username ?? "";
   const { data: session } = useMyActiveSession();
   const { data: iceServers } = useIceServers();
   const leaveMutation = useLeaveSession();

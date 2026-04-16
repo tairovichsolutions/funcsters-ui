@@ -12,6 +12,7 @@ import { EditorSettingsProvider } from "@/context/EditorSettingsContext";
 import { ProfileSettingModal } from "@/containers/profileSetting/ProfileSettingModal";
 import { ProfileSetingModalsProvider } from "@/providers/ProfileSettingModalsProvider";
 import { LanguageImplementationsProvider } from "@/context/languageImplementationsContext";
+import { PairSessionProvider } from "@/features/pair/providers/PairSessionProvider";
 
 export const metadata: Metadata = {
   title: "funcsters",
@@ -35,10 +36,12 @@ export default function RootLayout({
               <EditorSettingsProvider>
                 <AuthModalsProvider>
                   <ProfileSetingModalsProvider>
-                    {children}
-                    <AuthModal />
-                    <ToasterComponent />
-                    <ProfileSettingModal />
+                    <PairSessionProvider>
+                      {children}
+                      <AuthModal />
+                      <ToasterComponent />
+                      <ProfileSettingModal />
+                    </PairSessionProvider>
                   </ProfileSetingModalsProvider>
                 </AuthModalsProvider>
               </EditorSettingsProvider>
