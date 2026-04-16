@@ -56,6 +56,7 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const silentTrackRef = useRef<MediaStreamTrack | null>(null);
+  const silentAudioCtxRef = useRef<AudioContext | null>(null);
   const disconnectTimerRef = useRef<number | null>(null);
 
   const [connectionState, setConnectionState] = useState<RTCPeerConnectionState>("new");
@@ -66,6 +67,7 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
   // echoes on some codec paths (the bashar "audio echo" bug).
   const buildSilentTrack = useCallback((): MediaStreamTrack => {
     const ctx = new AudioContext();
+    silentAudioCtxRef.current = ctx;
     const dst = ctx.createMediaStreamDestination();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -190,6 +192,8 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
       localStreamRef.current = null;
       silentTrackRef.current?.stop();
       silentTrackRef.current = null;
+      silentAudioCtxRef.current?.close().catch(() => {});
+      silentAudioCtxRef.current = null;
       pcRef.current?.close();
       pcRef.current = null;
     };
