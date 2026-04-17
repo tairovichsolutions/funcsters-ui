@@ -47,11 +47,6 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
   const [shouldShowReadMore, setShouldShowReadMore] = useState(false);
 
 
-  const handleComentSubmit = () => {
-    if (setEditInput.length === 0) return alert("Please type something!");
-    console.log("Parent receiving data:", setEditInput);
-  };
-
   const contentRef = useRef<HTMLParagraphElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
@@ -169,7 +164,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
           </div>
 
           <div className="relative" ref={menuRef}>
-            {isOwner && (
+            {!isOwner && (
               <>
                 <button
                   onClick={() => setShowMenu(!showMenu)}
@@ -178,7 +173,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
                   <MoreHorizontal className="size-4" />
                 </button>
 
-                {!showMenu && (
+                {showMenu && (
                   <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50 overflow-hidden">
                     <button
                       onClick={() => setShowMenu(false)}
@@ -198,7 +193,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
             <TextEditorPrimary
               value={editInput}
               onChange={setEditInput}
-              onSubmit={handleComentSubmit}
+              onSubmit={handleSaveEdit}
               placeholder="Type your message here..."
             />
             {/* <textarea
@@ -309,7 +304,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
             </button>
           )}
 
-          {!isOwner && (
+          {isOwner && (
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsEditing(true)}
@@ -348,7 +343,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
                 <TextEditorPrimary
                   value={replyInput}
                   onChange={setReplyInput}
-                  onSubmit={handleComentSubmit}
+                  onSubmit={handlePostReply}
                   placeholder="Type your message here..."
                 />
                 {/* <input

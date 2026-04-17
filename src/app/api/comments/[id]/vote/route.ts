@@ -2,7 +2,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-const LOCAL_BACKEND = "http://localhost:8091/api/v1";
+const LOCAL_BACKEND = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1`;
 
 export async function POST(
   request: Request,
