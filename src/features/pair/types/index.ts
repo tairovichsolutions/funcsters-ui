@@ -34,6 +34,7 @@ export interface PairRequestCardDto {
   hostCountry: string | null;
   hostCountryFlag: string | null;
   challengeId: number;
+  challengeSlug: string;
   challengeTitle: string;
   challengeDifficulty: string | null;
   languageId: number;
@@ -61,6 +62,7 @@ export interface PairSessionDto {
   hostUsername: string;
   joinerUsername: string;
   challengeId: number;
+  challengeSlug: string;
   challengeTitle: string;
   languageId: number;
   languageName: string;

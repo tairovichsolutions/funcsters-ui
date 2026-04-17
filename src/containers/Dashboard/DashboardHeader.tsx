@@ -12,6 +12,7 @@ import { useAuthModal } from "@/providers/AuthModalsProvider";
 import { useGetUserProfile } from "@/queries/useGetUserProfile";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ProfileAvatarSkeleton } from "@/skeletons/ProfileAvatarSkeleton";
+import { LobbyNavLink } from "@/features/pair/components/LobbyNavLink";
 
 export const DashboardHeader = () => {
   const router = useRouter();
@@ -45,6 +46,7 @@ export const DashboardHeader = () => {
               <NavigationLinks tab={tab} isActive={isActive} key={tab?.id} />
             );
           })}
+          {isAuthenticated && <LobbyNavLink />}
         </div>
       </div>
 

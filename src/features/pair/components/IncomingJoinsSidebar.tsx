@@ -82,6 +82,9 @@ function JoinRequestCard({
 
   const handleAccept = async () => {
     const session = await acceptMutation.mutateAsync(jr.id);
+    // Host stays on the current challenge page — the top bar widget + editor
+    // transition to session mode via the provider once session is ACTIVE.
+    // No navigation needed; the global session state drives the UI.
     onAccept?.(session.id);
   };
 

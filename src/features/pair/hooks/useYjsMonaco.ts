@@ -21,6 +21,13 @@ export interface UseYjsMonacoOptions {
   dataChannel: RTCDataChannel | null;
   username?: string;
   color?: string;
+  /**
+   * Only the initiator (host) should seed the Y.Doc with its editor's current
+   * content. If BOTH peers seed, each creates an independent CRDT insertion
+   * and the resulting merge duplicates the starter code. The joiner starts
+   * with an empty Y.Doc and inherits the state via the sync-step-1/2 handshake.
+   */
+  isInitiator: boolean;
 }
 
 export interface YjsMonacoState {
@@ -30,7 +37,7 @@ export interface YjsMonacoState {
 }
 
 export function useYjsMonaco(opts: UseYjsMonacoOptions): YjsMonacoState {
-  const { editor, dataChannel, username, color } = opts;
+  const { editor, dataChannel, username, color, isInitiator } = opts;
   const [ready, setReady] = useState(false);
   const docRef = useRef<Y.Doc | null>(null);
   const awarenessRef = useRef<awarenessProtocol.Awareness | null>(null);
@@ -54,12 +61,40 @@ export function useYjsMonaco(opts: UseYjsMonacoOptions): YjsMonacoState {
       const doc = new Y.Doc();
       const yText = doc.getText("monaco");
 
-      const initialValue = model.getValue();
-      if (initialValue.length > 0 && yText.length === 0) {
-        yText.insert(0, initialValue);
+      // Host seeds Y.Doc with the editor's current starter code BEFORE
+      // attaching any data-channel provider. Joiner starts empty and inherits
+      // via the sync handshake.
+      if (isInitiator) {
+        const initialValue = model.getValue();
+        if (initialValue.length > 0 && yText.length === 0) {
+          yText.insert(0, initialValue);
+        }
       }
 
       const provider = createYjsOverDataChannel(doc, dataChannel, { name: username, color });
+
+      // Wait for the sync handshake to complete BEFORE creating the
+      // MonacoBinding. Otherwise on the joiner side, the binding would:
+      //  1. See empty Y.Text
+      //  2. Clear the Monaco model (losing the starter code)
+      //  3. Receive sync and re-populate
+      // ...creating a window where the joiner's local edits would land in
+      // a doc that doesn't yet match the host, causing divergence.
+      await provider.synced;
+      if (cancelled) {
+        provider.destroy();
+        doc.destroy();
+        return;
+      }
+
+      // On the joiner side, after sync the Y.Text may still be empty if the
+      // host's initial seed happened async. Final safety net: if we're the
+      // initiator and Y.Text is still empty after our own setup, seed now.
+      if (isInitiator && yText.length === 0) {
+        const initialValue = model.getValue();
+        if (initialValue.length > 0) yText.insert(0, initialValue);
+      }
+
       const editorsSet = new Set([editor]);
       const binding = new MonacoBinding(yText, model, editorsSet, provider.awareness);
 

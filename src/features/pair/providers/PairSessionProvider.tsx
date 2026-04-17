@@ -57,7 +57,10 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
   const { data: currentUser } = useCurrentUser();
   const currentUsername = currentUser?.username ?? "";
   const { data: session } = useMyActiveSession();
-  const { data: iceServers } = useIceServers();
+  // Only fetch ICE creds when a session is actually active (or imminent).
+  // Avoids 401 noise on the landing/challenges page for logged-out visitors.
+  const iceServersNeeded = session != null && session.status !== "ENDED";
+  const { data: iceServers } = useIceServers(iceServersNeeded);
   const leaveMutation = useLeaveSession();
 
   // STOMP should connect + subscribe as soon as we have any non-ended session so
@@ -140,10 +143,13 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
   }, [stomp, stomp.connected, sessionId, currentUsername]);
 
   // Yjs editor sync — only when the UI has attached a Monaco instance.
+  // isInitiator gates the initial Y.Doc seed so we don't duplicate the
+  // starter code (see useYjsMonaco docstring).
   const yjs = useYjsMonaco({
     editor,
     dataChannel,
     username: currentUsername,
+    isInitiator: isHost,
   });
 
   const leave = useCallback(async () => {
@@ -172,5 +178,29 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
     [session, rtc.connectionState, rtc.localMuted, rtc.mute, rtc.unmute, remoteStream, sessionEndedReason, leave, attachEditor, yjs.ready]
   );
 
-  return <PairSessionContext.Provider value={value}>{children}</PairSessionContext.Provider>;
+  return (
+    <PairSessionContext.Provider value={value}>
+      {/* Global hidden audio element to play the remote peer's audio stream.
+          Attached once at the provider level so it persists across page
+          navigation — moving it inside a route would kill audio on route
+          change. */}
+      <RemoteAudio stream={remoteStream} />
+      {children}
+    </PairSessionContext.Provider>
+  );
+}
+
+function RemoteAudio({ stream }: { stream: MediaStream | null }) {
+  const ref = useRef<HTMLAudioElement | null>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (stream) {
+      el.srcObject = stream;
+      el.play().catch(() => {});
+    } else {
+      el.srcObject = null;
+    }
+  }, [stream]);
+  return <audio ref={ref} autoPlay playsInline style={{ display: "none" }} />;
 }

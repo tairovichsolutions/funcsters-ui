@@ -27,6 +27,13 @@ const MSG_QUERY_AWARENESS = 2;
 export interface YjsProvider {
   doc: Y.Doc;
   awareness: awarenessProtocol.Awareness;
+  /**
+   * Resolves once the peer has acknowledged our sync-step-1 (the remote has
+   * applied our state vector's delta + replied). After this resolves, it's safe
+   * for the joiner to create its MonacoBinding — the binding will apply the
+   * host's content rather than overwriting it with the joiner's local starter.
+   */
+  synced: Promise<void>;
   destroy: () => void;
 }
 
@@ -40,6 +47,12 @@ export function createYjsOverDataChannel(
     name: options.name ?? "anonymous",
     color: options.color ?? "#4f46e5",
   });
+
+  let resolveSynced: () => void;
+  const synced = new Promise<void>((resolve) => {
+    resolveSynced = resolve;
+  });
+  let syncCompleted = false;
 
   // Binary protocol over the DC — flip to binaryType explicitly.
   dc.binaryType = "arraybuffer";
@@ -98,6 +111,13 @@ export function createYjsOverDataChannel(
       if (encoding.length(encoder) > 1 && responded !== syncProtocol.messageYjsSyncStep2) {
         send(encoding.toUint8Array(encoder));
       }
+      // step2 (response to our step1) means the peer has sent us everything it
+      // has and our doc is now caught up with the remote. Safe to attach the
+      // editor binding now.
+      if (responded === syncProtocol.messageYjsSyncStep2 && !syncCompleted) {
+        syncCompleted = true;
+        resolveSynced();
+      }
     } else if (messageType === MSG_AWARENESS) {
       awarenessProtocol.applyAwarenessUpdate(
         awareness,
@@ -128,6 +148,20 @@ export function createYjsOverDataChannel(
 
   if (dc.readyState === "open") onOpen();
 
+  // If there's no remote state (host's initial DC open before any data), the
+  // host's "synced" should resolve immediately — they're authoritative. Their
+  // Y.Doc is the source of truth so waiting for sync-step-2 from nobody would
+  // hang forever. The provider knows who the initiator is implicitly by
+  // checking if we seeded content: if the doc already has data when the DC
+  // opens, we're the initiator.
+  if (dc.readyState === "open" && doc.store.clients.size > 0) {
+    // Host already has content — resolve immediately.
+    if (!syncCompleted) {
+      syncCompleted = true;
+      resolveSynced!();
+    }
+  }
+
   const destroy = () => {
     doc.off("update", onDocUpdate);
     awareness.off("update", onAwarenessUpdate);
@@ -136,5 +170,5 @@ export function createYjsOverDataChannel(
     awareness.destroy();
   };
 
-  return { doc, awareness, destroy };
+  return { doc, awareness, synced, destroy };
 }

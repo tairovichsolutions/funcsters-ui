@@ -15,6 +15,7 @@ import { ChallengeDetailSkeleton } from "@/skeletons/ChallengeDetailSkeleton";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
 import { MDMarkdown } from "@/components/MDMarkdown";
 import { TitleWithTooltipIfTruncated } from "@/components/ui/TitleWithTooltip";
+import { PairProgramButton } from "@/features/pair/components/PairProgramButton";
 
 export const ChallengesDetailScreen = () => {
   const { id } = useParams();
@@ -95,6 +96,19 @@ export const ChallengesDetailScreen = () => {
           {currentLangImpl?.userProgress && (
             <StatusChip
               status={currentLangImpl?.userProgress as UserProgressTypes}
+            />
+          )}
+
+          {isAuthenticated && challengesDetailData?.id && (
+            <PairProgramButton
+              challengeId={Number(challengesDetailData.id)}
+              challengeTitle={challengesDetailData.title ?? ""}
+              languageOptions={
+                (challengesDetailData?.languageImplementations ?? []).map((l: any) => ({
+                  id: Number(l.languageId),
+                  name: l.languageName ?? l.language ?? `Language ${l.languageId}`,
+                }))
+              }
             />
           )}
         </div>

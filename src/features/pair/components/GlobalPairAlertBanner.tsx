@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Clock, UserRoundPlus, Users } from "lucide-react";
+import { Clock, Mic, UserRoundPlus, Users } from "lucide-react";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import { useCancelJoinRequest, useCancelPairRequest, useMyActiveJoin, useMyActiveRequest, useMyActiveSession } from "../hooks/usePairQueries";
 
 /**
@@ -18,14 +20,32 @@ import { useCancelJoinRequest, useCancelPairRequest, useMyActiveJoin, useMyActiv
  * Priority: session > join > request.
  */
 export function GlobalPairAlertBanner() {
+  const pathname = usePathname() ?? "";
+  const { data: currentUser } = useCurrentUser();
   const { data: mySession } = useMyActiveSession();
   const { data: myJoin } = useMyActiveJoin();
   const { data: myRequest } = useMyActiveRequest();
 
-  if (mySession && mySession.status === "AWAITING_GUIDELINES") {
+  // The session/pair context is always tied to a specific challenge. When a
+  // session exists, we link to THAT challenge's detail page rather than a
+  // separate session route — that's where the inline session UI lives.
+  const sessionChallengeHref = mySession
+    ? `/challenges/${mySession.challengeSlug}/detail`
+    : null;
+  const onChallengePage =
+    mySession && pathname.startsWith(`/challenges/${mySession.challengeSlug}/detail`);
+
+  if (mySession && mySession.status === "ACTIVE" && !onChallengePage) {
+    const partner =
+      currentUser?.username === mySession.hostUsername
+        ? mySession.joinerUsername
+        : mySession.hostUsername;
+    return <ActiveSessionBanner href={sessionChallengeHref!} partnerUsername={partner} />;
+  }
+  if (mySession && mySession.status === "AWAITING_GUIDELINES" && !onChallengePage) {
     return (
       <PermissionGrantedBanner
-        sessionId={mySession.id}
+        href={sessionChallengeHref!}
         hostUsername={mySession.hostUsername}
         expiresAtEpochMs={mySession.acceptedAtEpochMs + 2 * 60 * 1000}
       />
@@ -38,7 +58,7 @@ export function GlobalPairAlertBanner() {
     return (
       <BroadcastingBanner
         requestId={myRequest.id}
-        challengeId={myRequest.challengeId}
+        challengeSlug={myRequest.challengeSlug}
         challengeTitle={myRequest.challengeTitle}
         expiresAtEpochMs={myRequest.expiresAtEpochMs}
       />
@@ -47,12 +67,37 @@ export function GlobalPairAlertBanner() {
   return null;
 }
 
+function ActiveSessionBanner({ href, partnerUsername }: { href: string; partnerUsername: string }) {
+  return (
+    <div className="mx-auto w-full max-w-7xl px-4">
+      <div className="relative flex items-center gap-4 rounded-lg border border-indigo-200 bg-indigo-50 p-4 pl-5 dark:border-indigo-900/50 dark:bg-indigo-950/30">
+        <span className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-indigo-500" />
+        <Mic className="h-5 w-5 shrink-0 text-indigo-600 dark:text-indigo-400" />
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">
+            Pair session in progress
+          </div>
+          <div className="mt-1 truncate text-sm text-indigo-900 dark:text-indigo-100">
+            You&apos;re currently paired with @{partnerUsername}.
+          </div>
+        </div>
+        <Link
+          href={href}
+          className="inline-flex items-center gap-1.5 rounded-full bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+        >
+          Return to Session
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 function PermissionGrantedBanner({
-  sessionId,
+  href,
   hostUsername,
   expiresAtEpochMs,
 }: {
-  sessionId: number;
+  href: string;
   hostUsername: string;
   expiresAtEpochMs: number;
 }) {
@@ -75,7 +120,7 @@ function PermissionGrantedBanner({
           </div>
         </div>
         <Link
-          href={`/pair/session/${sessionId}`}
+          href={href}
           className="inline-flex items-center gap-1.5 rounded-full bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700"
         >
           <Users className="h-4 w-4" />
@@ -127,12 +172,12 @@ function JoinPendingBanner({ joinId, expiresAtEpochMs }: { joinId: number; expir
 
 function BroadcastingBanner({
   requestId,
-  challengeId,
+  challengeSlug,
   challengeTitle,
   expiresAtEpochMs,
 }: {
   requestId: number;
-  challengeId: number;
+  challengeSlug: string;
   challengeTitle: string;
   expiresAtEpochMs: number;
 }) {
@@ -140,7 +185,8 @@ function BroadcastingBanner({
   const cancel = useCancelPairRequest();
   // Return user to their challenge detail where the PairProgramButton
   // renders in "Broadcasting" mode and opens the incoming-joins sidebar.
-  const challengeHref = `/challenges/${challengeId}/detail`;
+  // Detail page route uses challenge SLUG, not numeric id.
+  const challengeHref = `/challenges/${challengeSlug}/detail`;
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4">

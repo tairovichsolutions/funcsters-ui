@@ -24,10 +24,13 @@ interface UserDto {
  * Result is cached by React Query so the fetch only happens once per session.
  */
 export function useCurrentUser() {
+  // `enabled` re-evaluates on every render, so when the user logs in and the
+  // cookie appears, the query fires. Avoids hitting /api/users/X with an empty
+  // cookie on logged-out pages.
+  const userId = typeof document !== "undefined" ? readCookie("userId") : null;
   return useQuery({
-    queryKey: ["current-user"],
+    queryKey: ["current-user", userId],
     queryFn: async (): Promise<UserDto | null> => {
-      const userId = readCookie("userId");
       if (!userId) return null;
       const { data } = await apiClient.get<{ authenticated: boolean; user?: UserDto }>(
         `/api/users/${userId}`
@@ -36,5 +39,6 @@ export function useCurrentUser() {
     },
     staleTime: 5 * 60_000,
     gcTime: 30 * 60_000,
+    enabled: !!userId,
   });
 }

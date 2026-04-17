@@ -3,6 +3,7 @@
 import { UserRoundPlus, Radio } from "lucide-react";
 import { useState } from "react";
 import { CreatePairRequestModal } from "./CreatePairRequestModal";
+import { IncomingJoinsSidebar } from "./IncomingJoinsSidebar";
 import { useMyActiveJoin, useMyActiveRequest, useMyActiveSession } from "../hooks/usePairQueries";
 
 /**
@@ -19,16 +20,15 @@ interface PairProgramButtonProps {
   challengeId: number;
   challengeTitle: string;
   languageOptions: Array<{ id: number; name: string }>;
-  onBroadcastingClick?: () => void;
 }
 
 export function PairProgramButton({
   challengeId,
   challengeTitle,
   languageOptions,
-  onBroadcastingClick,
 }: PairProgramButtonProps) {
   const [modalOpen, setModalOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { data: myRequest } = useMyActiveRequest();
   const { data: myJoin } = useMyActiveJoin();
   const { data: mySession } = useMyActiveSession();
@@ -41,19 +41,24 @@ export function PairProgramButton({
       ? "You are in an active session"
       : myJoin && myJoin.status === "PENDING"
       ? "You have a pending join request"
-      : myRequest && !isBroadcasting
-      ? null
       : null;
 
   if (isBroadcasting) {
     return (
-      <button
-        onClick={onBroadcastingClick}
-        className="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-      >
-        <Radio className="h-4 w-4 animate-pulse" />
-        Broadcasting
-      </button>
+      <>
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+        >
+          <Radio className="h-4 w-4 animate-pulse" />
+          Broadcasting
+        </button>
+        <IncomingJoinsSidebar
+          open={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          pairRequestId={myRequest?.id ?? null}
+        />
+      </>
     );
   }
 

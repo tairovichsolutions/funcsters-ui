@@ -2,7 +2,6 @@
 
 import { Users } from "lucide-react";
 import { useState } from "react";
-import { GlobalPairAlertBanner } from "@/features/pair/components/GlobalPairAlertBanner";
 import { LobbyFilters, type LobbyFilterState } from "@/features/pair/components/LobbyFilters";
 import { PairRequestCard } from "@/features/pair/components/PairRequestCard";
 import { useLobby } from "@/features/pair/hooks/usePairQueries";
@@ -23,8 +22,6 @@ export default function PairLobbyPage() {
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6">
-      <GlobalPairAlertBanner />
-
       <header>
         <h1 className="flex items-center gap-2 text-2xl font-bold">
           <Users className="h-6 w-6 text-blue-600" />
