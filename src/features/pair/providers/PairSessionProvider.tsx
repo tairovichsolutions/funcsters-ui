@@ -6,7 +6,7 @@ import { useCurrentUser } from "../hooks/useCurrentUser";
 import { useIceServers, useLeaveSession, useMyActiveSession } from "../hooks/usePairQueries";
 import { useStompPair } from "../hooks/useStompPair";
 import { useWebRTCSession } from "../hooks/useWebRTCSession";
-import { useYjsMonaco } from "../hooks/useYjsMonaco";
+import { clearYjsPersistence, useYjsMonaco } from "../hooks/useYjsMonaco";
 import type {
   PairControlEvent,
   PairSessionDto,
@@ -89,6 +89,10 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
         const event = JSON.parse(msg.body) as PairControlEvent;
         if (event.type === "SESSION_ENDED" || event.type === "PEER_LEFT") {
           setSessionEndedReason(event.reason ?? event.type);
+          // Session is over for both sides — wipe persisted Yjs state so
+          // the editor doesn't replay stale content if this tab ever joins
+          // another session with the same id.
+          clearYjsPersistence(sessionId).catch(() => {});
         }
       } catch {
         /* ignore malformed */
@@ -144,17 +148,25 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
 
   // Yjs editor sync — only when the UI has attached a Monaco instance.
   // isInitiator gates the initial Y.Doc seed so we don't duplicate the
-  // starter code (see useYjsMonaco docstring).
+  // starter code (see useYjsMonaco docstring). sessionId namespaces the
+  // IndexedDB persistence so refreshing mid-session restores the
+  // collaborative doc instead of starting fresh.
   const yjs = useYjsMonaco({
     editor,
     dataChannel,
+    sessionId,
     username: currentUsername,
     isInitiator: isHost,
   });
 
   const leave = useCallback(async () => {
     if (sessionId == null) return;
-    await leaveMutation.mutateAsync(sessionId);
+    const id = sessionId;
+    await leaveMutation.mutateAsync(id);
+    // Purge the session's IndexedDB doc so a future session with the
+    // same id (unlikely, but possible during local dev) doesn't inherit
+    // stale content, and so browser storage doesn't grow unbounded.
+    await clearYjsPersistence(id);
   }, [sessionId, leaveMutation]);
 
   const attachEditor = useCallback(

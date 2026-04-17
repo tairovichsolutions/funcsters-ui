@@ -5,28 +5,32 @@ import { useEffect, useRef, useState } from "react";
 import type * as awarenessProtocol from "y-protocols/awareness";
 import * as Y from "yjs";
 import { createYjsOverDataChannel } from "../lib/yjsOverDataChannel";
+import { attachRemoteCursorLabels } from "../lib/remoteCursorWidgets";
 
 /**
- * Binds a Monaco editor to a Y.Doc synced over a WebRTC DataChannel.
+ * Binds a Monaco editor to a Y.Doc synced over a WebRTC DataChannel,
+ * with IndexedDB persistence so state survives page refresh mid-session.
  *
- * Pre-applied fix for bashar's "stale MonacoBinding" bug:
- *   - Binding is created fresh on every effect run
- *   - binding.destroy() runs on every cleanup
- *   - Model identity change triggers a rebind automatically because the
- *     effect depends on the editor ref's model
+ * Refresh lifecycle:
+ *   - Each session gets its own IDB database: pair-session-{sessionId}.
+ *   - On mount the doc is hydrated from IDB (IndexeddbPersistence.whenSynced)
+ *     BEFORE we look at seeding or create the MonacoBinding. That way a
+ *     refreshed peer restores the collaborative state rather than starting
+ *     from scratch and either wiping it or duplicating the starter code.
+ *   - Host seeds starter code ONLY if, after IDB hydration, the Y.Text is
+ *     still empty — i.e. this is a genuinely fresh session, not a reload.
+ *   - Joiner never seeds; they rely on the sync handshake (or IDB if they
+ *     had seen this session before).
+ *   - Session end (leave) should clear the IDB entry — the provider does
+ *     that via clearYjsPersistence(sessionId).
  */
 
 export interface UseYjsMonacoOptions {
   editor: monacoEditor.IStandaloneCodeEditor | null;
   dataChannel: RTCDataChannel | null;
+  sessionId: number | null;
   username?: string;
   color?: string;
-  /**
-   * Only the initiator (host) should seed the Y.Doc with its editor's current
-   * content. If BOTH peers seed, each creates an independent CRDT insertion
-   * and the resulting merge duplicates the starter code. The joiner starts
-   * with an empty Y.Doc and inherits the state via the sync-step-1/2 handshake.
-   */
   isInitiator: boolean;
 }
 
@@ -36,14 +40,26 @@ export interface YjsMonacoState {
   ready: boolean;
 }
 
+const dbNameFor = (sessionId: number) => `pair-session-${sessionId}`;
+
+export async function clearYjsPersistence(sessionId: number): Promise<void> {
+  if (typeof window === "undefined" || !window.indexedDB) return;
+  await new Promise<void>((resolve) => {
+    const req = window.indexedDB.deleteDatabase(dbNameFor(sessionId));
+    req.onsuccess = () => resolve();
+    req.onerror = () => resolve();
+    req.onblocked = () => resolve();
+  });
+}
+
 export function useYjsMonaco(opts: UseYjsMonacoOptions): YjsMonacoState {
-  const { editor, dataChannel, username, color, isInitiator } = opts;
+  const { editor, dataChannel, sessionId, username, color, isInitiator } = opts;
   const [ready, setReady] = useState(false);
   const docRef = useRef<Y.Doc | null>(null);
   const awarenessRef = useRef<awarenessProtocol.Awareness | null>(null);
 
   useEffect(() => {
-    if (!editor || !dataChannel) return;
+    if (!editor || !dataChannel || sessionId == null) return;
 
     const model = editor.getModel();
     if (!model) return;
@@ -52,44 +68,52 @@ export function useYjsMonaco(opts: UseYjsMonacoOptions): YjsMonacoState {
     let cleanup: (() => void) | null = null;
 
     (async () => {
-      // y-monaco imports monaco-editor which touches `window` at module load.
-      // Lazy-import here so Next.js can still pre-render pages that include
-      // this hook transitively via the root layout.
+      // y-monaco + y-indexeddb import monaco-editor / window at module load,
+      // so we lazy-import here to keep the SSR pre-render tree clean.
       const { MonacoBinding } = await import("y-monaco");
+      const { IndexeddbPersistence } = await import("y-indexeddb");
       if (cancelled) return;
 
       const doc = new Y.Doc();
       const yText = doc.getText("monaco");
 
-      // Host seeds Y.Doc with the editor's current starter code BEFORE
-      // attaching any data-channel provider. Joiner starts empty and inherits
-      // via the sync handshake.
-      if (isInitiator) {
-        const initialValue = model.getValue();
-        if (initialValue.length > 0 && yText.length === 0) {
-          yText.insert(0, initialValue);
-        }
-      }
-
-      const provider = createYjsOverDataChannel(doc, dataChannel, { name: username, color });
-
-      // Wait for the sync handshake to complete BEFORE creating the
-      // MonacoBinding. Otherwise on the joiner side, the binding would:
-      //  1. See empty Y.Text
-      //  2. Clear the Monaco model (losing the starter code)
-      //  3. Receive sync and re-populate
-      // ...creating a window where the joiner's local edits would land in
-      // a doc that doesn't yet match the host, causing divergence.
-      await provider.synced;
+      // 1. Hydrate from IDB first. If this peer has been in the session
+      //    before (including before a refresh), their Y.Doc history is
+      //    restored and the sync handshake will just reconcile deltas.
+      const persistence = new IndexeddbPersistence(dbNameFor(sessionId), doc);
+      await persistence.whenSynced;
       if (cancelled) {
-        provider.destroy();
+        await persistence.destroy();
         doc.destroy();
         return;
       }
 
-      // On the joiner side, after sync the Y.Text may still be empty if the
-      // host's initial seed happened async. Final safety net: if we're the
-      // initiator and Y.Text is still empty after our own setup, seed now.
+      // 2. Seed starter code only if nothing was restored AND we're the
+      //    host. Both sides seeding would duplicate the starter. A reloaded
+      //    host already has content from IDB so they don't re-seed.
+      if (isInitiator && yText.length === 0) {
+        const initialValue = model.getValue();
+        if (initialValue.length > 0) yText.insert(0, initialValue);
+      }
+
+      // 3. Establish the DataChannel-backed provider + wait for the sync
+      //    handshake so MonacoBinding doesn't briefly paint an empty doc
+      //    over the editor.
+      const provider = createYjsOverDataChannel(doc, dataChannel, {
+        name: username,
+        color,
+      });
+      await provider.synced;
+      if (cancelled) {
+        provider.destroy();
+        await persistence.destroy();
+        doc.destroy();
+        return;
+      }
+
+      // 4. Final safety: if we're the host and nothing landed via sync or
+      //    IDB, seed now. Covers the case where sync-step-2 from an empty
+      //    joiner races our own setup.
       if (isInitiator && yText.length === 0) {
         const initialValue = model.getValue();
         if (initialValue.length > 0) yText.insert(0, initialValue);
@@ -97,6 +121,12 @@ export function useYjsMonaco(opts: UseYjsMonacoOptions): YjsMonacoState {
 
       const editorsSet = new Set([editor]);
       const binding = new MonacoBinding(yText, model, editorsSet, provider.awareness);
+      const detachCursorLabels = attachRemoteCursorLabels(
+        editor,
+        doc,
+        yText,
+        provider.awareness
+      );
 
       docRef.current = doc;
       awarenessRef.current = provider.awareness;
@@ -104,8 +134,12 @@ export function useYjsMonaco(opts: UseYjsMonacoOptions): YjsMonacoState {
 
       cleanup = () => {
         setReady(false);
+        detachCursorLabels();
         binding.destroy();
         provider.destroy();
+        // Don't delete the IDB — we want state to survive refresh. It's
+        // cleared explicitly on session end by the provider.
+        persistence.destroy();
         doc.destroy();
         docRef.current = null;
         awarenessRef.current = null;
@@ -117,7 +151,7 @@ export function useYjsMonaco(opts: UseYjsMonacoOptions): YjsMonacoState {
       cleanup?.();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor, dataChannel]);
+  }, [editor, dataChannel, sessionId]);
 
   return { doc: docRef.current, awareness: awarenessRef.current, ready };
 }

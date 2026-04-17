@@ -742,3 +742,32 @@ button:not([disabled]),
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
+
+/* Pair-programming — remote peer's selection + caret + username label.
+   y-monaco paints the .yRemoteSelection / .yRemoteSelectionHead classes
+   on each remote cursor; the label is a Monaco content widget injected
+   by features/pair/lib/remoteCursorWidgets.ts. */
+.yRemoteSelection {
+  background-color: rgba(79, 70, 229, 0.25);
+}
+.yRemoteSelectionHead {
+  position: absolute;
+  border-left: 2px solid rgba(79, 70, 229, 0.9);
+  height: 100%;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+.yRemoteCursorLabel {
+  position: absolute;
+  white-space: nowrap;
+  font-size: 11px;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 4px 4px 4px 0;
+  font-weight: 600;
+  pointer-events: none;
+  transform: translateY(-3px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  user-select: none;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+}

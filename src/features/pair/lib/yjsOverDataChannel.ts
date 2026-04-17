@@ -7,32 +7,30 @@ import * as decoding from "lib0/decoding";
 /**
  * Yjs provider that rides on an existing WebRTC DataChannel.
  * Replaces the y-websocket approach bashar had that required a separate
- * Node server in the backend and caused the "YJS sync race" bug.
+ * Node server and caused the original "YJS sync race" bug.
  *
- * Protocol (matches y-websocket's wire format so future migration is trivial):
+ * Wire format matches y-websocket so a future migration is trivial:
  *   byte 0 = MESSAGE_TYPE
  *     0 = sync step (delegates to y-protocols/sync)
  *     1 = awareness update (delegates to y-protocols/awareness)
  *     2 = query awareness (respond with full awareness state)
  *
- * On DC open, both peers issue sync step 1 (announces local state vector).
- * The other peer answers with step 2 (diff). This is the y-websocket
- * handshake without needing a server.
+ * Both peers send sync-step-1 on DC open; each resolves its `synced`
+ * promise when it receives sync-step-2 from the remote. A 5-second
+ * timeout is in place as a safety net — if the handshake stalls we
+ * still attach the MonacoBinding (the doc may just be empty) rather
+ * than block the UI forever.
  */
 
 const MSG_SYNC = 0;
 const MSG_AWARENESS = 1;
 const MSG_QUERY_AWARENESS = 2;
 
+const SYNC_TIMEOUT_MS = 5_000;
+
 export interface YjsProvider {
   doc: Y.Doc;
   awareness: awarenessProtocol.Awareness;
-  /**
-   * Resolves once the peer has acknowledged our sync-step-1 (the remote has
-   * applied our state vector's delta + replied). After this resolves, it's safe
-   * for the joiner to create its MonacoBinding — the binding will apply the
-   * host's content rather than overwriting it with the joiner's local starter.
-   */
   synced: Promise<void>;
   destroy: () => void;
 }
@@ -53,18 +51,31 @@ export function createYjsOverDataChannel(
     resolveSynced = resolve;
   });
   let syncCompleted = false;
+  const markSynced = () => {
+    if (!syncCompleted) {
+      syncCompleted = true;
+      resolveSynced();
+    }
+  };
 
-  // Binary protocol over the DC — flip to binaryType explicitly.
+  const syncTimeout = setTimeout(() => {
+    if (!syncCompleted) {
+      console.warn("[yjs/dc] sync handshake timed out — attaching binding anyway");
+      markSynced();
+    }
+  }, SYNC_TIMEOUT_MS);
+
   dc.binaryType = "arraybuffer";
 
   const send = (data: Uint8Array) => {
-    if (dc.readyState === "open") {
-      // Cast: lib0's Uint8Array is generic over ArrayBufferLike; DataChannel.send
-      // needs a concrete ArrayBuffer. Slice copies into a known-ArrayBuffer-backed
-      // buffer so TS and the runtime both agree.
-      const buf = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer;
-      dc.send(buf);
-    }
+    if (dc.readyState !== "open") return;
+    // lib0's Uint8Array view may not be backed by a concrete ArrayBuffer —
+    // slice into a fresh one so DataChannel.send is happy.
+    const buf = data.buffer.slice(
+      data.byteOffset,
+      data.byteOffset + data.byteLength
+    ) as ArrayBuffer;
+    dc.send(buf);
   };
 
   const sendSync = (f: (encoder: encoding.Encoder) => void) => {
@@ -85,8 +96,7 @@ export function createYjsOverDataChannel(
   };
 
   const onDocUpdate = (update: Uint8Array, origin: unknown) => {
-    // Don't echo updates we just applied from the peer.
-    if (origin === dc) return;
+    if (origin === dc) return; // don't echo updates we got from the peer
     sendSync((encoder) => syncProtocol.writeUpdate(encoder, update));
   };
 
@@ -111,12 +121,10 @@ export function createYjsOverDataChannel(
       if (encoding.length(encoder) > 1 && responded !== syncProtocol.messageYjsSyncStep2) {
         send(encoding.toUint8Array(encoder));
       }
-      // step2 (response to our step1) means the peer has sent us everything it
-      // has and our doc is now caught up with the remote. Safe to attach the
-      // editor binding now.
-      if (responded === syncProtocol.messageYjsSyncStep2 && !syncCompleted) {
-        syncCompleted = true;
-        resolveSynced();
+      // Our sync-step-1 has been answered — the remote has sent us every
+      // op it has. Safe to paint the editor now.
+      if (responded === syncProtocol.messageYjsSyncStep2) {
+        markSynced();
       }
     } else if (messageType === MSG_AWARENESS) {
       awarenessProtocol.applyAwarenessUpdate(
@@ -130,14 +138,12 @@ export function createYjsOverDataChannel(
   };
 
   const onOpen = () => {
-    // Sync handshake: both peers send step 1 on open.
-    // The side with more recent changes responds with step 2.
+    // Handshake: both peers issue step 1 on open; the side with state
+    // responds with step 2 containing the delta.
     sendSync((encoder) => syncProtocol.writeSyncStep1(encoder, doc));
-    // Also query peer's full awareness state.
     const awEncoder = encoding.createEncoder();
     encoding.writeVarUint(awEncoder, MSG_QUERY_AWARENESS);
     send(encoding.toUint8Array(awEncoder));
-    // Share our local awareness right away.
     sendAwareness([doc.clientID]);
   };
 
@@ -148,21 +154,8 @@ export function createYjsOverDataChannel(
 
   if (dc.readyState === "open") onOpen();
 
-  // If there's no remote state (host's initial DC open before any data), the
-  // host's "synced" should resolve immediately — they're authoritative. Their
-  // Y.Doc is the source of truth so waiting for sync-step-2 from nobody would
-  // hang forever. The provider knows who the initiator is implicitly by
-  // checking if we seeded content: if the doc already has data when the DC
-  // opens, we're the initiator.
-  if (dc.readyState === "open" && doc.store.clients.size > 0) {
-    // Host already has content — resolve immediately.
-    if (!syncCompleted) {
-      syncCompleted = true;
-      resolveSynced!();
-    }
-  }
-
   const destroy = () => {
+    clearTimeout(syncTimeout);
     doc.off("update", onDocUpdate);
     awareness.off("update", onAwarenessUpdate);
     dc.removeEventListener("message", onMessage);

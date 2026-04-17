@@ -8,13 +8,21 @@ import type { IceServerDto, WebRtcSignalType } from "../types";
  * No helper libs (simple-peer/peerjs) — the bugs bashar hit (one-way audio,
  * mute reliability, stale ICE) live in exactly the code those libs hide.
  *
- * Pre-applied bug fixes from the bashar commit log:
  *   1. `addTrack` BEFORE `createOffer` (one-way audio fix)
- *   2. Mute via `replaceTrack(silentTrack)`, not `track.enabled = false`
- *   3. ICE restart on `iceConnectionState === "disconnected"` after a 4s grace
- *   4. visibilitychange/pagehide handlers for mobile backgrounding
- *   5. DataChannel created on initiator side; Yjs sync attached there
- *   6. iceServers fetched once per session (REST-HMAC creds, 1h TTL)
+ *   2. Mute via `track.enabled = false` — simpler and 100% reliable across
+ *      Chrome/Safari/Firefox. The prior `replaceTrack(silentTrack)` approach
+ *      silently failed when the sender wasn't ready yet (race between user
+ *      click and getUserMedia resolve), leaving the UI muted but the mic
+ *      still broadcasting.
+ *   3. Mute intent is stored in a ref and re-applied each time a fresh
+ *      stream is acquired, so a click during setup isn't dropped.
+ *   4. Rebuild the PC when the peer restarts (browser refresh mid-session):
+ *      detecting either an OFFER on an already-connected PC, or an
+ *      ICE/connection "failed" state, we increment a rebuild nonce that
+ *      tears down + recreates the PC fresh. Pending offers are replayed
+ *      against the new PC so the non-initiator side answers correctly.
+ *   5. ICE candidates that arrive pre-setRemoteDescription are queued and
+ *      flushed once the remote description is applied.
  */
 
 export interface SignalSender {
@@ -37,7 +45,6 @@ export interface WebRTCSession {
   mute: () => void;
   unmute: () => void;
   receiveSignal: (type: WebRtcSignalType, payload: string) => void;
-  restartIce: () => void;
 }
 
 const DISCONNECT_GRACE_MS = 4_000;
@@ -55,34 +62,34 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
 
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
-  const silentTrackRef = useRef<MediaStreamTrack | null>(null);
-  const silentAudioCtxRef = useRef<AudioContext | null>(null);
   const disconnectTimerRef = useRef<number | null>(null);
-  // Queue ICE candidates that arrive before we've called setRemoteDescription —
-  // classic race where the host fires candidates before the joiner's answer is
-  // even built. Flushed in receiveSignal after setRemoteDescription succeeds.
   const pendingIceCandidatesRef = useRef<RTCIceCandidateInit[]>([]);
 
+  // Mute intent survives across pc rebuilds + the getUserMedia race. Every
+  // time a fresh local stream is acquired we apply `!mutedIntentRef.current`
+  // to its audio track(s).
+  const mutedIntentRef = useRef<boolean>(false);
+
+  // Offer received while current pc is non-fresh (peer refreshed). Replayed
+  // on the next pc after rebuild completes.
+  const pendingOfferRef = useRef<string | null>(null);
+
+  // Bump this to force a full pc rebuild (cleanup + setup).
+  const [rebuildNonce, setRebuildNonce] = useState(0);
   const [connectionState, setConnectionState] = useState<RTCPeerConnectionState>("new");
   const [localMuted, setLocalMuted] = useState(false);
 
-  // Build a silent audio track so mute/unmute can swap via replaceTrack.
-  // Chrome/Safari both honor replaceTrack; `track.enabled = false` still
-  // echoes on some codec paths (the bashar "audio echo" bug).
-  const buildSilentTrack = useCallback((): MediaStreamTrack => {
-    const ctx = new AudioContext();
-    silentAudioCtxRef.current = ctx;
-    const dst = ctx.createMediaStreamDestination();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    gain.gain.value = 0;
-    osc.connect(gain);
-    gain.connect(dst);
-    osc.start();
-    return dst.stream.getAudioTracks()[0];
+  const applyMuteIntentToStream = useCallback((stream: MediaStream) => {
+    for (const track of stream.getAudioTracks()) {
+      track.enabled = !mutedIntentRef.current;
+    }
   }, []);
 
-  // Main connection lifecycle — rebuilds when iceServers become available.
+  const triggerRebuild = useCallback((pendingOffer?: string) => {
+    if (pendingOffer) pendingOfferRef.current = pendingOffer;
+    setRebuildNonce((n) => n + 1);
+  }, []);
+
   useEffect(() => {
     if (!enabled || !iceServers) return;
 
@@ -108,13 +115,14 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
       pc.oniceconnectionstatechange = () => {
         const state = pc.iceConnectionState;
         if (state === "disconnected") {
-          // 4s grace before ICE restart (mobile networks briefly blip).
           if (disconnectTimerRef.current != null) {
             window.clearTimeout(disconnectTimerRef.current);
           }
+          // 4s grace — mobile networks briefly blip on handoff. If still
+          // disconnected after that, assume the peer is gone and rebuild.
           disconnectTimerRef.current = window.setTimeout(() => {
-            if (pcRef.current && pcRef.current.iceConnectionState === "disconnected") {
-              restartIceInternal();
+            if (pcRef.current === pc && pc.iceConnectionState === "disconnected") {
+              triggerRebuild();
             }
           }, DISCONNECT_GRACE_MS);
         } else if (state === "connected" || state === "completed") {
@@ -123,7 +131,9 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
             disconnectTimerRef.current = null;
           }
         } else if (state === "failed") {
-          restartIceInternal();
+          // A peer refresh usually lands here — the stale pc can't recover,
+          // a fresh one can.
+          if (pcRef.current === pc) triggerRebuild();
         }
       };
 
@@ -141,7 +151,7 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
         onDataChannel?.(ev.channel);
       };
 
-      // 1. Acquire microphone
+      // 1. Acquire microphone + apply any pre-existing mute intent.
       let stream: MediaStream;
       try {
         stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -149,18 +159,35 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
         console.error("[webrtc] getUserMedia failed", err);
         return;
       }
-      if (cancelled) {
+      if (cancelled || pcRef.current !== pc) {
         stream.getTracks().forEach((t) => t.stop());
         return;
       }
       localStreamRef.current = stream;
+      applyMuteIntentToStream(stream);
 
-      // 2. CRITICAL: addTrack BEFORE createOffer (bashar one-way-audio fix).
+      // 2. addTrack BEFORE createOffer/createAnswer so the SDP reflects
+      //    the outgoing audio direction (not recvonly).
       stream.getTracks().forEach((track) => pc.addTrack(track, stream));
 
-      // 3. Initiator creates the DataChannel + initial offer.
-      //    Responder's ondatachannel fires when the offer arrives.
-      if (isInitiator) {
+      // 3. Three possible paths at this point:
+      //    (a) Rebuilt non-initiator with an offer queued from the peer's
+      //        fresh connection → answer it on the new pc.
+      //    (b) Initiator → create the DataChannel + send the first offer.
+      //    (c) Non-initiator with no queued offer → wait for one to arrive.
+      const queuedOffer = pendingOfferRef.current;
+      if (queuedOffer) {
+        pendingOfferRef.current = null;
+        try {
+          await pc.setRemoteDescription({ type: "offer", sdp: queuedOffer });
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+          if (answer.sdp) sendSignal("ANSWER", answer.sdp);
+          await flushPendingIce(pc);
+        } catch (err) {
+          console.error("[webrtc] queued offer replay failed", err);
+        }
+      } else if (isInitiator) {
         const dc = pc.createDataChannel("yjs", { ordered: true });
         onDataChannel?.(dc);
 
@@ -174,12 +201,11 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
 
     const onVisibilityChange = () => {
       if (document.visibilityState === "visible" && pcRef.current) {
-        // Foregrounding after backgrounding: force fresh ICE.
         if (
           pcRef.current.iceConnectionState === "disconnected" ||
           pcRef.current.iceConnectionState === "failed"
         ) {
-          restartIceInternal();
+          triggerRebuild();
         }
       }
     };
@@ -194,16 +220,12 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
       }
       localStreamRef.current?.getTracks().forEach((t) => t.stop());
       localStreamRef.current = null;
-      silentTrackRef.current?.stop();
-      silentTrackRef.current = null;
-      silentAudioCtxRef.current?.close().catch(() => {});
-      silentAudioCtxRef.current = null;
       pendingIceCandidatesRef.current = [];
       pcRef.current?.close();
       pcRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, iceServers, isInitiator]);
+  }, [enabled, iceServers, isInitiator, rebuildNonce]);
 
   const flushPendingIce = async (pc: RTCPeerConnection) => {
     const queued = pendingIceCandidatesRef.current.splice(0);
@@ -216,45 +238,51 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
     }
   };
 
-  const restartIceInternal = useCallback(() => {
-    const pc = pcRef.current;
-    if (!pc) return;
-    if (!isInitiator) {
-      // Only the initiator issues the restart offer; the other side will
-      // receive it and answer. This avoids both peers racing.
-      return;
-    }
-    pc.createOffer({ iceRestart: true })
-      .then((offer) => pc.setLocalDescription(offer).then(() => offer))
-      .then((offer) => {
-        if (offer.sdp) sendSignal("ICE_RESTART", offer.sdp);
-      })
-      .catch((err) => console.error("[webrtc] ICE restart failed", err));
-  }, [isInitiator, sendSignal]);
-
   const receiveSignal = useCallback(
     (type: WebRtcSignalType, payload: string) => {
       const pc = pcRef.current;
-      if (!pc) return;
 
       (async () => {
         try {
-          if (type === "OFFER" || type === "ICE_RESTART") {
+          if (type === "OFFER") {
+            if (!pc) {
+              // pc not ready yet (we're mid-rebuild). Queue for replay.
+              pendingOfferRef.current = payload;
+              return;
+            }
+            // An OFFER on an already-established pc means the peer restarted
+            // (e.g. browser refresh). Tear down our stale pc and answer on
+            // a fresh one.
+            const state = pc.connectionState;
+            if (state === "connected" || state === "failed" || state === "disconnected") {
+              triggerRebuild(payload);
+              return;
+            }
+            await pc.setRemoteDescription({ type: "offer", sdp: payload });
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            if (answer.sdp) sendSignal("ANSWER", answer.sdp);
+            await flushPendingIce(pc);
+          } else if (type === "ICE_RESTART") {
+            if (!pc) return;
             await pc.setRemoteDescription({ type: "offer", sdp: payload });
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
             if (answer.sdp) sendSignal("ANSWER", answer.sdp);
             await flushPendingIce(pc);
           } else if (type === "ANSWER") {
+            if (!pc) return;
+            if (pc.signalingState === "stable") {
+              // Stale answer for a pc we already tore down. Ignore.
+              return;
+            }
             await pc.setRemoteDescription({ type: "answer", sdp: payload });
             await flushPendingIce(pc);
           } else if (type === "ICE_CANDIDATE") {
             const candidate = JSON.parse(payload) as RTCIceCandidateInit;
-            if (pc.remoteDescription) {
+            if (pc && pc.remoteDescription) {
               await pc.addIceCandidate(candidate);
             } else {
-              // Queue — remote description hasn't been set yet. Flushed once
-              // the OFFER/ANSWER arrives and setRemoteDescription completes.
               pendingIceCandidatesRef.current.push(candidate);
             }
           }
@@ -263,34 +291,22 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
         }
       })();
     },
-    [sendSignal]
+    [sendSignal, triggerRebuild]
   );
 
   const mute = useCallback(() => {
-    const pc = pcRef.current;
+    mutedIntentRef.current = true;
     const stream = localStreamRef.current;
-    if (!pc || !stream) return;
-    const audioTrack = stream.getAudioTracks()[0];
-    if (!audioTrack) return;
-
-    if (!silentTrackRef.current) {
-      silentTrackRef.current = buildSilentTrack();
-    }
-    const sender = pc.getSenders().find((s) => s.track?.kind === "audio");
-    sender?.replaceTrack(silentTrackRef.current).catch(() => {});
+    if (stream) applyMuteIntentToStream(stream);
     setLocalMuted(true);
-  }, [buildSilentTrack]);
+  }, [applyMuteIntentToStream]);
 
   const unmute = useCallback(() => {
-    const pc = pcRef.current;
+    mutedIntentRef.current = false;
     const stream = localStreamRef.current;
-    if (!pc || !stream) return;
-    const audioTrack = stream.getAudioTracks()[0];
-    if (!audioTrack) return;
-    const sender = pc.getSenders().find((s) => s.track?.kind === "audio");
-    sender?.replaceTrack(audioTrack).catch(() => {});
+    if (stream) applyMuteIntentToStream(stream);
     setLocalMuted(false);
-  }, []);
+  }, [applyMuteIntentToStream]);
 
   return {
     connectionState,
@@ -298,6 +314,5 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
     mute,
     unmute,
     receiveSignal,
-    restartIce: restartIceInternal,
   };
 }
