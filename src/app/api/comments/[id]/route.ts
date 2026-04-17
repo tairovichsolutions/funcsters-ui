@@ -2,7 +2,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-const LOCAL_BACKEND = "http://localhost:8091/api/v1";
+const LOCAL_BACKEND = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1`;
 
 export async function PUT(
   request: Request,
@@ -12,16 +12,16 @@ export async function PUT(
   const accessToken = cookieStore.get("accessToken")?.value;
 
   const { id } = await params;
-  
+
   try {
-    const content = await request.text();
+    const body = await request.json();
     const res = await fetch(`${LOCAL_BACKEND}/comments/${id}`, {
       method: "PUT",
       headers: {
-        "Content-Type": "text/plain",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
-      body: content,
+      body: JSON.stringify(body),
     });
 
     const data = await res.json().catch(() => ({}));
