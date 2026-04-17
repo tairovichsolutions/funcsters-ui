@@ -27,7 +27,10 @@ const BASE = "/api/v1/pair";
 
 async function unwrap<T>(promise: Promise<{ data: ApiEnvelope<T> }>): Promise<T> {
   const { data } = await promise;
-  return data.data;
+  // Backend returns { data: null } for "no active X" endpoints. Preserve null
+  // explicitly so TanStack Query v5 doesn't raise the "cannot be undefined"
+  // warning when downstream queryFns return this value directly.
+  return (data?.data ?? null) as T;
 }
 
 // ---------- pair requests ----------

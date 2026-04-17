@@ -58,6 +58,10 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
   const silentTrackRef = useRef<MediaStreamTrack | null>(null);
   const silentAudioCtxRef = useRef<AudioContext | null>(null);
   const disconnectTimerRef = useRef<number | null>(null);
+  // Queue ICE candidates that arrive before we've called setRemoteDescription —
+  // classic race where the host fires candidates before the joiner's answer is
+  // even built. Flushed in receiveSignal after setRemoteDescription succeeds.
+  const pendingIceCandidatesRef = useRef<RTCIceCandidateInit[]>([]);
 
   const [connectionState, setConnectionState] = useState<RTCPeerConnectionState>("new");
   const [localMuted, setLocalMuted] = useState(false);
@@ -194,11 +198,23 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
       silentTrackRef.current = null;
       silentAudioCtxRef.current?.close().catch(() => {});
       silentAudioCtxRef.current = null;
+      pendingIceCandidatesRef.current = [];
       pcRef.current?.close();
       pcRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, iceServers, isInitiator]);
+
+  const flushPendingIce = async (pc: RTCPeerConnection) => {
+    const queued = pendingIceCandidatesRef.current.splice(0);
+    for (const cand of queued) {
+      try {
+        await pc.addIceCandidate(cand);
+      } catch (err) {
+        console.warn("[webrtc] flush queued candidate failed", err);
+      }
+    }
+  };
 
   const restartIceInternal = useCallback(() => {
     const pc = pcRef.current;
@@ -228,11 +244,19 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
             if (answer.sdp) sendSignal("ANSWER", answer.sdp);
+            await flushPendingIce(pc);
           } else if (type === "ANSWER") {
             await pc.setRemoteDescription({ type: "answer", sdp: payload });
+            await flushPendingIce(pc);
           } else if (type === "ICE_CANDIDATE") {
-            const candidate = JSON.parse(payload);
-            await pc.addIceCandidate(candidate);
+            const candidate = JSON.parse(payload) as RTCIceCandidateInit;
+            if (pc.remoteDescription) {
+              await pc.addIceCandidate(candidate);
+            } else {
+              // Queue — remote description hasn't been set yet. Flushed once
+              // the OFFER/ANSWER arrives and setRemoteDescription completes.
+              pendingIceCandidatesRef.current.push(candidate);
+            }
           }
         } catch (err) {
           console.error("[webrtc] signal handler error", type, err);
