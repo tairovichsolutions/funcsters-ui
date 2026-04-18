@@ -5,24 +5,22 @@ import type { IceServerDto, WebRtcSignalType } from "../types";
 
 /**
  * Vanilla RTCPeerConnection hook for 2-user audio + 1 Yjs DataChannel.
- * No helper libs (simple-peer/peerjs) — the bugs bashar hit (one-way audio,
- * mute reliability, stale ICE) live in exactly the code those libs hide.
  *
- *   1. `addTrack` BEFORE `createOffer` (one-way audio fix)
- *   2. Mute via `track.enabled = false` — simpler and 100% reliable across
- *      Chrome/Safari/Firefox. The prior `replaceTrack(silentTrack)` approach
- *      silently failed when the sender wasn't ready yet (race between user
- *      click and getUserMedia resolve), leaving the UI muted but the mic
- *      still broadcasting.
- *   3. Mute intent is stored in a ref and re-applied each time a fresh
- *      stream is acquired, so a click during setup isn't dropped.
- *   4. Rebuild the PC when the peer restarts (browser refresh mid-session):
- *      detecting either an OFFER on an already-connected PC, or an
- *      ICE/connection "failed" state, we increment a rebuild nonce that
- *      tears down + recreates the PC fresh. Pending offers are replayed
- *      against the new PC so the non-initiator side answers correctly.
- *   5. ICE candidates that arrive pre-setRemoteDescription are queued and
- *      flushed once the remote description is applied.
+ *   1. addTrack BEFORE createAnswer/createOffer. An OFFER that arrives
+ *      during our getUserMedia is queued until setup finishes — otherwise
+ *      createAnswer would reflect no local audio and produce recvonly
+ *      SDP, resulting in one-way audio that never recovers.
+ *   2. Mute via track.enabled. Intent is stored in a ref and re-applied
+ *      to every newly-acquired stream so a click during permission-grant
+ *      latency isn't dropped.
+ *   3. Peer-refresh detection. A fresh mount sends a REINIT signal; any
+ *      side still holding a connected pc rebuilds immediately instead of
+ *      waiting for ICE to time out. Also covers the case where a stale
+ *      pc receives an OFFER on a "connected" state (peer restarted with
+ *      fresh SDP) — we tear down and rebuild, replaying the queued offer
+ *      on the new pc.
+ *   4. ICE candidates arriving before setRemoteDescription are queued
+ *      and flushed once the remote description is applied.
  */
 
 export interface SignalSender {
@@ -65,14 +63,18 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
   const disconnectTimerRef = useRef<number | null>(null);
   const pendingIceCandidatesRef = useRef<RTCIceCandidateInit[]>([]);
 
-  // Mute intent survives across pc rebuilds + the getUserMedia race. Every
-  // time a fresh local stream is acquired we apply `!mutedIntentRef.current`
-  // to its audio track(s).
+  // Mute intent survives across pc rebuilds + the getUserMedia race.
   const mutedIntentRef = useRef<boolean>(false);
 
-  // Offer received while current pc is non-fresh (peer refreshed). Replayed
-  // on the next pc after rebuild completes.
+  // Offer received while current pc is non-fresh (peer refreshed), or
+  // while our own setup hasn't completed addTrack yet. Replayed on the
+  // pc once setup is complete.
   const pendingOfferRef = useRef<string | null>(null);
+
+  // True only between addTrack and unmount/rebuild. OFFERs received
+  // before this flips true are queued; processing before addTrack would
+  // create a recvonly answer.
+  const setupCompleteRef = useRef<boolean>(false);
 
   // Bump this to force a full pc rebuild (cleanup + setup).
   const [rebuildNonce, setRebuildNonce] = useState(0);
@@ -90,6 +92,30 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
     setRebuildNonce((n) => n + 1);
   }, []);
 
+  const flushPendingIce = useCallback(async (pc: RTCPeerConnection) => {
+    const queued = pendingIceCandidatesRef.current.splice(0);
+    for (const cand of queued) {
+      try {
+        await pc.addIceCandidate(cand);
+      } catch (err) {
+        // Candidates from a now-stale pc (different ufrag) legitimately
+        // fail here — the fresh pc will receive fresh candidates over STOMP.
+        console.warn("[webrtc] flush queued candidate failed", err);
+      }
+    }
+  }, []);
+
+  const processOffer = useCallback(
+    async (pc: RTCPeerConnection, sdp: string) => {
+      await pc.setRemoteDescription({ type: "offer", sdp });
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      if (answer.sdp) sendSignal("ANSWER", answer.sdp);
+      await flushPendingIce(pc);
+    },
+    [sendSignal, flushPendingIce]
+  );
+
   useEffect(() => {
     if (!enabled || !iceServers) return;
 
@@ -105,6 +131,7 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
         iceTransportPolicy: "all",
       });
       pcRef.current = pc;
+      setupCompleteRef.current = false;
 
       pc.onconnectionstatechange = () => {
         const state = pc.connectionState;
@@ -118,8 +145,8 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
           if (disconnectTimerRef.current != null) {
             window.clearTimeout(disconnectTimerRef.current);
           }
-          // 4s grace — mobile networks briefly blip on handoff. If still
-          // disconnected after that, assume the peer is gone and rebuild.
+          // 4s grace — mobile networks briefly blip. If still disconnected
+          // after that, assume the peer is gone and rebuild.
           disconnectTimerRef.current = window.setTimeout(() => {
             if (pcRef.current === pc && pc.iceConnectionState === "disconnected") {
               triggerRebuild();
@@ -131,8 +158,6 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
             disconnectTimerRef.current = null;
           }
         } else if (state === "failed") {
-          // A peer refresh usually lands here — the stale pc can't recover,
-          // a fresh one can.
           if (pcRef.current === pc) triggerRebuild();
         }
       };
@@ -151,7 +176,11 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
         onDataChannel?.(ev.channel);
       };
 
-      // 1. Acquire microphone + apply any pre-existing mute intent.
+      // Announce our fresh pc to the peer immediately — before the slow
+      // getUserMedia step — so the peer can start its own rebuild in
+      // parallel if it's holding a stale pc.
+      sendSignal("REINIT", "");
+
       let stream: MediaStream;
       try {
         stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -165,25 +194,20 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
       }
       localStreamRef.current = stream;
       applyMuteIntentToStream(stream);
-
-      // 2. addTrack BEFORE createOffer/createAnswer so the SDP reflects
-      //    the outgoing audio direction (not recvonly).
       stream.getTracks().forEach((track) => pc.addTrack(track, stream));
 
-      // 3. Three possible paths at this point:
-      //    (a) Rebuilt non-initiator with an offer queued from the peer's
-      //        fresh connection → answer it on the new pc.
-      //    (b) Initiator → create the DataChannel + send the first offer.
-      //    (c) Non-initiator with no queued offer → wait for one to arrive.
+      // addTrack is done — safe to answer an OFFER now.
+      setupCompleteRef.current = true;
+
+      // Three possible paths:
+      //   (a) an OFFER arrived during our setup → answer it on this pc.
+      //   (b) initiator → create DataChannel + send first offer.
+      //   (c) non-initiator with nothing queued → wait for an OFFER.
       const queuedOffer = pendingOfferRef.current;
       if (queuedOffer) {
         pendingOfferRef.current = null;
         try {
-          await pc.setRemoteDescription({ type: "offer", sdp: queuedOffer });
-          const answer = await pc.createAnswer();
-          await pc.setLocalDescription(answer);
-          if (answer.sdp) sendSignal("ANSWER", answer.sdp);
-          await flushPendingIce(pc);
+          await processOffer(pc, queuedOffer);
         } catch (err) {
           console.error("[webrtc] queued offer replay failed", err);
         }
@@ -213,6 +237,7 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
 
     return () => {
       cancelled = true;
+      setupCompleteRef.current = false;
       document.removeEventListener("visibilitychange", onVisibilityChange);
       if (disconnectTimerRef.current != null) {
         window.clearTimeout(disconnectTimerRef.current);
@@ -227,59 +252,55 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, iceServers, isInitiator, rebuildNonce]);
 
-  const flushPendingIce = async (pc: RTCPeerConnection) => {
-    const queued = pendingIceCandidatesRef.current.splice(0);
-    for (const cand of queued) {
-      try {
-        await pc.addIceCandidate(cand);
-      } catch (err) {
-        console.warn("[webrtc] flush queued candidate failed", err);
-      }
-    }
-  };
-
   const receiveSignal = useCallback(
     (type: WebRtcSignalType, payload: string) => {
-      const pc = pcRef.current;
-
       (async () => {
         try {
+          if (type === "REINIT") {
+            // Peer just (re)mounted. If our pc is already fully connected,
+            // they can't negotiate with it — rebuild to sync up. If we're
+            // mid-setup (new/connecting), ignore; we'll reach a clean state
+            // naturally.
+            const pc = pcRef.current;
+            if (pc && pc.connectionState === "connected") {
+              triggerRebuild();
+            }
+            return;
+          }
+
           if (type === "OFFER") {
+            const pc = pcRef.current;
             if (!pc) {
-              // pc not ready yet (we're mid-rebuild). Queue for replay.
               pendingOfferRef.current = payload;
               return;
             }
-            // An OFFER on an already-established pc means the peer restarted
-            // (e.g. browser refresh). Tear down our stale pc and answer on
-            // a fresh one.
+            // A fresh OFFER on an already-established pc means the peer
+            // restarted. Rebuild and replay the offer on the new pc.
             const state = pc.connectionState;
             if (state === "connected" || state === "failed" || state === "disconnected") {
               triggerRebuild(payload);
               return;
             }
-            await pc.setRemoteDescription({ type: "offer", sdp: payload });
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-            if (answer.sdp) sendSignal("ANSWER", answer.sdp);
-            await flushPendingIce(pc);
-          } else if (type === "ICE_RESTART") {
-            if (!pc) return;
-            await pc.setRemoteDescription({ type: "offer", sdp: payload });
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-            if (answer.sdp) sendSignal("ANSWER", answer.sdp);
-            await flushPendingIce(pc);
-          } else if (type === "ANSWER") {
-            if (!pc) return;
-            if (pc.signalingState === "stable") {
-              // Stale answer for a pc we already tore down. Ignore.
+            // Setup (addTrack) hasn't finished yet — queue and let setup
+            // pick it up after addTrack, so our answer isn't recvonly.
+            if (!setupCompleteRef.current) {
+              pendingOfferRef.current = payload;
               return;
             }
+            await processOffer(pc, payload);
+          } else if (type === "ICE_RESTART") {
+            const pc = pcRef.current;
+            if (!pc || !setupCompleteRef.current) return;
+            await processOffer(pc, payload);
+          } else if (type === "ANSWER") {
+            const pc = pcRef.current;
+            if (!pc) return;
+            if (pc.signalingState === "stable") return;
             await pc.setRemoteDescription({ type: "answer", sdp: payload });
             await flushPendingIce(pc);
           } else if (type === "ICE_CANDIDATE") {
             const candidate = JSON.parse(payload) as RTCIceCandidateInit;
+            const pc = pcRef.current;
             if (pc && pc.remoteDescription) {
               await pc.addIceCandidate(candidate);
             } else {
@@ -291,7 +312,7 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
         }
       })();
     },
-    [sendSignal, triggerRebuild]
+    [processOffer, flushPendingIce, triggerRebuild]
   );
 
   const mute = useCallback(() => {

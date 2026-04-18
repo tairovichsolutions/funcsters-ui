@@ -144,9 +144,13 @@ export function attachRemoteCursorLabels(
   return () => {
     awareness.off("change", onAwarenessChange);
     doc.off("update", onDocUpdate);
-    for (const [id] of widgets) {
-      const w = widgets.get(id);
-      if (w) editor.removeContentWidget(w);
+    for (const widget of widgets.values()) {
+      try {
+        editor.removeContentWidget(widget);
+      } catch {
+        // Editor may have been disposed by Monaco's own teardown before
+        // our cleanup landed — removing widgets off a dead editor throws.
+      }
     }
     widgets.clear();
   };

@@ -109,7 +109,12 @@ export type WebRtcSignalType =
   | "OFFER"
   | "ANSWER"
   | "ICE_CANDIDATE"
-  | "ICE_RESTART";
+  | "ICE_RESTART"
+  // Sent once per fresh useWebRTCSession mount. If the peer is still
+  // holding a stale pc (connected state), they rebuild immediately instead
+  // of waiting for ICE to time out (~10s). Backend treats `type` as an
+  // opaque string so no server change is needed.
+  | "REINIT";
 
 export interface PairSignalMessage {
   type: WebRtcSignalType;
