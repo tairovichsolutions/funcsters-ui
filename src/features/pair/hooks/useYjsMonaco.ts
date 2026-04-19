@@ -77,9 +77,9 @@ export function useYjsMonaco(opts: UseYjsMonacoOptions): YjsMonacoState {
       const doc = new Y.Doc();
       const yText = doc.getText("monaco");
 
-      // 1. Hydrate from IDB first. If this peer has been in the session
-      //    before (including before a refresh), their Y.Doc history is
-      //    restored and the sync handshake will just reconcile deltas.
+      // 1. Hydrate from IDB. If this peer has been in the session before
+      //    (including before a refresh), their Y.Doc history is restored
+      //    and the sync handshake will reconcile deltas.
       const persistence = new IndexeddbPersistence(dbNameFor(sessionId), doc);
       await persistence.whenSynced;
       if (cancelled) {
@@ -88,17 +88,15 @@ export function useYjsMonaco(opts: UseYjsMonacoOptions): YjsMonacoState {
         return;
       }
 
-      // 2. Seed starter code only if nothing was restored AND we're the
-      //    host. Both sides seeding would duplicate the starter. A reloaded
-      //    host already has content from IDB so they don't re-seed.
-      if (isInitiator && yText.length === 0) {
-        const initialValue = model.getValue();
-        if (initialValue.length > 0) yText.insert(0, initialValue);
-      }
-
-      // 3. Establish the DataChannel-backed provider + wait for the sync
-      //    handshake so MonacoBinding doesn't briefly paint an empty doc
-      //    over the editor.
+      // 2. Establish the DataChannel-backed provider and wait for the sync
+      //    handshake BEFORE deciding whether to seed starter code. If we
+      //    seed pre-sync and the peer has any content in their IDB (e.g.
+      //    because one side's IDB got cleared but the other's didn't — a
+      //    realistic outcome when a SESSION_ENDED event is lost to STOMP
+      //    subscription churn), the CRDT will merge our seed with the
+      //    peer's existing content as two independent position-0 inserts
+      //    and produce character-interleaved garbage. By waiting for sync
+      //    first, we see the peer's content (if any) before seeding.
       const provider = createYjsOverDataChannel(doc, dataChannel, {
         name: username,
         color,
@@ -111,9 +109,10 @@ export function useYjsMonaco(opts: UseYjsMonacoOptions): YjsMonacoState {
         return;
       }
 
-      // 4. Final safety: if we're the host and nothing landed via sync or
-      //    IDB, seed now. Covers the case where sync-step-2 from an empty
-      //    joiner races our own setup.
+      // 3. Seed starter code only if BOTH our IDB and the peer's doc were
+      //    empty — i.e. this is a genuinely fresh session. Gated on
+      //    isInitiator so the joiner never seeds even if the handshake
+      //    somehow left yText empty.
       if (isInitiator && yText.length === 0) {
         const initialValue = model.getValue();
         if (initialValue.length > 0) yText.insert(0, initialValue);
