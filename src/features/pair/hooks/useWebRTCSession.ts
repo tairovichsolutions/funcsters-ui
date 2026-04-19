@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { preBufferDataChannel } from "../lib/yjsOverDataChannel";
 import type { IceServerDto, WebRtcSignalType } from "../types";
 
 /**
@@ -173,6 +174,16 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
       };
 
       pc.ondatachannel = (ev) => {
+        // Pre-attach a buffering message listener SYNCHRONOUSLY here,
+        // before React's setDataChannel → re-render → useYjsMonaco effect
+        // → dynamic imports → IDB hydrate chain can run. On the non-
+        // initiator side the channel fires ondatachannel already in "open"
+        // state, so the peer's sync-step-1 can arrive during that render
+        // gap and be dispatched to a handler-less DC — silently dropped by
+        // the browser. Buffering here ensures the real provider replays
+        // those early messages once it attaches. See preBufferDataChannel
+        // docstring for the full race.
+        preBufferDataChannel(ev.channel);
         onDataChannel?.(ev.channel);
       };
 
@@ -213,6 +224,11 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
         }
       } else if (isInitiator) {
         const dc = pc.createDataChannel("yjs", { ordered: true });
+        // Defensive: on the initiator side the DC is usually "connecting"
+        // at this point so there's nothing to buffer, but if SCTP somehow
+        // opens faster than our React cycle we still want to catch any
+        // early peer messages. Same rationale as the non-initiator branch.
+        preBufferDataChannel(dc);
         onDataChannel?.(dc);
 
         const offer = await pc.createOffer();
@@ -257,20 +273,22 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
       (async () => {
         try {
           if (type === "REINIT") {
-            // Peer just (re)mounted. Rebuild if our pc has already committed
-            // to any prior handshake — i.e. anything that isn't a pristine
-            // fresh pc (signalingState "stable" AND no remoteDescription
-            // yet). This covers: a fully connected pc (normal refresh), a
-            // pc sitting in ICE grace ("disconnected"), a failed pc, AND
-            // the subtler stuck state where we already answered a previous
-            // OFFER but ICE never completed (signalingState "have-local-
-            // answer" with connectionState "connecting") — which is the
-            // state that was making repeated-refresh sessions dead.
+            // Peer just (re)mounted. Rebuild ONLY if our pc is already
+            // fully connected — i.e. the peer has a fresh pc that can't
+            // negotiate against our existing connection. Broader checks
+            // (e.g. rebuild on any non-pristine state) cause a cascading
+            // rebuild loop: when A sends REINIT and then OFFER, the peer
+            // rebuilds and sends its own REINIT back — which would land on
+            // A's pc in "have-local-offer" (mid-handshake), trigger A to
+            // rebuild too, and the handshake bounces around, destroying
+            // Y.Docs on every cycle. Each destroyed Y.Doc races with IDB
+            // flush for keystrokes the user made in that window, which is
+            // where the one-way op loss came from. Genuinely stuck states
+            // like "have-local-answer" recover via the processOffer catch
+            // below.
             const pc = pcRef.current;
-            if (pc) {
-              const isPristine =
-                pc.signalingState === "stable" && pc.remoteDescription === null;
-              if (!isPristine) triggerRebuild();
+            if (pc && pc.connectionState === "connected") {
+              triggerRebuild();
             }
             return;
           }
@@ -294,22 +312,20 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
               pendingOfferRef.current = payload;
               return;
             }
-            // Stale-handshake guard: the ONLY pc state safe to apply a new
-            // remote offer on directly is the pristine one (signalingState
-            // "stable" AND no remoteDescription yet). Anything else means
-            // we already committed to a previous OFFER/ANSWER exchange
-            // that never finished — e.g. we sent an ANSWER and are now
-            // stuck in "have-local-answer" waiting on an ICE that will
-            // never complete because the peer refreshed. Calling
-            // setRemoteDescription on such a pc throws InvalidStateError
-            // and the try/catch would silently swallow it, leaving the
-            // DataChannel permanently dead and producing exactly the
-            // symmetric-divergence symptom we were seeing. Rebuild.
-            if (pc.signalingState !== "stable" || pc.remoteDescription !== null) {
+            // Try to process the offer. If the pc is in a signaling state
+            // that can't accept a new remote offer (e.g. "have-local-
+            // answer" from a previous OFFER whose ICE never completed),
+            // setRemoteDescription throws InvalidStateError — rebuild and
+            // replay on a fresh pc. This is the targeted recovery for the
+            // genuinely stuck case, without the cascading-rebuild loop
+            // that a speculative non-pristine check would cause when the
+            // peer's own REINIT + OFFER arrive during our normal handshake.
+            try {
+              await processOffer(pc, payload);
+            } catch (err) {
+              console.warn("[webrtc] processOffer failed, rebuilding", err);
               triggerRebuild(payload);
-              return;
             }
-            await processOffer(pc, payload);
           } else if (type === "ICE_RESTART") {
             const pc = pcRef.current;
             if (!pc || !setupCompleteRef.current) return;

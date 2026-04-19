@@ -28,6 +28,42 @@ const MSG_QUERY_AWARENESS = 2;
 
 const SYNC_TIMEOUT_MS = 5_000;
 
+/**
+ * Pre-attachment message buffer. On the non-initiator side, pc.ondatachannel
+ * fires with a DataChannel that's ALREADY in "open" state — because ICE+SCTP
+ * completed before JS got control. The React render cycle between
+ * onDataChannel → setDataChannel → useYjsMonaco effect → dynamic imports →
+ * IDB hydrate → createYjsOverDataChannel can be hundreds of milliseconds.
+ * During that window the initiator sends sync-step-1 the moment its own
+ * provider attaches (roughly the same time as ours), and that step-1 arrives
+ * at our handler-less DC — Chrome dispatches the message event to nobody and
+ * the bytes are lost. The observed symptom: host's sync times out (never got
+ * step-2 for its step-1) while joiner's sync succeeded. By attaching a
+ * buffering listener inside pc.ondatachannel (synchronously, before any
+ * React work), we retain those messages and replay them once the real
+ * provider is up.
+ */
+const dcMessageBuffers = new WeakMap<
+  RTCDataChannel,
+  { buffer: MessageEvent[]; handler: (msg: MessageEvent) => void }
+>();
+
+export function preBufferDataChannel(dc: RTCDataChannel): void {
+  if (dcMessageBuffers.has(dc)) return;
+  const buffer: MessageEvent[] = [];
+  const handler = (msg: MessageEvent) => buffer.push(msg);
+  dc.addEventListener("message", handler);
+  dcMessageBuffers.set(dc, { buffer, handler });
+}
+
+function takeBufferedMessages(dc: RTCDataChannel): MessageEvent[] {
+  const entry = dcMessageBuffers.get(dc);
+  if (!entry) return [];
+  dc.removeEventListener("message", entry.handler);
+  dcMessageBuffers.delete(dc);
+  return entry.buffer;
+}
+
 export interface YjsProvider {
   doc: Y.Doc;
   awareness: awarenessProtocol.Awareness;
@@ -69,8 +105,6 @@ export function createYjsOverDataChannel(
 
   const send = (data: Uint8Array) => {
     if (dc.readyState !== "open") return;
-    // lib0's Uint8Array view may not be backed by a concrete ArrayBuffer —
-    // slice into a fresh one so DataChannel.send is happy.
     const buf = data.buffer.slice(
       data.byteOffset,
       data.byteOffset + data.byteLength
@@ -149,7 +183,15 @@ export function createYjsOverDataChannel(
 
   doc.on("update", onDocUpdate);
   awareness.on("update", onAwarenessUpdate);
+
+  // Drain the pre-attachment buffer (messages that arrived between
+  // pc.ondatachannel and now — see preBufferDataChannel above). The swap
+  // runs synchronously so no in-flight message slips between removing the
+  // buffer handler and attaching the real one.
+  const buffered = takeBufferedMessages(dc);
   dc.addEventListener("message", onMessage);
+  for (const msg of buffered) onMessage(msg);
+
   dc.addEventListener("open", onOpen);
 
   if (dc.readyState === "open") onOpen();

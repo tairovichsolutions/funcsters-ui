@@ -113,44 +113,24 @@ export function useYjsMonaco(opts: UseYjsMonacoOptions): YjsMonacoState {
       //    empty — i.e. this is a genuinely fresh session. Gated on
       //    isInitiator so the joiner never seeds even if the handshake
       //    somehow left yText empty.
+      //
+      //    We attach the MonacoBinding immediately after — NOT deferred.
+      //    An earlier attempt at deferring on the joiner side (waiting
+      //    for yText to become non-empty before binding) introduced a
+      //    worse bug: while the deferred wait was in progress, Monaco's
+      //    onDidChangeContent handler wasn't yet wired up, so any keys
+      //    the user typed during the wait went into Monaco's model but
+      //    never into yText. When the binding finally attached, its
+      //    constructor called model.setValue(ytext.toString()) — silently
+      //    wiping the user's typing — and the edits were lost to the
+      //    peer forever. That's the one-way op loss reported in testing.
+      //    A brief model.setValue wipe on first-ever connect (joiner's
+      //    yText still empty when binding attaches) is the lesser evil;
+      //    the host's seed op propagates within tens of ms and the
+      //    binding's observer re-fills Monaco immediately after.
       if (isInitiator && yText.length === 0) {
         const initialValue = model.getValue();
         if (initialValue.length > 0) yText.insert(0, initialValue);
-      }
-
-      // 4. Joiner-only: defer MonacoBinding creation until yText has
-      //    content. Otherwise MonacoBinding's constructor calls
-      //    model.setValue("") to align Monaco with the empty yText,
-      //    wiping the starter-code defaultValue. The host's seed op
-      //    arrives a few ms later and the binding's observer re-inserts
-      //    it, producing a brief visible flash and — worse — occasional
-      //    position glitches where Monaco's view state (scroll, cursor,
-      //    selection) resets. Waiting for the host's seed to land in
-      //    yText first means the binding's initial sync is a no-op
-      //    (model.getValue() === ytext.toString()) and no wipe happens.
-      //    1.5s ceiling so the editor doesn't hang if the host is stuck.
-      if (!isInitiator && yText.length === 0) {
-        await new Promise<void>((resolve) => {
-          let done = false;
-          const finish = () => {
-            if (done) return;
-            done = true;
-            yText.unobserve(onChange);
-            clearTimeout(timer);
-            resolve();
-          };
-          const onChange = () => {
-            if (yText.length > 0) finish();
-          };
-          yText.observe(onChange);
-          const timer = setTimeout(finish, 1500);
-        });
-        if (cancelled) {
-          provider.destroy();
-          await persistence.destroy();
-          doc.destroy();
-          return;
-        }
       }
 
       const editorsSet = new Set([editor]);
