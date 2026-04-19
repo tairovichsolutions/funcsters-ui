@@ -257,17 +257,20 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
       (async () => {
         try {
           if (type === "REINIT") {
-            // Peer just (re)mounted. If our pc is in any already-negotiated
-            // state (connected / disconnected / failed) it can't sync with
-            // the peer's fresh SDP — rebuild immediately. Ignore only when
-            // we're already mid-rebuild ourselves (new / connecting), since
-            // our own setup will converge naturally.
+            // Peer just (re)mounted. Rebuild if our pc has already committed
+            // to any prior handshake — i.e. anything that isn't a pristine
+            // fresh pc (signalingState "stable" AND no remoteDescription
+            // yet). This covers: a fully connected pc (normal refresh), a
+            // pc sitting in ICE grace ("disconnected"), a failed pc, AND
+            // the subtler stuck state where we already answered a previous
+            // OFFER but ICE never completed (signalingState "have-local-
+            // answer" with connectionState "connecting") — which is the
+            // state that was making repeated-refresh sessions dead.
             const pc = pcRef.current;
             if (pc) {
-              const s = pc.connectionState;
-              if (s === "connected" || s === "disconnected" || s === "failed") {
-                triggerRebuild();
-              }
+              const isPristine =
+                pc.signalingState === "stable" && pc.remoteDescription === null;
+              if (!isPristine) triggerRebuild();
             }
             return;
           }
@@ -280,8 +283,8 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
             }
             // A fresh OFFER on an already-established pc means the peer
             // restarted. Rebuild and replay the offer on the new pc.
-            const state = pc.connectionState;
-            if (state === "connected" || state === "failed" || state === "disconnected") {
+            const connState = pc.connectionState;
+            if (connState === "connected" || connState === "failed" || connState === "disconnected") {
               triggerRebuild(payload);
               return;
             }
@@ -289,6 +292,21 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
             // pick it up after addTrack, so our answer isn't recvonly.
             if (!setupCompleteRef.current) {
               pendingOfferRef.current = payload;
+              return;
+            }
+            // Stale-handshake guard: the ONLY pc state safe to apply a new
+            // remote offer on directly is the pristine one (signalingState
+            // "stable" AND no remoteDescription yet). Anything else means
+            // we already committed to a previous OFFER/ANSWER exchange
+            // that never finished — e.g. we sent an ANSWER and are now
+            // stuck in "have-local-answer" waiting on an ICE that will
+            // never complete because the peer refreshed. Calling
+            // setRemoteDescription on such a pc throws InvalidStateError
+            // and the try/catch would silently swallow it, leaving the
+            // DataChannel permanently dead and producing exactly the
+            // symmetric-divergence symptom we were seeing. Rebuild.
+            if (pc.signalingState !== "stable" || pc.remoteDescription !== null) {
+              triggerRebuild(payload);
               return;
             }
             await processOffer(pc, payload);
