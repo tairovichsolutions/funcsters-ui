@@ -257,13 +257,17 @@ export function useWebRTCSession(opts: UseWebRTCSessionOptions): WebRTCSession {
       (async () => {
         try {
           if (type === "REINIT") {
-            // Peer just (re)mounted. If our pc is already fully connected,
-            // they can't negotiate with it — rebuild to sync up. If we're
-            // mid-setup (new/connecting), ignore; we'll reach a clean state
-            // naturally.
+            // Peer just (re)mounted. If our pc is in any already-negotiated
+            // state (connected / disconnected / failed) it can't sync with
+            // the peer's fresh SDP — rebuild immediately. Ignore only when
+            // we're already mid-rebuild ourselves (new / connecting), since
+            // our own setup will converge naturally.
             const pc = pcRef.current;
-            if (pc && pc.connectionState === "connected") {
-              triggerRebuild();
+            if (pc) {
+              const s = pc.connectionState;
+              if (s === "connected" || s === "disconnected" || s === "failed") {
+                triggerRebuild();
+              }
             }
             return;
           }

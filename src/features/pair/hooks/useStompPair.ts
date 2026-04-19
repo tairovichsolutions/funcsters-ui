@@ -1,7 +1,7 @@
 "use client";
 
 import { Client, type IMessage, type StompSubscription } from "@stomp/stompjs";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 /**
  * STOMP-over-WebSocket client hook. Cookies carry the JWT on the /ws upgrade
@@ -98,5 +98,15 @@ export function useStompPair(opts: UseStompPairOptions = {}): StompPairClient {
     });
   }, []);
 
-  return { connected, subscribe, publish };
+  // Return identity must be stable across renders of the calling component;
+  // otherwise downstream useEffects that list `stomp` in their deps will
+  // tear down + re-create STOMP subscriptions on every parent render. Under
+  // rapid refresh the PairSessionProvider re-renders many times while data
+  // hydrates, and a churning signal subscription drops any OFFER/ANSWER
+  // that lands in the UNSUBSCRIBE→SUBSCRIBE gap — exactly the stuck-
+  // handshake failure mode we were hitting on the 2nd/3rd refresh.
+  return useMemo(
+    () => ({ connected, subscribe, publish }),
+    [connected, subscribe, publish]
+  );
 }
