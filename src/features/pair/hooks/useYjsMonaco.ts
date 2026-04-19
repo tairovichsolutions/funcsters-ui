@@ -118,6 +118,41 @@ export function useYjsMonaco(opts: UseYjsMonacoOptions): YjsMonacoState {
         if (initialValue.length > 0) yText.insert(0, initialValue);
       }
 
+      // 4. Joiner-only: defer MonacoBinding creation until yText has
+      //    content. Otherwise MonacoBinding's constructor calls
+      //    model.setValue("") to align Monaco with the empty yText,
+      //    wiping the starter-code defaultValue. The host's seed op
+      //    arrives a few ms later and the binding's observer re-inserts
+      //    it, producing a brief visible flash and — worse — occasional
+      //    position glitches where Monaco's view state (scroll, cursor,
+      //    selection) resets. Waiting for the host's seed to land in
+      //    yText first means the binding's initial sync is a no-op
+      //    (model.getValue() === ytext.toString()) and no wipe happens.
+      //    1.5s ceiling so the editor doesn't hang if the host is stuck.
+      if (!isInitiator && yText.length === 0) {
+        await new Promise<void>((resolve) => {
+          let done = false;
+          const finish = () => {
+            if (done) return;
+            done = true;
+            yText.unobserve(onChange);
+            clearTimeout(timer);
+            resolve();
+          };
+          const onChange = () => {
+            if (yText.length > 0) finish();
+          };
+          yText.observe(onChange);
+          const timer = setTimeout(finish, 1500);
+        });
+        if (cancelled) {
+          provider.destroy();
+          await persistence.destroy();
+          doc.destroy();
+          return;
+        }
+      }
+
       const editorsSet = new Set([editor]);
       const binding = new MonacoBinding(yText, model, editorsSet, provider.awareness);
       const detachCursorLabels = attachRemoteCursorLabels(
