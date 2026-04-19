@@ -22,7 +22,7 @@ export const SolutionSubmittedModal = ({
   onClose,
   xpCount,
 }: any) => {
-  console.log("xpCount", xpCount);
+
 
   // 2. Setup the URL and Text to share
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";

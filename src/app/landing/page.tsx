@@ -28,7 +28,7 @@ export default async function Landing() {
   }));
   const damiarray = [...tutorItems, ...tutorItems]
 
-  console.log({ damiarray });
+
 
   return (
     <div className="scroll-smooth bg-[#f5f8fb]  bg-cover  h-full w-full">

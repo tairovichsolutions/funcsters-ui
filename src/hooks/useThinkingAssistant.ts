@@ -151,7 +151,7 @@ export const performTAGarbageCollection = () => {
     if (now - lastActive > TTL_MS) {
       delete allStorage[slug];
       changed = true;
-      console.log(`GC: Cleared cached chat for ${slug}`);
+
     }
   });
 
