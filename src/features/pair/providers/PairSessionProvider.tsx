@@ -79,10 +79,30 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [sessionEndedReason, setSessionEndedReason] = useState<string | null>(null);
   const [editor, setEditor] = useState<monacoEditor.IStandaloneCodeEditor | null>(null);
+  // True only after BOTH STOMP topic subscriptions (control + signal) are
+  // actually installed on the broker. WebRTC is gated on this — if we
+  // activated on stomp.connected alone, the signal subscription effect
+  // would race with useWebRTCSession's REINIT: on refresh, the peer
+  // receives REINIT, rebuilds, and publishes a fresh OFFER. STOMP topics
+  // are ephemeral (non-durable), so an OFFER arriving before the refreshed
+  // tab has finished SUBSCRIBEing is silently dropped by the broker. The
+  // handshake then stalls forever and the session appears dead even
+  // though the backend still reports ACTIVE. See bug: host refresh kills
+  // session, joiner refresh fails after N attempts.
+  const [subscriptionsReady, setSubscriptionsReady] = useState(false);
 
-  // Subscribe to STOMP topics once connected + session known.
+  // receiveSignal identity rotates on every WebRTC rebuild; we read it
+  // through a ref so the subscription effect below doesn't churn.
+  const receiveSignalRef = useRef<((type: WebRtcSignalType, payload: string) => void) | null>(null);
+
+  // Install control + signal subscriptions ATOMICALLY, BEFORE WebRTC can
+  // send anything. Both must be live on the broker before subscriptionsReady
+  // flips true.
   useEffect(() => {
-    if (!stomp.connected || !sessionId) return;
+    if (!stomp.connected || !sessionId) {
+      setSubscriptionsReady(false);
+      return;
+    }
 
     const controlSub = stomp.subscribe(`/topic/pair/${sessionId}/control`, (msg) => {
       try {
@@ -99,10 +119,35 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
       }
     });
 
-    return () => {
+    const signalSub = stomp.subscribe(`/topic/pair/${sessionId}/signal`, (msg) => {
+      try {
+        const signal = JSON.parse(msg.body) as PairSignalMessage;
+        // Don't process our own signals echoed back.
+        if (signal.from === currentUsername) return;
+        receiveSignalRef.current?.(signal.type, signal.payload);
+      } catch {
+        /* ignore */
+      }
+    });
+
+    // subscribe() returns null if the client dropped between connected=true
+    // and this callback — leave subscriptionsReady false and let the next
+    // stomp.connected flip retry.
+    if (!controlSub || !signalSub) {
       controlSub?.unsubscribe();
+      signalSub?.unsubscribe();
+      setSubscriptionsReady(false);
+      return;
+    }
+
+    setSubscriptionsReady(true);
+
+    return () => {
+      setSubscriptionsReady(false);
+      controlSub.unsubscribe();
+      signalSub.unsubscribe();
     };
-  }, [stomp, stomp.connected, sessionId]);
+  }, [stomp, stomp.connected, sessionId, currentUsername]);
 
   // WebRTC signal relay wiring
   const sendSignal = useCallback(
@@ -115,7 +160,7 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
   );
 
   const rtc = useWebRTCSession({
-    enabled: webrtcEnabled && stomp.connected,
+    enabled: webrtcEnabled && stomp.connected && subscriptionsReady,
     isInitiator: isHost,
     iceServers: iceServers,
     sendSignal,
@@ -123,28 +168,9 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
     onRemoteStream: setRemoteStream,
   });
 
-  // Subscribe to signaling topic + route to receiveSignal
-  const receiveSignalRef = useRef(rtc.receiveSignal);
+  // Keep receiveSignalRef pointed at the latest handler without forcing
+  // the subscription effect above to re-run.
   receiveSignalRef.current = rtc.receiveSignal;
-
-  useEffect(() => {
-    if (!stomp.connected || !sessionId) return;
-
-    const signalSub = stomp.subscribe(`/topic/pair/${sessionId}/signal`, (msg) => {
-      try {
-        const signal = JSON.parse(msg.body) as PairSignalMessage;
-        // Don't process our own signals echoed back.
-        if (signal.from === currentUsername) return;
-        receiveSignalRef.current(signal.type, signal.payload);
-      } catch {
-        /* ignore */
-      }
-    });
-
-    return () => {
-      signalSub?.unsubscribe();
-    };
-  }, [stomp, stomp.connected, sessionId, currentUsername]);
 
   // Yjs editor sync — only when the UI has attached a Monaco instance.
   // isInitiator gates the initial Y.Doc seed so we don't duplicate the
