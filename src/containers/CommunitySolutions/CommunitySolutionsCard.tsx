@@ -96,7 +96,8 @@ export const CommunitySolutionsCard = React.memo(
           setShowSuccessModal(false);
         }
       } catch (error) {
-        console.log("Solution deleted Error:", error);
+        // Solution deleted Error
+
       }
     };
 

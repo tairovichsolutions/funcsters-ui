@@ -67,7 +67,7 @@ const CustomLegend = ({ data }: { data: ChartSlice[] }) => (
 export const ChallengeProgressCard: React.FC<ChallengeProgressCardProps> =
   React.memo(({ completedChallenges }) => {
 
-    console.log({completedChallenges});
+
     const slices = useMemo<ChartSlice[]>(() => {
       return DIFFICULTIES.map((item) => {
         const value = completedChallenges?.[item.key] ?? 0;
