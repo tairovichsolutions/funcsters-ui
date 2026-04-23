@@ -97,12 +97,12 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
 
   // Install control + signal subscriptions ATOMICALLY, BEFORE WebRTC can
   // send anything. Both must be live on the broker before subscriptionsReady
-  // flips true.
+  // flips true. The explicit setState on success is the whole point of this
+  // effect — we intentionally signal to the WebRTC hook (gated on
+  // subscriptionsReady) that the inbound topics are live. The cleanup
+  // setState(false) on teardown is the matching pair.
   useEffect(() => {
-    if (!stomp.connected || !sessionId) {
-      setSubscriptionsReady(false);
-      return;
-    }
+    if (!stomp.connected || !sessionId) return;
 
     const controlSub = stomp.subscribe(`/topic/pair/${sessionId}/control`, (msg) => {
       try {
@@ -136,10 +136,10 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
     if (!controlSub || !signalSub) {
       controlSub?.unsubscribe();
       signalSub?.unsubscribe();
-      setSubscriptionsReady(false);
       return;
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSubscriptionsReady(true);
 
     return () => {
@@ -169,8 +169,11 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
   });
 
   // Keep receiveSignalRef pointed at the latest handler without forcing
-  // the subscription effect above to re-run.
-  receiveSignalRef.current = rtc.receiveSignal;
+  // the subscription effect above to re-run. Assigning the ref from an
+  // effect (not during render) satisfies react-hooks/refs.
+  useEffect(() => {
+    receiveSignalRef.current = rtc.receiveSignal;
+  }, [rtc.receiveSignal]);
 
   // Yjs editor sync — only when the UI has attached a Monaco instance.
   // isInitiator gates the initial Y.Doc seed so we don't duplicate the
