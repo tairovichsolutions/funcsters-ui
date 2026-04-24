@@ -48,13 +48,6 @@ export const useThinkingAssistant = (
 
     if (problemData) {
       setMessages(problemData.history);
-
-      // Reset the 2-hour timer just by viewing/opening the tab
-      allStorage[slug] = {
-        ...problemData,
-        lastActive: Date.now(),
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(allStorage));
     } else {
       setMessages([]);
     }
