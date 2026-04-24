@@ -4,7 +4,8 @@ import { apiClient } from "@/lib/axiosClient";
 import toast from "react-hot-toast";
 
 const STORAGE_KEY = "funcsters_ta_history";
-const TTL_MS = 2 * 60 * 60 * 1000; // 2 hours
+const INPUT_STORAGE_KEY = "funcsters_ta_draft";
+const TTL_MS = 1 * 60 * 60 * 1000; // 1 hour
 
 export interface Message {
   role: "user" | "assistant";
@@ -43,14 +44,23 @@ export const useThinkingAssistant = (
   // Load history on mount/slug change
   useEffect(() => {
     if (!slug) return;
-    const allStorage = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    const problemData = allStorage[slug];
+    
+    const loadData = () => {
+      const allStorage = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      const problemData = allStorage[slug];
 
-    if (problemData) {
-      setMessages(problemData.history);
-    } else {
-      setMessages([]);
-    }
+      if (problemData) {
+        setMessages(problemData.history);
+      } else {
+        setMessages([]);
+      }
+    };
+
+    loadData();
+
+    // Listen for global garbage collection events to clear state immediately
+    window.addEventListener("storage_cleared", loadData);
+    return () => window.removeEventListener("storage_cleared", loadData);
   }, [slug]);
 
   const sendMessage = async (userText: string) => {
@@ -140,15 +150,16 @@ export const performTAGarbageCollection = () => {
   let changed = false;
 
   Object.keys(allStorage).forEach((slug) => {
-    const lastActive = allStorage[slug].lastActive;
-    if (now - lastActive > TTL_MS) {
+    const data = allStorage[slug];
+    if (data && data.lastActive && now - data.lastActive > TTL_MS) {
       delete allStorage[slug];
       changed = true;
-
     }
   });
 
   if (changed) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(allStorage));
+    // Trigger a window event to notify active hooks to clear their state
+    window.dispatchEvent(new Event("storage_cleared"));
   }
 };
