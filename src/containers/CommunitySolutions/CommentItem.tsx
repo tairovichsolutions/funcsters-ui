@@ -138,14 +138,10 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
   const firstLetter = comment.user?.name?.charAt(0)?.toUpperCase() || "A";
   const isOwner = !!(currentUserId && String(comment.user.id) === String(currentUserId));
 
+  // Soft-deleted comments: hidden entirely from the UI
+  // The data stays in the DB for thread integrity, but nothing is rendered
   if (comment.deleted) {
-    return (
-      <div className={cn("flex gap-3", isReply ? "mt-4" : "mt-5")}>
-        <div className="flex-1 space-y-1">
-          <p className="text-[13px] text-neutral-4.5 italic">[deleted]</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
