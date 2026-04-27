@@ -12,6 +12,8 @@ import { EditorSettingsProvider } from "@/context/EditorSettingsContext";
 import { ProfileSettingModal } from "@/containers/profileSetting/ProfileSettingModal";
 import { ProfileSetingModalsProvider } from "@/providers/ProfileSettingModalsProvider";
 import { LanguageImplementationsProvider } from "@/context/languageImplementationsContext";
+import { PairSessionProvider } from "@/features/pair/providers/PairSessionProvider";
+import { GlobalPairAlertBanner } from "@/features/pair/components/GlobalPairAlertBanner";
 
 export const metadata: Metadata = {
   title: "funcsters",
@@ -35,10 +37,19 @@ export default function RootLayout({
               <EditorSettingsProvider>
                 <AuthModalsProvider>
                   <ProfileSetingModalsProvider>
-                    {children}
-                    <AuthModal />
-                    <ToasterComponent />
-                    <ProfileSettingModal />
+                    <PairSessionProvider>
+                      {/* Spec v2 global rule 3: persistent alert banner on every
+                          page when the user has any in-flight pair-programming
+                          state (broadcasting, pending join, permission granted,
+                          or active session). Self-renders null when no state. */}
+                      <div className="sticky top-0 z-40 w-full pt-2">
+                        <GlobalPairAlertBanner />
+                      </div>
+                      {children}
+                      <AuthModal />
+                      <ToasterComponent />
+                      <ProfileSettingModal />
+                    </PairSessionProvider>
                   </ProfileSetingModalsProvider>
                 </AuthModalsProvider>
               </EditorSettingsProvider>

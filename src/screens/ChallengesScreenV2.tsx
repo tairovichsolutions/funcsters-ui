@@ -54,29 +54,29 @@ export const ChallengesScreenV2: React.FC = () => {
 
 
 
-  //  const { data: metricsData, isLoading:loading } = useMetrics();
-  const metricsData = {
-    completedChallenges: {
-      easy: 25,
-      expert: 25,
-      hard: 25,
-      medium: 25,
-      total: 100
-    },
-    streak: {
-      currentStreak: {
-        count: 12,
-        startDate: "2024-03-01",
-        endDate: "2024-03-12",
-      },
-      longestStreak: {
-        count: 24,
-        startDate: "2024-01-05",
-        endDate: "2024-01-29",
-      },
-    },
+   const { data: metricsData } = useMetrics();
+  // const metricsData = {
+  //   completedChallenges: {
+  //     easy: 25,
+  //     expert: 25,
+  //     hard: 25,
+  //     medium: 25,
+  //     total: 100
+  //   },
+  //   streak: {
+  //     currentStreak: {
+  //       count: 12,
+  //       startDate: "2024-03-01",
+  //       endDate: "2024-03-12",
+  //     },
+  //     longestStreak: {
+  //       count: 24,
+  //       startDate: "2024-01-05",
+  //       endDate: "2024-01-29",
+  //     },
+  //   },
 
-  }
+  // }
 
 
   return (
@@ -152,7 +152,7 @@ export const ChallengesScreenV2: React.FC = () => {
         <aside className=" bg-white dark:bg-slate-900 rounded-2xl  h-max  border lg:block lg:col-span-3 xl:col-span-1 2xl:col-span-1">
           <div className="flex flex-col lg:sticky p-2 2xl:p-4 top-0">
             <StreakStatsCardV2 streakData={metricsData?.streak} />
-            <XpPointsCardV2 xpData={120} />
+            <XpPointsCardV2 xpData={metricsData?.xpPoints} />
             <MiniLeaderBoard />
           </div>
         </aside>

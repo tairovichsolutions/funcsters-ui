@@ -37,7 +37,7 @@ export const useTagOptions = (): UseTagOptionsResult => {
 
   const tagLabelMap = React.useMemo(
     () =>
-      (data?.data ?? []).reduce((acc: Record<string, string>, tag: ApiTag) => {
+      (data?.tags ?? []).reduce((acc: Record<string, string>, tag: ApiTag) => {
         acc[String(tag.tagId)] = tag.tagName;
         return acc;
       }, {}),

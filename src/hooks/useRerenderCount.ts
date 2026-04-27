@@ -5,6 +5,6 @@ export const useRerenderCount = (name: string): void => {
 
   React.useEffect(() => {
     commits.current += 1;
-    console.log(`${name} commits:`, commits.current);
+
   });
 };
