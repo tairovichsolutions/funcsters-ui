@@ -87,7 +87,7 @@ const FAQ_DATA = {
 const FaqsSection = () => {
     const categories = Object.keys(FAQ_DATA);
     const [activeCategory, setActiveCategory] = useState("General");
-    console.log({ activeCategory });
+
     return (
         <SecondaryContainer>
 

@@ -17,7 +17,7 @@ export async function GET(request: Request) {
 
   try {
     const res = await fetch(
-      `http://localhost:8091/api/v1/comments/submission/${submissionId}?sort=${sortParam}&page=${page}&size=${size}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/comments/submission/${submissionId}?sort=${sortParam}&page=${page}&size=${size}`,
       {
         method: "GET",
         headers: {

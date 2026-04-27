@@ -5,12 +5,15 @@ import { Assets } from "@/constants/assets";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components";
 import { useAuthModal } from "@/providers/AuthModalsProvider";
+import { useDeleteAccount } from "@/mutations/useDeleteAccount";
 
 export const DeleteAccountConfirmationModal = () => {
   const { closeModal } = useAuthModal();
+  const { mutate: deleteAccount, isPending } = useDeleteAccount();
 
   const [confirmation, setConfirmation] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const isValid = confirmation === "I understand";
   const showError = submitted && !isValid;
@@ -18,10 +21,19 @@ export const DeleteAccountConfirmationModal = () => {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
+    setErrorMessage("");
 
     if (!isValid) return;
 
-    closeModal();
+    deleteAccount(undefined, {
+        onSuccess: () => {
+            closeModal();
+        },
+        onError: (err: any) => {
+            const message = err?.response?.data?.message || "Something went wrong. Please try again.";
+            setErrorMessage(message);
+        }
+    });
   };
 
   return (
@@ -35,8 +47,9 @@ export const DeleteAccountConfirmationModal = () => {
           Delete Account
         </h2>
         <p className="font-normal text-[13px] max-w-md text-center text-medium-gray">
-          Deleting your account will permanently remove all your data, progress,
-          and achievements. This action cannot be undone. Please type{" "}
+          Deleting your account will <span className="font-semibold text-primary">permanently remove all your data</span>, 
+          including solutions, comments, history, and achievements. This action is irreversible. 
+          Please type{" "}
           <span className="font-semibold text-nowrap text-primary">
             I understand
           </span>{" "}
@@ -47,10 +60,10 @@ export const DeleteAccountConfirmationModal = () => {
       <form onSubmit={onSubmit} className="w-full flex flex-col gap-4">
         <Input
           name="confirmation"
-          label="Type"
+          label="Confirmation"
           value={confirmation}
           onChange={(e: any) => setConfirmation(e.target.value)}
-          // placeholder='Type "I understand" here'
+          placeholder='Type "I understand"'
           error={
             showError ? "You must type 'I understand' to confirm" : undefined
           }
@@ -62,6 +75,7 @@ export const DeleteAccountConfirmationModal = () => {
             className="w-full! border h-11! border-[#0000004D] dark:border-gray-400 dark:text-gray-400 text-[#000000B2]"
             variant="outline"
             onClick={() => closeModal()}
+            disabled={isPending}
           >
             Cancel
           </Button>
@@ -70,11 +84,17 @@ export const DeleteAccountConfirmationModal = () => {
             type="submit"
             variant="destructive"
             className="h-11!"
-            disabled={!isValid}
+            disabled={!isValid || isPending}
           >
-            Yes, Delete
+            {isPending ? "Deleting..." : "Yes, Delete"}
           </Button>
         </div>
+
+        {errorMessage && (
+          <p className="text-red-500 text-[13px] font-medium text-center">
+            {errorMessage}
+          </p>
+        )}
       </form>
     </div>
   );

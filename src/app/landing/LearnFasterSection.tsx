@@ -45,7 +45,7 @@ const LearnFasterSection = () => {
     const [activeIndex, setActiveIndex] = useState(0)
     const categories = Object.keys(FAQ_DATA);
     const [activeCategory, setActiveCategory] = useState("General");
-    console.log({ activeCategory });
+
     return (
         <SecondaryContainer>
 

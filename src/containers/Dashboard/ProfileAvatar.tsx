@@ -27,7 +27,8 @@ export const ProfileAvatar = ({ userData }: any) => {
         console.error("Unexpected logout response:", data);
       }
     } catch (error) {
-      console.log("Error while logout.", error);
+      // Error while logout
+
     }
   };
 

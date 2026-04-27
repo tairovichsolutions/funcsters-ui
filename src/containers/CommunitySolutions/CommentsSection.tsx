@@ -24,7 +24,7 @@ export interface CommentsSectionProps {
 
 export const CommentsSection = ({ submissionId, isNestedView, onViewAllComments, className }: CommentsSectionProps) => {
   const [selectedFilter, setSelectedFilter] = useState<string>("top");
-  const [commentInput, setCommentInput] = useState("");
+  const [markdownContent, setMarkdownContent] = useState("");
   const queryClient = useQueryClient();
 
   const { data: commentsResponse, isLoading } = useRootComments(
@@ -34,27 +34,26 @@ export const CommentsSection = ({ submissionId, isNestedView, onViewAllComments,
       0, 
       isNestedView ? 100 : 7 
   );
-
   const { mutate: createComment, isPending: creatingComment } = useCreateComment();
 
-  const handlePostSubmit = () => {
-    if(!commentInput.trim() || !submissionId) return;
+  const handleComentSubmit = () => {
+    const trimmed = markdownContent.trim();
+    if (!trimmed) return alert("Please type something!");
+    if (!submissionId) return;
+    if (creatingComment) return;
 
     createComment(
-        {
-           submissionId: submissionId,
-           comment: commentInput
+      { submissionId, comment: trimmed },
+      {
+        onSuccess: () => {
+          setMarkdownContent("");
+          queryClient.invalidateQueries({ queryKey: ["GetRootComments"] });
         },
-        {
-           onSuccess: () => {
-              setCommentInput("");
-              queryClient.invalidateQueries({ queryKey: ["GetRootComments"] });
-           }
-        }
+      }
     );
   };
 
-const damiComents: CommentType[] = [
+const _damiComents: CommentType[] = [
   // 1. Standard positive comment
   {
     id: 1,
@@ -340,12 +339,7 @@ const damiComents: CommentType[] = [
     FILTER_OPTIONS.find((x) => x.id === selectedFilter)?.label ?? "Most Recent";
 
   const rootComments: CommentType[] = commentsResponse?.content || [];
-  const [markdownContent, setMarkdownContent] = useState("jahid ## Heading");
 
-  const handleComentSubmit = () => {
-    if (markdownContent.length === 0) return alert("Please type something!");    
-    console.log("Parent receiving data:", markdownContent);   
-  };
   return (
     <div className={cn("flex flex-col border-t border-[#00509233] dark:border-[#FFFFFF33] pt-4 mt-2", className)}>
       
@@ -409,39 +403,27 @@ const damiComents: CommentType[] = [
         />
       </div>
 
-      {/* //TODO: coment dami */}
       {/* Comments List */}
-      {/* <div className="flex flex-col mt-2 mb-2">
-        {isLoading ? (
-            <div className="py-4 text-center text-sm text-gray-500">Loading comments...</div>
-        ) : rootComments.map((comment) => (
-          <CommentItem key={comment.id} comment={comment} />
-        ))}
-      </div> */}
       <div className="flex flex-col mt-2 mb-2">
-        { damiComents.map((comment) => (
-          <CommentItem key={comment.id} comment={comment} />
-        ))}
+        {isLoading ? (
+          <div className="py-4 text-center text-sm text-gray-500">Loading comments...</div>
+        ) : rootComments.length === 0 ? (
+          <div className="py-4 text-center text-sm text-gray-500">No comments yet. Be the first to comment.</div>
+        ) : (
+          rootComments.map((comment) => (
+            <CommentItem key={comment.id} comment={comment} />
+          ))
+        )}
       </div>
 
       {/* View All Comments Button */}
-      {/* {!isNestedView && rootComments.length >= 7 && (
+      {!isNestedView && rootComments.length >= 7 && (
         <div className="flex justify-center mt-3 pb-2 pt-1">
           <button
             onClick={onViewAllComments}
             className="text-[13px] font-semibold text-[#008CFF] hover:underline"
           >
-            View all {commentsResponse?.totalElements ?? 7} comments →
-          </button>
-        </div>
-      )} */}
-         {!isNestedView && damiComents.length >= 5 && (
-        <div className="flex justify-center mt-3 pb-2 pt-1">
-          <button
-            onClick={onViewAllComments}
-            className="text-[13px] font-semibold text-[#008CFF] hover:underline"
-          >
-            View all {damiComents.length ?? 5} comments →
+            View all {commentsResponse?.totalElements ?? rootComments.length} comments →
           </button>
         </div>
       )}

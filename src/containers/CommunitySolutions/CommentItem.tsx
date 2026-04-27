@@ -47,11 +47,6 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
   const [shouldShowReadMore, setShouldShowReadMore] = useState(false);
 
 
-  const handleComentSubmit = () => {
-    if (setEditInput.length === 0) return alert("Please type something!");
-    console.log("Parent receiving data:", setEditInput);
-  };
-
   const contentRef = useRef<HTMLParagraphElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
@@ -143,14 +138,10 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
   const firstLetter = comment.user?.name?.charAt(0)?.toUpperCase() || "A";
   const isOwner = !!(currentUserId && String(comment.user.id) === String(currentUserId));
 
+  // Soft-deleted comments: hidden entirely from the UI
+  // The data stays in the DB for thread integrity, but nothing is rendered
   if (comment.deleted) {
-    return (
-      <div className={cn("flex gap-3", isReply ? "mt-4" : "mt-5")}>
-        <div className="flex-1 space-y-1">
-          <p className="text-[13px] text-neutral-4.5 italic">[deleted]</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -169,7 +160,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
           </div>
 
           <div className="relative" ref={menuRef}>
-            {isOwner && (
+            {!isOwner && (
               <>
                 <button
                   onClick={() => setShowMenu(!showMenu)}
@@ -178,7 +169,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
                   <MoreHorizontal className="size-4" />
                 </button>
 
-                {!showMenu && (
+                {showMenu && (
                   <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50 overflow-hidden">
                     <button
                       onClick={() => setShowMenu(false)}
@@ -198,7 +189,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
             <TextEditorPrimary
               value={editInput}
               onChange={setEditInput}
-              onSubmit={handleComentSubmit}
+              onSubmit={handleSaveEdit}
               placeholder="Type your message here..."
             />
             {/* <textarea
@@ -309,7 +300,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
             </button>
           )}
 
-          {!isOwner && (
+          {isOwner && (
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsEditing(true)}
@@ -348,7 +339,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
                 <TextEditorPrimary
                   value={replyInput}
                   onChange={setReplyInput}
-                  onSubmit={handleComentSubmit}
+                  onSubmit={handlePostReply}
                   placeholder="Type your message here..."
                 />
                 {/* <input

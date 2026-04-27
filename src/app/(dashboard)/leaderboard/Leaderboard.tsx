@@ -12,6 +12,7 @@ import HexagonRankIcon from "../../../../public/svgs/leaderBoard/HexagonRankIcon
 import MedalIcon from "../../../../public/svgs/leaderBoard/MedalIcon";
 import SilverMedalIcon from "../../../../public/svgs/leaderBoard/SilverMedalIcon";
 import { LanguageBadge } from "./LanguageBadge";
+import CountryDropdown from "./CountryDropDown";
 
 // --- Types ---
 type Language = "python" | "js";
@@ -21,7 +22,7 @@ interface UserData {
     id: string;
     rank: number;
     name: string;
-    challengesSolved: number;
+   country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: number;
     languages: Language[];
     streak: number;
     longestStreak: number;
@@ -32,56 +33,56 @@ interface UserData {
 
 // --- Base Dummy Data ---
 const BASE_DATA = [
-    { id: "8", rank: 8, name: "Rahat Hossain", challengesSolved: 108, languages: ["python", "js"], streak: 21, longestStreak: 45, xp: 320, xpGained: 320, isCurrentUser: true },
-    { id: "1", rank: 1, name: "Jane Cooper", challengesSolved: 187, languages: ["python", "js"], streak: 28, longestStreak: 45, xp: 1000000, xpGained: 520 },
-    { id: "2", rank: 2, name: "Wade Warren", challengesSolved: 165, languages: ["python", "js"], streak: 27, longestStreak: 45, xp: 485, xpGained: 485 },
-    { id: "3", rank: 3, name: "Jerome Bell", challengesSolved: 152, languages: ["python", "js"], streak: 26, longestStreak: 45, xp: 450, xpGained: 450 },
-    { id: "4", rank: 4, name: "Robert Fox", challengesSolved: 130, languages: ["python", "js"], streak: 25, longestStreak: 45, xp: 410, xpGained: 410 },
-    { id: "5", rank: 5, name: "Robert Fox", challengesSolved: 128, languages: ["python", "js"], streak: 24, longestStreak: 45, xp: 365, xpGained: 365 },
-    { id: "6", rank: 6, name: "Floyd Miles", challengesSolved: 124, languages: ["python", "js"], streak: 23, longestStreak: 45, xp: 340, xpGained: 340 },
-    { id: "7", rank: 7, name: "Jerome Bell", challengesSolved: 115, languages: ["python", "js"], streak: 22, longestStreak: 45, xp: 325, xpGained: 325 },
-    { id: "9", rank: 9, name: "Wade Warren", challengesSolved: 105, languages: ["python", "js"], streak: 20, longestStreak: 45, xp: 295, xpGained: 295 },
-    { id: "10", rank: 10, name: "Brooklyn Simmons", challengesSolved: 98, languages: ["python", "js"], streak: 19, longestStreak: 45, xp: 280, xpGained: 280 },
-    { id: "11", rank: 11, name: "Emily Chen", challengesSolved: 95, languages: ["python", "js"], streak: 18, longestStreak: 42, xp: 950, xpGained: 310 },
-    { id: "12", rank: 12, name: "Liam O'Connor", challengesSolved: 92, languages: ["python", "js", "java"], streak: 17, longestStreak: 40, xp: 920, xpGained: 305 },
-    { id: "13", rank: 13, name: "Sophia Martinez", challengesSolved: 89, languages: ["python"], streak: 16, longestStreak: 38, xp: 890, xpGained: 300 },
-    { id: "14", rank: 14, name: "Mason Johnson", challengesSolved: 86, languages: ["js", "c++"], streak: 15, longestStreak: 36, xp: 860, xpGained: 295 },
-    { id: "15", rank: 15, name: "Isabella Garcia", challengesSolved: 83, languages: ["python", "js"], streak: 14, longestStreak: 35, xp: 830, xpGained: 290 },
-    { id: "16", rank: 16, name: "Ethan Williams", challengesSolved: 80, languages: ["python"], streak: 13, longestStreak: 34, xp: 800, xpGained: 285 },
-    { id: "17", rank: 17, name: "Mia Brown", challengesSolved: 77, languages: ["js", "ruby"], streak: 12, longestStreak: 33, xp: 770, xpGained: 280 },
-    { id: "18", rank: 18, name: "Alexander Jones", challengesSolved: 74, languages: ["python", "js"], streak: 11, longestStreak: 32, xp: 740, xpGained: 275 },
-    { id: "19", rank: 19, name: "Charlotte Davis", challengesSolved: 71, languages: ["python"], streak: 10, longestStreak: 31, xp: 710, xpGained: 270 },
-    { id: "20", rank: 20, name: "Benjamin Miller", challengesSolved: 68, languages: ["js", "go"], streak: 9, longestStreak: 30, xp: 680, xpGained: 265 },
-    { id: "21", rank: 21, name: "Amelia Wilson", challengesSolved: 65, languages: ["python", "js"], streak: 8, longestStreak: 29, xp: 650, xpGained: 260 },
-    { id: "22", rank: 22, name: "Lucas Moore", challengesSolved: 62, languages: ["python"], streak: 7, longestStreak: 28, xp: 620, xpGained: 255 },
-    { id: "23", rank: 23, name: "Harper Taylor", challengesSolved: 59, languages: ["js", "rust"], streak: 6, longestStreak: 27, xp: 590, xpGained: 250 },
-    { id: "24", rank: 24, name: "Elijah Anderson", challengesSolved: 56, languages: ["python", "js"], streak: 5, longestStreak: 26, xp: 560, xpGained: 245 },
-    { id: "25", rank: 25, name: "Evelyn Thomas", challengesSolved: 53, languages: ["python"], streak: 4, longestStreak: 25, xp: 530, xpGained: 240 },
-    { id: "26", rank: 26, name: "James Jackson", challengesSolved: 50, languages: ["js", "c#"], streak: 3, longestStreak: 24, xp: 500, xpGained: 235 },
-    { id: "27", rank: 27, name: "Abigail White", challengesSolved: 47, languages: ["python", "js"], streak: 2, longestStreak: 23, xp: 470, xpGained: 230 },
-    { id: "28", rank: 28, name: "Daniel Harris", challengesSolved: 44, languages: ["python"], streak: 1, longestStreak: 22, xp: 440, xpGained: 225 },
-    { id: "29", rank: 29, name: "Victoria Martin", challengesSolved: 41, languages: ["js", "php"], streak: 1, longestStreak: 21, xp: 410, xpGained: 220 },
-    { id: "30", rank: 30, name: "Matthew Thompson", challengesSolved: 38, languages: ["python", "js"], streak: 2, longestStreak: 20, xp: 380, xpGained: 215 },
-    { id: "31", rank: 31, name: "Grace Garcia", challengesSolved: 35, languages: ["python"], streak: 3, longestStreak: 19, xp: 350, xpGained: 210 },
-    { id: "32", rank: 32, name: "David Martinez", challengesSolved: 32, languages: ["js", "swift"], streak: 4, longestStreak: 18, xp: 320, xpGained: 205 },
-    { id: "33", rank: 33, name: "Chloe Robinson", challengesSolved: 29, languages: ["python", "js"], streak: 5, longestStreak: 17, xp: 290, xpGained: 200 },
-    { id: "34", rank: 34, name: "Andrew Clark", challengesSolved: 26, languages: ["python"], streak: 6, longestStreak: 16, xp: 260, xpGained: 195 },
-    { id: "35", rank: 35, name: "Natalie Rodriguez", challengesSolved: 23, languages: ["js", "kotlin"], streak: 7, longestStreak: 15, xp: 230, xpGained: 190 },
-    { id: "36", rank: 36, name: "Joshua Lewis", challengesSolved: 20, languages: ["python", "js"], streak: 8, longestStreak: 14, xp: 200, xpGained: 185 },
-    { id: "37", rank: 37, name: "Madison Lee", challengesSolved: 18, languages: ["python"], streak: 9, longestStreak: 13, xp: 180, xpGained: 180 },
-    { id: "38", rank: 38, name: "Christopher Walker", challengesSolved: 16, languages: ["js", "typescript"], streak: 10, longestStreak: 12, xp: 160, xpGained: 175 },
-    { id: "39", rank: 39, name: "Elizabeth Hall", challengesSolved: 14, languages: ["python", "js"], streak: 11, longestStreak: 11, xp: 140, xpGained: 170 },
-    { id: "40", rank: 40, name: "Joseph Allen", challengesSolved: 12, languages: ["python"], streak: 12, longestStreak: 10, xp: 120, xpGained: 165 },
-    { id: "41", rank: 41, name: "Sofia Young", challengesSolved: 10, languages: ["js", "c++"], streak: 13, longestStreak: 9, xp: 100, xpGained: 160 },
-    { id: "42", rank: 42, name: "Samuel King", challengesSolved: 9, languages: ["python", "js"], streak: 14, longestStreak: 8, xp: 90, xpGained: 155 },
-    { id: "43", rank: 43, name: "Avery Wright", challengesSolved: 8, languages: ["python"], streak: 15, longestStreak: 7, xp: 80, xpGained: 150 },
-    { id: "44", rank: 44, name: "John Scott", challengesSolved: 7, languages: ["js", "ruby"], streak: 16, longestStreak: 6, xp: 70, xpGained: 145 },
-    { id: "45", rank: 45, name: "Ella Green", challengesSolved: 6, languages: ["python", "js"], streak: 17, longestStreak: 5, xp: 60, xpGained: 140 },
-    { id: "46", rank: 46, name: "Nathan Baker", challengesSolved: 5, languages: ["python"], streak: 18, longestStreak: 4, xp: 50, xpGained: 135 },
-    { id: "47", rank: 47, name: "Scarlett Adams", challengesSolved: 4, languages: ["js", "go"], streak: 19, longestStreak: 3, xp: 40, xpGained: 130 },
-    { id: "48", rank: 48, name: "Dylan Nelson", challengesSolved: 3, languages: ["python", "js"], streak: 20, longestStreak: 2, xp: 30, xpGained: 125 },
-    { id: "49", rank: 49, name: "Lily Carter", challengesSolved: 2, languages: ["python"], streak: 21, longestStreak: 1, xp: 20, xpGained: 120 },
-    { id: "50", rank: 50, name: "Gabriel Mitchell", challengesSolved: 1, languages: ["js"], streak: 22, longestStreak: 1, xp: 10, xpGained: 115 }
+    { id: "8", rank: 8, name: "Rahat Hossain", country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 108, languages: ["python", "js"], streak: 21, longestStreak: 45, xp: 320, xpGained: 320, isCurrentUser: true },
+    { id: "1", rank: 1, name: "Jane Cooper",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 187, languages: ["python", "js"], streak: 28, longestStreak: 45, xp: 1000000, xpGained: 520 },
+    { id: "2", rank: 2, name: "Wade Warren",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 165, languages: ["python", "js"], streak: 27, longestStreak: 45, xp: 485, xpGained: 485 },
+    { id: "3", rank: 3, name: "Jerome Bell",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 152, languages: ["python", "js"], streak: 26, longestStreak: 45, xp: 450, xpGained: 450 },
+    { id: "4", rank: 4, name: "Robert Fox",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 130, languages: ["python", "js"], streak: 25, longestStreak: 45, xp: 410, xpGained: 410 },
+    { id: "5", rank: 5, name: "Robert Fox",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 128, languages: ["python", "js"], streak: 24, longestStreak: 45, xp: 365, xpGained: 365 },
+    { id: "6", rank: 6, name: "Floyd Miles",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 124, languages: ["python", "js"], streak: 23, longestStreak: 45, xp: 340, xpGained: 340 },
+    { id: "7", rank: 7, name: "Jerome Bell",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 115, languages: ["python", "js"], streak: 22, longestStreak: 45, xp: 325, xpGained: 325 },
+    { id: "9", rank: 9, name: "Wade Warren",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 105, languages: ["python", "js"], streak: 20, longestStreak: 45, xp: 295, xpGained: 295 },
+    { id: "10", rank: 10, name: "Brooklyn Simmons",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 98, languages: ["python", "js"], streak: 19, longestStreak: 45, xp: 280, xpGained: 280 },
+    { id: "11", rank: 11, name: "Emily Chen",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 95, languages: ["python", "js"], streak: 18, longestStreak: 42, xp: 950, xpGained: 310 },
+    { id: "12", rank: 12, name: "Liam O'Connor",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 92, languages: ["python", "js", "java"], streak: 17, longestStreak: 40, xp: 920, xpGained: 305 },
+    { id: "13", rank: 13, name: "Sophia Martinez",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 89, languages: ["python"], streak: 16, longestStreak: 38, xp: 890, xpGained: 300 },
+    { id: "14", rank: 14, name: "Mason Johnson",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 86, languages: ["js", "c++"], streak: 15, longestStreak: 36, xp: 860, xpGained: 295 },
+    { id: "15", rank: 15, name: "Isabella Garcia",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 83, languages: ["python", "js"], streak: 14, longestStreak: 35, xp: 830, xpGained: 290 },
+    { id: "16", rank: 16, name: "Ethan Williams",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 80, languages: ["python"], streak: 13, longestStreak: 34, xp: 800, xpGained: 285 },
+    { id: "17", rank: 17, name: "Mia Brown",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 77, languages: ["js", "ruby"], streak: 12, longestStreak: 33, xp: 770, xpGained: 280 },
+    { id: "18", rank: 18, name: "Alexander Jones",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 74, languages: ["python", "js"], streak: 11, longestStreak: 32, xp: 740, xpGained: 275 },
+    { id: "19", rank: 19, name: "Charlotte Davis",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 71, languages: ["python"], streak: 10, longestStreak: 31, xp: 710, xpGained: 270 },
+    { id: "20", rank: 20, name: "Benjamin Miller",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 68, languages: ["js", "go"], streak: 9, longestStreak: 30, xp: 680, xpGained: 265 },
+    { id: "21", rank: 21, name: "Amelia Wilson",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 65, languages: ["python", "js"], streak: 8, longestStreak: 29, xp: 650, xpGained: 260 },
+    { id: "22", rank: 22, name: "Lucas Moore",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 62, languages: ["python"], streak: 7, longestStreak: 28, xp: 620, xpGained: 255 },
+    { id: "23", rank: 23, name: "Harper Taylor",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 59, languages: ["js", "rust"], streak: 6, longestStreak: 27, xp: 590, xpGained: 250 },
+    { id: "24", rank: 24, name: "Elijah Anderson",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 56, languages: ["python", "js"], streak: 5, longestStreak: 26, xp: 560, xpGained: 245 },
+    { id: "25", rank: 25, name: "Evelyn Thomas",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 53, languages: ["python"], streak: 4, longestStreak: 25, xp: 530, xpGained: 240 },
+    { id: "26", rank: 26, name: "James Jackson",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 50, languages: ["js", "c#"], streak: 3, longestStreak: 24, xp: 500, xpGained: 235 },
+    { id: "27", rank: 27, name: "Abigail White",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 47, languages: ["python", "js"], streak: 2, longestStreak: 23, xp: 470, xpGained: 230 },
+    { id: "28", rank: 28, name: "Daniel Harris",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 44, languages: ["python"], streak: 1, longestStreak: 22, xp: 440, xpGained: 225 },
+    { id: "29", rank: 29, name: "Victoria Martin",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 41, languages: ["js", "php"], streak: 1, longestStreak: 21, xp: 410, xpGained: 220 },
+    { id: "30", rank: 30, name: "Matthew Thompson",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 38, languages: ["python", "js"], streak: 2, longestStreak: 20, xp: 380, xpGained: 215 },
+    { id: "31", rank: 31, name: "Grace Garcia",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 35, languages: ["python"], streak: 3, longestStreak: 19, xp: 350, xpGained: 210 },
+    { id: "32", rank: 32, name: "David Martinez",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 32, languages: ["js", "swift"], streak: 4, longestStreak: 18, xp: 320, xpGained: 205 },
+    { id: "33", rank: 33, name: "Chloe Robinson",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 29, languages: ["python", "js"], streak: 5, longestStreak: 17, xp: 290, xpGained: 200 },
+    { id: "34", rank: 34, name: "Andrew Clark",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 26, languages: ["python"], streak: 6, longestStreak: 16, xp: 260, xpGained: 195 },
+    { id: "35", rank: 35, name: "Natalie Rodriguez",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 23, languages: ["js", "kotlin"], streak: 7, longestStreak: 15, xp: 230, xpGained: 190 },
+    { id: "36", rank: 36, name: "Joshua Lewis",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 20, languages: ["python", "js"], streak: 8, longestStreak: 14, xp: 200, xpGained: 185 },
+    { id: "37", rank: 37, name: "Madison Lee",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 18, languages: ["python"], streak: 9, longestStreak: 13, xp: 180, xpGained: 180 },
+    { id: "38", rank: 38, name: "Christopher Walker",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 16, languages: ["js", "typescript"], streak: 10, longestStreak: 12, xp: 160, xpGained: 175 },
+    { id: "39", rank: 39, name: "Elizabeth Hall",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 14, languages: ["python", "js"], streak: 11, longestStreak: 11, xp: 140, xpGained: 170 },
+    { id: "40", rank: 40, name: "Joseph Allen",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 12, languages: ["python"], streak: 12, longestStreak: 10, xp: 120, xpGained: 165 },
+    { id: "41", rank: 41, name: "Sofia Young",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 10, languages: ["js", "c++"], streak: 13, longestStreak: 9, xp: 100, xpGained: 160 },
+    { id: "42", rank: 42, name: "Samuel King",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 9, languages: ["python", "js"], streak: 14, longestStreak: 8, xp: 90, xpGained: 155 },
+    { id: "43", rank: 43, name: "Avery Wright",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 8, languages: ["python"], streak: 15, longestStreak: 7, xp: 80, xpGained: 150 },
+    { id: "44", rank: 44, name: "John Scott",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 7, languages: ["js", "ruby"], streak: 16, longestStreak: 6, xp: 70, xpGained: 145 },
+    { id: "45", rank: 45, name: "Ella Green",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 6, languages: ["python", "js"], streak: 17, longestStreak: 5, xp: 60, xpGained: 140 },
+    { id: "46", rank: 46, name: "Nathan Baker",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 5, languages: ["python"], streak: 18, longestStreak: 4, xp: 50, xpGained: 135 },
+    { id: "47", rank: 47, name: "Scarlett Adams",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 4, languages: ["js", "go"], streak: 19, longestStreak: 3, xp: 40, xpGained: 130 },
+    { id: "48", rank: 48, name: "Dylan Nelson",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 3, languages: ["python", "js"], streak: 20, longestStreak: 2, xp: 30, xpGained: 125 },
+    { id: "49", rank: 49, name: "Lily Carter",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 2, languages: ["python"], streak: 21, longestStreak: 1, xp: 20, xpGained: 120 },
+    { id: "50", rank: 50, name: "Gabriel Mitchell",country:"America" ,countryFlag:"https://flagcdn.com/w20/us.png", challengesSolved: 1, languages: ["js"], streak: 22, longestStreak: 1, xp: 10, xpGained: 115 }
 ];
 
 const COUNTRIES = ["All Countries", "United States", "India", "Bangladesh", "United Kingdom", "Canada"];
@@ -200,9 +201,9 @@ export default function Leaderboard() {
                                     ))}
                                 </div>
                             </div>
+<CountryDropdown/>
 
-
-                            <div className="relative w-full sm:w-max    sm:mt-0" ref={dropdownRef}>
+                            <div className="relative hidden w-full sm:w-max    sm:mt-0" ref={dropdownRef}>
                                 <button
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                     // disabled={isLoading}
@@ -246,6 +247,7 @@ export default function Leaderboard() {
                                     <th className="py-4 px-6 w-48 ">User</th>
                                     <th className="py-4 px-6 w-48 min-w-[250px]">Languages</th>
                                     <th className="py-4 px-6 w-48">Streak</th>
+                                    <th className="py-4 px-6 w-48">Country</th>
                                     <th className="py-4 px-6 text-right w-32">XP</th>
                                 </tr>
                             </thead>
@@ -263,6 +265,7 @@ export default function Leaderboard() {
                                                 </div>
                                             </td>
                                             <td className="py-4 px-6"><div className="h-6 w-16 bg-gray-200 rounded"></div></td>
+                                            <td className="py-4 px-6"><div className="h-6 w-20 bg-gray-200 rounded"></div></td>
                                             <td className="py-4 px-6"><div className="h-6 w-20 bg-gray-200 rounded"></div></td>
                                             <td className="py-4 px-6 flex justify-end"><div className="h-6 w-16 bg-gray-200 rounded"></div></td>
                                         </tr>
@@ -326,6 +329,16 @@ export default function Leaderboard() {
                                                         </div>
                                                         <span className="text-xs text-[#64748B]  ">
                                                             Longest: {user.longestStreak}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="py-4 px-6">
+                                                <div className="flex  items-center gap-2 ">
+                                                    <img src={user?.countryFlag || "https://flagcdn.com/w20/bd.png"} alt={user.country} className="w-5 h-5 rounded-full object-cover" />
+                                                    <div className="flex flex-col">                                                     
+                                                        <span className="text-base text-black   ">
+                                                           {user.country}
                                                         </span>
                                                     </div>
                                                 </div>

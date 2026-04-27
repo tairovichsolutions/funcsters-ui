@@ -2,6 +2,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axiosClient";
 import toast from "react-hot-toast";
 import { QueryKey } from "@/constants/commentQueryKeys";
+import { QueryKey as SolutionsQueryKey } from "@/constants/queryKey";
+
+// Invalidates every query whose count of comments can change when a
+// comment is added or removed. Edit/vote don't change counts, so they
+// skip the solutions keys.
+const invalidateCommentCountQueries = (qc: ReturnType<typeof useQueryClient>) => {
+  qc.invalidateQueries({ queryKey: [QueryKey.GetRootComments] });
+  qc.invalidateQueries({ queryKey: [QueryKey.GetReplies] });
+  qc.invalidateQueries({ queryKey: [SolutionsQueryKey.GetAllCommunitySolutions] });
+  qc.invalidateQueries({ queryKey: [SolutionsQueryKey.GetMyCommunitySolutions] });
+};
 
 export const useCreateComment = () => {
   const queryClient = useQueryClient();
@@ -15,8 +26,7 @@ export const useCreateComment = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKey.GetRootComments] });
-      queryClient.invalidateQueries({ queryKey: [QueryKey.GetReplies] });
+      invalidateCommentCountQueries(queryClient);
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || "Failed to add comment");
@@ -48,8 +58,7 @@ export const useDeleteComment = () => {
       await apiClient.delete(`/api/comments/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKey.GetRootComments] });
-      queryClient.invalidateQueries({ queryKey: [QueryKey.GetReplies] });
+      invalidateCommentCountQueries(queryClient);
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || "Failed to delete comment");

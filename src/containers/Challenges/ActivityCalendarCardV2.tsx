@@ -152,7 +152,7 @@ export const ActivityCalendarCardV2: React.FC = () => {
         (d: Date) => d.getFullYear() === year && d.getMonth() === monthIndex,
         [year, monthIndex],
     );
-    console.log({ cells });
+
     const streakMetaByDate = React.useMemo(() => {
         const currentMonthDays = days
             .filter((d) => d.date.slice(0, 7) === currentMonthStr)
