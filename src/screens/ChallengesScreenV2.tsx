@@ -75,6 +75,7 @@ export const ChallengesScreenV2: React.FC = () => {
         endDate: "2024-01-29",
       },
     },
+    xpPoints: 1250
 
   }
 
