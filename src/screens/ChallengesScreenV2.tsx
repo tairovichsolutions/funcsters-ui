@@ -54,29 +54,29 @@ export const ChallengesScreenV2: React.FC = () => {
 
 
 
-   const { data: metricsData } = useMetrics();
-  // const metricsData = {
-  //   completedChallenges: {
-  //     easy: 25,
-  //     expert: 25,
-  //     hard: 25,
-  //     medium: 25,
-  //     total: 100
-  //   },
-  //   streak: {
-  //     currentStreak: {
-  //       count: 12,
-  //       startDate: "2024-03-01",
-  //       endDate: "2024-03-12",
-  //     },
-  //     longestStreak: {
-  //       count: 24,
-  //       startDate: "2024-01-05",
-  //       endDate: "2024-01-29",
-  //     },
-  //   },
+  //  const { data: metricsData, isLoading:loading } = useMetrics();
+  const metricsData = {
+    completedChallenges: {
+      easy: 25,
+      expert: 25,
+      hard: 25,
+      medium: 25,
+      total: 100
+    },
+    streak: {
+      currentStreak: {
+        count: 12,
+        startDate: "2024-03-01",
+        endDate: "2024-03-12",
+      },
+      longestStreak: {
+        count: 24,
+        startDate: "2024-01-05",
+        endDate: "2024-01-29",
+      },
+    },
 
-  // }
+  }
 
 
   return (

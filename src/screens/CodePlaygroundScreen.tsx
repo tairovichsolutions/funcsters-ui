@@ -22,6 +22,9 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
 import { SolutionSubmittedModal } from "@/containers/CodePlayground/SolutionSubmittedModal";
+import { usePairSession } from "@/features/pair/providers/PairSessionProvider";
+import { CommunityGuidelinesModal } from "@/features/pair/components/CommunityGuidelinesModal";
+import { useCurrentUser } from "@/features/pair/hooks/useCurrentUser";
 
 const LOCAL_STORAGE_KEY = "funcsters-code-snippets";
 
@@ -103,6 +106,39 @@ export const CodePlaygroundScreen = memo(() => {
   const { data: userData } = useGetUserProfile();
   const isAuthenticated = userData?.data?.authenticated || false;
   const { openModal } = useAuthModal();
+
+  // ---- Pair-programming wiring ------------------------------------------
+  // When a session is ACTIVE on this challenge, attach the editor to the
+  // shared Yjs doc so both users see each other's edits. Detach when the
+  // session ends.
+  const pair = usePairSession();
+  const { data: currentUser } = useCurrentUser();
+  const pairSession = pair.session;
+  const isJoiner = pairSession?.joinerUsername === currentUser?.username;
+  const showGuidelines =
+    isJoiner && pairSession?.status === "AWAITING_GUIDELINES";
+
+  useEffect(() => {
+    if (pairSession?.status !== "ACTIVE") {
+      pair.attachEditor(null);
+      return;
+    }
+    let cancelled = false;
+    const tryAttach = () => {
+      if (cancelled) return;
+      if (editorRef.current) {
+        pair.attachEditor(editorRef.current);
+      } else {
+        window.setTimeout(tryAttach, 150);
+      }
+    };
+    tryAttach();
+    return () => {
+      cancelled = true;
+      pair.attachEditor(null);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pairSession?.status, pairSession?.id]);
 
   useEffect(() => {
     if (!languageId || !challengeId) return;
@@ -248,24 +284,60 @@ export const CodePlaygroundScreen = memo(() => {
                   xpCount={earnedXp}
                 />
               )}
+
+              {/* Community guidelines gate — shown to the joiner on the
+                  challenge page when their session is AWAITING_GUIDELINES.
+                  On Agree: transitions session to ACTIVE and the editor
+                  auto-attaches to Yjs. On Decline: ends the session. */}
+              <CommunityGuidelinesModal
+                open={!!showGuidelines}
+                sessionId={pairSession?.id ?? null}
+                onDecline={() => pair.leave()}
+              />
             </div>
 
             <div className="flex-1 min-h-0">
-              <MonacoCodeEditer
-                value={code}
-                theme={editorTheme}
-                editorRef={editorRef}
-                className="w-full h-full"
-                tabSize={settings.tabSize}
-                onChange={handleCodeChange}
-                language={selectedLanguage}
-                fontSize={settings.fontSize}
-                wordWrap={settings.wordWrap}
-                onRunShortcut={handleRunCode}
-                keyBinding={settings.keyBinding}
-                onSubmitShortcut={handleSubmitCode}
-                autoComplete={settings.autoComplete}
-              />
+              {/* Two editor modes:
+                  - Solo: `value={code}` (controlled) — React state owns content.
+                  - Pair-session: `defaultValue={code}` (uncontrolled) — Yjs
+                    owns content so CRDT updates aren't overwritten by React
+                    re-renders. `key` forces a clean Monaco remount on mode
+                    switch so the editor picks up the right props. */}
+              {pairSession?.status === "ACTIVE" ? (
+                <MonacoCodeEditer
+                  key={`pair-${pairSession.id}`}
+                  defaultValue={code}
+                  theme={editorTheme}
+                  editorRef={editorRef}
+                  className="w-full h-full"
+                  tabSize={settings.tabSize}
+                  onChange={handleCodeChange}
+                  language={selectedLanguage}
+                  fontSize={settings.fontSize}
+                  wordWrap={settings.wordWrap}
+                  onRunShortcut={handleRunCode}
+                  keyBinding={settings.keyBinding}
+                  onSubmitShortcut={handleSubmitCode}
+                  autoComplete={settings.autoComplete}
+                />
+              ) : (
+                <MonacoCodeEditer
+                  key="solo"
+                  value={code}
+                  theme={editorTheme}
+                  editorRef={editorRef}
+                  className="w-full h-full"
+                  tabSize={settings.tabSize}
+                  onChange={handleCodeChange}
+                  language={selectedLanguage}
+                  fontSize={settings.fontSize}
+                  wordWrap={settings.wordWrap}
+                  onRunShortcut={handleRunCode}
+                  keyBinding={settings.keyBinding}
+                  onSubmitShortcut={handleSubmitCode}
+                  autoComplete={settings.autoComplete}
+                />
+              )}
             </div>
           </div>
         </Panel>

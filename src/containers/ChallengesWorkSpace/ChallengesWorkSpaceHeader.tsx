@@ -17,6 +17,7 @@ import { ProblemListButton } from "./ProblemListButton";
 import { ThemeButton } from "@/components/ui/theme-button";
 import { EditerSettingPopover } from "./EditerSettingPopover";
 import { useGetUserProfile } from "@/queries/useGetUserProfile";
+import { PairSessionWidget } from "@/features/pair/components/PairSessionWidget";
 
 export const ChallengesWorkSpaceHeader = () => {
   const { id } = useParams();
@@ -43,6 +44,12 @@ export const ChallengesWorkSpaceHeader = () => {
         {isAuthenticated && (
           <XPPoints>{metricsData?.xpPoints || 0} XP</XPPoints>
         )}
+      </div>
+
+      {/* Pair-programming session widget — renders null when there's no
+          active session, otherwise shows avatars + timer + mic + leave. */}
+      <div className="flex items-center">
+        <PairSessionWidget />
       </div>
 
       <div className=" flex gap-3">
