@@ -1,5 +1,6 @@
 import { ArrowUp } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -11,15 +12,26 @@ const MAX_CHARS = 1000;
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
 
 export default function GPTLikeInput({ onSend, maxHeight = 180 }: Props) {
+  const { id } = useParams();
+  const slug = String(id);
+  const DRAFT_KEY = `funcsters_ta_draft_${slug}`;
+
   const [value, setValue] = useState("");
   const taRef = useRef<HTMLTextAreaElement | null>(null);
   const [taHeight, setTaHeight] = useState(42);
+
+  // Load draft on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(DRAFT_KEY);
+    if (saved) setValue(saved);
+  }, [DRAFT_KEY]);
 
   const send = () => {
     const text = value.trim();
     if (!text || text.length > MAX_CHARS) return;
     onSend?.(text);
     setValue("");
+    localStorage.removeItem(DRAFT_KEY);
   };
 
   useEffect(() => {
@@ -44,6 +56,7 @@ export default function GPTLikeInput({ onSend, maxHeight = 180 }: Props) {
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
     setValue(val);
+    localStorage.setItem(DRAFT_KEY, val);
   };
 
   const radius = useMemo(() => {

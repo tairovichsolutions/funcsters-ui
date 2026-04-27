@@ -4,7 +4,6 @@ export const QueryKey = {
   GetUserProfile: "get-user-profile",
   GetAllChallenges: "get-all-Challenges",
   GetChallengeById: "get-challenge-by-id",
-  GetAuthorizationUrl: "get-authorization-Url",
   GetActivityCalendar: "get-activity-calendar",
   GetMyCommunitySolutions: "get-my-community-solutions",
   GetAllCommunitySolutions: "get-all-community-solutions",

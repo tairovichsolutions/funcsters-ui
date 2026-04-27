@@ -122,7 +122,7 @@ export const ThinkingAssistantScreen = () => {
               <div className="flex flex-col items-center justify-center py-6 space-y-2 text-center bg-muted/30 rounded-2xl border border-dashed border-border">
                 <div className="text-2xl">💤</div>
                 <p className="text-sm font-medium text-foreground">Thinking Assistant is sleeping</p>
-                <p className="text-xs text-muted-foreground">Please come back after 2 hours to continue.</p>
+                <p className="text-xs text-muted-foreground">Please come back after 1 hour to continue.</p>
               </div>
             ) : (
               <GPTLikeInput onSend={handleSend} />
@@ -179,7 +179,7 @@ export const ThinkingAssistantScreen = () => {
 
                 <div
                   className={cn(
-                    "max-w-[85%]  rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm break-all",
+                    "max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm break-words",
                     isUser
                       ? "bg-primary  text-primary-foreground rounded-tr-none"
                       : "bg-muted/50 text-foreground border border-border/50 rounded-tl-none"
@@ -759,7 +759,7 @@ export const ThinkingAssistantScreen = () => {
             <div className="flex flex-col items-center justify-center py-4 space-y-2 text-center bg-muted/30 rounded-2xl border border-dashed border-border">
               <div className="text-2xl">💤</div>
               <p className="text-sm font-medium text-foreground">Thinking Assistant is sleeping</p>
-              <p className="text-xs text-muted-foreground">Please come back after 2 hours to continue.</p>
+              <p className="text-xs text-muted-foreground">Please come back after 1 hour to continue.</p>
             </div>
           ) : (
             <>
