@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Clock, Mic, UserRoundPlus, Users } from "lucide-react";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { useCancelJoinRequest, useCancelPairRequest, useMyActiveJoin, useMyActiveRequest, useMyActiveSession } from "../hooks/usePairQueries";
+import PrimaryContainer from "@/components/shared/container/PrimaryContainer";
 
 /**
  * Spec v2 global rule 3: persistent banner on every page when the current user
@@ -69,7 +70,7 @@ export function GlobalPairAlertBanner() {
 
 function ActiveSessionBanner({ href, partnerUsername }: { href: string; partnerUsername: string }) {
   return (
-    <div className="mx-auto w-full max-w-7xl px-4">
+    <PrimaryContainer >
       <div className="relative flex items-center gap-4 rounded-lg border border-indigo-200 bg-indigo-50 p-4 pl-5 dark:border-indigo-900/50 dark:bg-indigo-950/30">
         <span className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-indigo-500" />
         <Mic className="h-5 w-5 shrink-0 text-indigo-600 dark:text-indigo-400" />
@@ -88,7 +89,7 @@ function ActiveSessionBanner({ href, partnerUsername }: { href: string; partnerU
           Return to Session
         </Link>
       </div>
-    </div>
+    </PrimaryContainer>
   );
 }
 
@@ -104,7 +105,7 @@ function PermissionGrantedBanner({
   const remaining = useCountdown(expiresAtEpochMs);
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4">
+    <PrimaryContainer >
       <div className="relative flex items-center gap-4 rounded-lg border border-orange-200 bg-orange-50 p-4 pl-5 dark:border-orange-900/50 dark:bg-orange-950/30">
         <span className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-orange-500" />
         <div className="flex-1 min-w-0">
@@ -127,7 +128,7 @@ function PermissionGrantedBanner({
           Join Session Now
         </Link>
       </div>
-    </div>
+    </PrimaryContainer>
   );
 }
 
@@ -136,7 +137,7 @@ function JoinPendingBanner({ joinId, expiresAtEpochMs }: { joinId: number; expir
   const cancel = useCancelJoinRequest();
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4">
+    <PrimaryContainer >
       <div className="relative flex items-center gap-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 pl-5 dark:border-emerald-900/50 dark:bg-emerald-950/30">
         <span className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-emerald-500" />
         <div className="flex-1 min-w-0">
@@ -166,7 +167,7 @@ function JoinPendingBanner({ joinId, expiresAtEpochMs }: { joinId: number; expir
           Waiting For Response...
         </span>
       </div>
-    </div>
+    </PrimaryContainer>
   );
 }
 
@@ -189,9 +190,9 @@ function BroadcastingBanner({
   const challengeHref = `/challenges/${challengeSlug}/detail`;
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4">
-      <div className="relative flex items-center gap-4 rounded-lg border border-blue-200 bg-blue-50 p-4 pl-5 dark:border-blue-900/50 dark:bg-blue-950/30">
-        <span className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-blue-500" />
+    <PrimaryContainer >
+      <div className="relative overflow-hidden flex items-center gap-4 rounded-lg border border-blue-200 bg-blue-50 p-4 pl-5 dark:border-blue-900/50 dark:bg-blue-950/30">
+       <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#008CFF]" />
         <UserRoundPlus className="h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 text-sm">
@@ -201,6 +202,7 @@ function BroadcastingBanner({
               {formatCountdown(remaining)}
             </span>
           </div>
+  
           <div className="mt-1 truncate text-sm text-blue-900 dark:text-blue-100">
             Waiting for a pair on{" "}
             <Link href={challengeHref} className="font-medium underline-offset-2 hover:underline">
@@ -222,7 +224,7 @@ function BroadcastingBanner({
           View Incoming
         </Link>
       </div>
-    </div>
+    </PrimaryContainer>
   );
 }
 

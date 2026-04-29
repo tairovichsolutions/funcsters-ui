@@ -23,10 +23,7 @@ export type PairJoinRequestStatus =
   | "CANCELED"
   | "EXPIRED";
 
-export type PairSessionStatus =
-  | "AWAITING_GUIDELINES"
-  | "ACTIVE"
-  | "ENDED";
+export type PairSessionStatus = "AWAITING_GUIDELINES" | "ACTIVE" | "ENDED";
 
 export interface PairRequestCardDto {
   id: number;
@@ -81,6 +78,7 @@ export interface IceServerDto {
 
 export interface CreatePairRequestDto {
   challengeId: number;
+  description?: string;
   languageId: number;
   focusArea: PairFocusArea;
   spokenLanguages: string[];

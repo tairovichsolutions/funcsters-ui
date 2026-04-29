@@ -6,6 +6,7 @@ import { LobbyFilters, type LobbyFilterState } from "@/features/pair/components/
 import { PairRequestCard } from "@/features/pair/components/PairRequestCard";
 import { useLobby } from "@/features/pair/hooks/usePairQueries";
 import PrimaryContainer from "@/components/shared/container/PrimaryContainer";
+import { GlobalPairAlertBanner } from "@/features/pair/components/GlobalPairAlertBanner";
 
 // TODO(FE-dev): replace with real /api/languages fetch. Kept as a stub list to
 // keep the lobby filter self-contained until the languages endpoint is wired.
@@ -35,7 +36,7 @@ export default function PairLobbyPage() {
               Connect with other developers, share knowledge, and solve challenges together in real-time.
             </p>
           </header>
-
+                 <GlobalPairAlertBanner />
           <LobbyFilters value={filter} onChange={(next) => { setFilter(next); setPage(0); }} languageOptions={LANGUAGE_STUBS} />
 
           {isLoading && <LobbyGridSkeleton />}
@@ -51,7 +52,7 @@ export default function PairLobbyPage() {
           )}
           {data && data.content.length > 0 && (
             <>
-           {/* <div>{JSON.stringify(data.content)}</div> */}
+           <div>{JSON.stringify(data.content)}</div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {[...data.content,...data.content,...data.content,...data.content,...data.content,...data.content,...data.content,...data.content,...data.content,].map((card) => (
                   <PairRequestCard key={card.id} card={card} />
