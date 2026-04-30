@@ -99,7 +99,7 @@ export const ChallengesDetailScreen = () => {
             />
           )}
 
-          {isAuthenticated && challengesDetailData?.id && (
+          {/* {isAuthenticated && challengesDetailData?.id && (
             <PairProgramButton
               challengeId={Number(challengesDetailData.id)}
               challengeTitle={challengesDetailData.title ?? ""}
@@ -110,7 +110,7 @@ export const ChallengesDetailScreen = () => {
                 }))
               }
             />
-          )}
+          )} */}
         </div>
       </div>
 
