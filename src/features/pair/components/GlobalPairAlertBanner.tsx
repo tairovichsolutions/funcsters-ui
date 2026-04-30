@@ -229,7 +229,7 @@ function BroadcastingBanner({
 }
 
 /** Ticks every 1s, returns ms-remaining against a server-authoritative epoch. */
-function useCountdown(expiresAtEpochMs: number): number {
+export function useCountdown(expiresAtEpochMs: number): number {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -238,7 +238,7 @@ function useCountdown(expiresAtEpochMs: number): number {
   return Math.max(0, expiresAtEpochMs - now);
 }
 
-function formatCountdown(ms: number): string {
+export function formatCountdown(ms: number): string {
   const total = Math.floor(ms / 1000);
   const m = Math.floor(total / 60)
     .toString()

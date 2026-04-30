@@ -4,7 +4,8 @@ import { UserRoundPlus, Radio } from "lucide-react";
 import { useState } from "react";
 import { CreatePairRequestModal } from "./CreatePairRequestModal";
 import { IncomingJoinsSidebar } from "./IncomingJoinsSidebar";
-import { useMyActiveJoin, useMyActiveRequest, useMyActiveSession } from "../hooks/usePairQueries";
+import { useCancelPairRequest, useMyActiveJoin, useMyActiveRequest, useMyActiveSession } from "../hooks/usePairQueries";
+import { formatCountdown, useCountdown } from "./GlobalPairAlertBanner";
 
 /**
  * Button that sits on the challenge detail page ("top of the editor" per spec
@@ -32,7 +33,8 @@ export function PairProgramButton({
   const { data: myRequest } = useMyActiveRequest();
   const { data: myJoin } = useMyActiveJoin();
   const { data: mySession } = useMyActiveSession();
-
+  const cancel = useCancelPairRequest();
+  const remaining = useCountdown(myRequest?.expiresAtEpochMs || 0);
   const isBroadcasting =
     myRequest &&
     (myRequest.status === "BROADCASTING" || myRequest.status === "AWAITING_JOINER");
@@ -46,13 +48,33 @@ export function PairProgramButton({
   if (isBroadcasting) {
     return (
       <>
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-        >
-          <Radio className="h-4 w-4 animate-pulse" />
-          Broadcasting
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-[#038CFF0F] py-1.5 pl-3 pr-1.5 text-sm font-semibold text-[#008CFF] transition-colors hover:bg-blue-100"
+          >
+            {/* Pulsing Blue Dot */}
+            <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+
+            {/* Truncated Text */}
+            <span className="max-w-[200px] truncate">
+              Broadcasting For Missing Number O....
+            </span>
+
+            {/* Timer Badge */}
+            <span className="rounded-md bg-[#FF6C0A29] min-w-[2.8rem] px-1.5 py-0.5 text-xs font-bold text-[#FF6C0A]">
+             {formatCountdown(remaining)}
+            </span>
+          </button>
+
+          {/* Cancel Button */}
+          <button
+            className="text-sm font-medium text-[#808080] transition-colors hover:text-gray-600"
+            onClick={() => cancel.mutate(myRequest?.id)}
+          >
+            Cancel
+          </button>
+        </div>
         <IncomingJoinsSidebar
           open={sidebarOpen}
           onClose={() => setSidebarOpen(false)}

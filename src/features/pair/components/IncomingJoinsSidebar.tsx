@@ -1,8 +1,9 @@
 "use client";
 
-import { Code2, MessageCircle, X } from "lucide-react";
-import { useAcceptJoin, useIncomingJoins, useRejectJoin } from "../hooks/usePairQueries";
+import { Clock, Code2, MessageCircle, X } from "lucide-react";
+import { useAcceptJoin, useIncomingJoins, useMyActiveRequest, useRejectJoin } from "../hooks/usePairQueries";
 import type { PairJoinRequestDto } from "../types";
+import { formatCountdown, useCountdown } from "./GlobalPairAlertBanner";
 
 /**
  * Right-side drawer that appears when a broadcasting host clicks the
@@ -24,7 +25,8 @@ interface IncomingJoinsSidebarProps {
 
 export function IncomingJoinsSidebar({ open, onClose, pairRequestId, onAccept }: IncomingJoinsSidebarProps) {
   const { data: joins = [], isLoading } = useIncomingJoins(open ? pairRequestId ?? undefined : undefined);
-
+   const { data: myRequest } = useMyActiveRequest();
+const remaining = useCountdown(myRequest?.expiresAtEpochMs || 0);
   if (!open) return null;
 
   return (
@@ -49,17 +51,166 @@ export function IncomingJoinsSidebar({ open, onClose, pairRequestId, onAccept }:
             <X className="h-4 w-4" />
           </button>
         </div>
+        <style>{`
+        /* Wave Animation (Kept from previous) */
+        @keyframes wave {
+          0% { transform: scale(0.6); opacity: 0.8; }
+          100% { transform: scale(1); opacity: 0; }
+        }
+        .animate-wave {
+          animation: wave 2s cubic-bezier(0.3, 0, 0.3, 1) infinite;
+        }
+        .delay-0s { animation-delay: 0s; }
+        .delay-1s { animation-delay: 1s; }
+        .delay-2s { animation-delay: 2s; }
 
-        <div className="overflow-y-auto p-4">
-          <p className="mb-4 text-sm text-muted-foreground">
+        /* NEW: Spinner Variation Animations */
+        @keyframes spin-slow {
+          100% { transform: rotate(360deg); }
+        }
+        
+        /* This stretches and shrinks the stroke length */
+        @keyframes dash-morph {
+          0% {
+            stroke-dasharray: 1, 150;
+            stroke-dashoffset: 0;
+          }
+          50% {
+            stroke-dasharray: 90, 150;
+            stroke-dashoffset: -35;
+          }
+          100% {
+            stroke-dasharray: 90, 150;
+            stroke-dashoffset: -124;
+          }
+        }
+
+        .animate-spin-slow {
+          animation: spin-slow 2s linear infinite;
+        }
+        .animate-dash-morph {
+          animation: dash-morph 1.5s ease-in-out infinite;
+        }
+      `}</style>
+
+      
+        <div className="overflow-y-auto ">
+          <p className="mb-4 text-sm  bg-[#FBFCFC] text-muted-foreground">
             {joins.length === 0
               ? isLoading
                 ? "Loading…"
-                : "No one has requested to join yet."
-              : `${joins.length} developer${joins.length === 1 ? "" : "s"} want to pair with you on this challenge.`}
-          </p>
+                :   <div className="w-full max-w-[400px] bg-white   shadow-sm flex flex-col font-sans mx-auto">
+          {/* Top Banner */}
+          <div className="p-4 text-xs font-medium text-gray-400  border-red-100">
+            0 developers want to pair with you on this challenge.
+          </div>
 
-          <div className="space-y-3">
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col items-center px-8 pt-12 pb-8  text-center relative overflow-hidden">
+
+            {/* Wave Animation Wrapper */}
+            <div className="relative flex items-center justify-center w-40 h-40 mb-6">
+              <div className="absolute inset-0 bg-blue-100 rounded-full animate-wave delay-0s opacity-0"></div>
+              <div className="absolute inset-0 bg-blue-100 rounded-full animate-wave delay-1s opacity-0"></div>
+              <div className="absolute inset-0 bg-blue-100 rounded-full animate-wave delay-2s opacity-0"></div>
+
+              <div className="relative border-2 border-[#008CFF33] flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+
+                <svg
+                  width="38"
+                  height="39"
+                  viewBox="0 0 38 39"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="animate-[spin_3s_linear_infinite]"
+                >
+                  <path
+                    d="M13.9893 20.5L1.98926 25C3.32259 29 8.98926 37.1 20.9893 37.5"
+                    stroke="#008CFF"
+                    strokeWidth="3"
+                  />
+                  <circle
+                    cx="18.9893"
+                    cy="19.5"
+                    r="4"
+                    stroke="#008CFF"
+                    strokeWidth="3"
+                  />
+                  <circle
+                    cx="27.2393"
+                    cy="35.25"
+                    r="1.75"
+                    fill="#008CFF"
+                  />
+                  <circle
+                    cx="23.2393"
+                    cy="10.25"
+                    r="1.75"
+                    fill="#008CFF"
+                  />
+                  <path
+                    d="M1.48926 18C2.15592 12.5 6.48926 1.5 18.4893 1.5C33.4893 1.5 36.4893 14 36.4893 19C36.4893 24 34.9893 28.5 32.4893 31M7.98926 23C9.32259 26.0925 13.4893 31 20.4893 30C29.2007 28.7555 30.8649 21.5 28.9893 14.5"
+                    stroke="#008CFF"
+                    strokeWidth="3"
+                  />
+                  <path
+                    d="M8.48926 16.5C9.15592 14.1667 11.8893 9.4 17.4893 9"
+                    stroke="#008CFF"
+                    strokeWidth="3"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <h2 className="text-xl font-bold text-gray-900 mb-3 tracking-tight">Broadcasting...</h2>
+            <p className="text-sm text-gray-500 leading-relaxed mb-8 max-w-[280px]">
+              Your request is live in the Lobby! Hang tight while we find the perfect partner for your challenge.
+            </p>
+
+            {/* Timer Card with Morphing Spinner */}
+            <div className="w-full flex items-center justify-between bg-[#00000005] rounded-xl p-4 mb-10">
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 text-blue-500" strokeWidth={2.5} />
+                <div className="flex flex-col text-left">
+                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Expires In</span>
+                  <span className="text-lg font-bold text-gray-900 tabular-nums leading-tight mt-0.5">      {formatCountdown(remaining)}</span>
+                </div>
+              </div>
+
+              {/* Morphing Circular Loading Spinner */}
+              <div className="relative w-8 h-8">
+                {/* Added animate-spin-slow directly to the SVG container */}
+                <svg className="w-full h-full animate-spin-slow" viewBox="0 0 36 36">
+                  {/* Background track */}
+                  <path
+                    className="text-gray-200"
+                    strokeWidth="3.5"
+                    stroke="currentColor"
+                    fill="none"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  {/* Blue spinner path with morphing dash animation */}
+                  <path
+                    className="text-blue-500 animate-dash-morph"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    stroke="currentColor"
+                    fill="none"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <p className="text-[13px] text-gray-400 max-w-[250px] leading-relaxed">
+              You can browse other pages; we&#39;ll alert you if someone wants to join.
+            </p>
+          </div>
+        </div>
+              : <p className="p-4 bg-[#FBFCFC]!  border-b-[1px]">{joins.length} developer {joins.length === 1 ? "" : "s"} want to pair with you on this challenge.</p>}
+          </p>
+{/* <div>{JSON.stringify(joins)}</div> */}
+          <div className="space-y-3 p-4">
             {joins.map((jr) => (
               <JoinRequestCard key={jr.id} jr={jr} onAccept={onAccept} />
             ))}
@@ -89,7 +240,7 @@ function JoinRequestCard({
   };
 
   return (
-    <div className="rounded-xl border border-border bg-background p-3">
+    <div className="rounded-xl border p-4  border-border bg-background ">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
           <div className="relative h-8 w-8 shrink-0 rounded-full bg-muted">
