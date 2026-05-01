@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Clock, Mic, Share2, UserRoundPlus, Users } from "lucide-react";
 import { useCurrentUser } from "../hooks/useCurrentUser";
-import { useCancelJoinRequest, useCancelPairRequest, useMyActiveJoin, useMyActiveRequest, useMyActiveSession } from "../hooks/usePairQueries";
+import { useCancelJoinRequest, useCancelPairRequest, useIncomingJoins, useMyActiveJoin, useMyActiveRequest, useMyActiveSession } from "../hooks/usePairQueries";
 import PrimaryContainer from "@/components/shared/container/PrimaryContainer";
 
 /**
@@ -27,6 +27,7 @@ export function GlobalPairAlertBanner() {
   const { data: mySession } = useMyActiveSession();
   const { data: myJoin } = useMyActiveJoin();
   const { data: myRequest } = useMyActiveRequest();
+  const { data: joins = [] } = useIncomingJoins(myRequest?.id);
 
   // The session/pair context is always tied to a specific challenge. When a
   // session exists, we link to THAT challenge's detail page rather than a
@@ -36,7 +37,7 @@ export function GlobalPairAlertBanner() {
     : null;
   const onChallengePage =
     mySession && pathname.startsWith(`/challenges/${mySession.challengeSlug}/detail`);
-  console.log({ mySession, myRequest, onChallengePage, sessionChallengeHref,currentUser });
+    console.log({ mySession, myRequest, onChallengePage, sessionChallengeHref,currentUser,myJoin,joins });
   if (mySession && mySession.status === "ACTIVE" && !onChallengePage) {
     const partner =
       currentUser?.username === mySession.hostUsername
@@ -54,7 +55,7 @@ export function GlobalPairAlertBanner() {
     );
   }
   if (myJoin && myJoin.status === "PENDING") {
-    return <JoinPendingBanner mySession={sessionChallengeHref} joinId={myJoin.id} expiresAtEpochMs={myJoin.expiresAtEpochMs} />;
+    return <JoinPendingBanner  joinId={myJoin.id} expiresAtEpochMs={myJoin.expiresAtEpochMs} />;
   }
   if (myRequest && (myRequest.status === "BROADCASTING" || myRequest.status === "AWAITING_JOINER")) {
     return (
@@ -133,7 +134,7 @@ function PermissionGrantedBanner({
   );
 }
 
-function JoinPendingBanner({ joinId, expiresAtEpochMs, mySession }: { joinId: number; expiresAtEpochMs: number }) {
+function JoinPendingBanner({ joinId, expiresAtEpochMs, }: { joinId: number; expiresAtEpochMs: number }) {
   const remaining = useCountdown(expiresAtEpochMs);
   const cancel = useCancelJoinRequest();
 
@@ -181,7 +182,7 @@ function JoinPendingBanner({ joinId, expiresAtEpochMs, mySession }: { joinId: nu
           </div>
 
           <div className="mt-0.5 text-base font-bold text-slate-900">
-            Requested to Help <span className="text-slate-700">{mySession?.hostUsername}</span>
+            Requested to Help <span className="text-slate-700">{"mySession?.hostUsername"}</span>
           </div>
 
           <div className="text-xs text-slate-500">

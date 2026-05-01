@@ -57,8 +57,15 @@ export function PairRequestCard({ card }: { card: PairRequestCardDto }) {
 
             {card.hostCountry ? (
               <>
-                {card.hostCountryFlag && <span className="mr-1">{card.hostCountryFlag}</span>}
-                {card.hostCountry}
+                {/* {card.hostCountryFlag && <span className="mr-1">{card.hostCountryFlag}</span>} */}
+
+                <div className="flex flex-col justify-end gap-1">
+                  <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs   text-center   py-0.5 rounded-md">1200 xp</span>
+                  <div className="flex gap-1">
+                    {card.hostCountryFlag && <img src={card.hostCountryFlag || ''} className="w-3 h-3" alt="country flag" />}
+                    <span className="text-[10px]">{card.hostCountry}</span>
+                  </div>
+                </div>
               </>
             ) :
               <div className="flex flex-col gap-1">
@@ -93,16 +100,20 @@ export function PairRequestCard({ card }: { card: PairRequestCardDto }) {
           <span
             className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium
               `}
-              //  ${difficultyClass(              card.challengeDifficulty            )}
+          //  ${difficultyClass(              card.challengeDifficulty            )}
           >
-            <DifficultyChip className="text-[10px] px-4 py-[5px] mb-1" level={card?.challengeDifficulty ||''} />
+            <DifficultyChip className="text-[10px] px-4 py-[5px] mb-1" level={card?.challengeDifficulty || ''} />
             {/* {toTitle(card.challengeDifficulty)} */}
           </span>
         )}
       </div>
 
       <p className="mt-3 line-clamp-2 text-sm italic text-[#5A5D65]">
-        &quot;{focusAreaLabel(card.focusArea)}&quot;
+        {card?.description ? (
+          <>{card.description}</>
+        ) : (
+          <>&quot;{focusAreaLabel(card.focusArea)}&quot;</>
+        )}
       </p>
 
       <div className="my-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">

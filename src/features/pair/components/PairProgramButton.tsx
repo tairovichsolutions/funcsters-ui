@@ -1,12 +1,13 @@
 "use client";
 
 import { UserRoundPlus, Radio } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CreatePairRequestModal } from "./CreatePairRequestModal";
 import { IncomingJoinsSidebar } from "./IncomingJoinsSidebar";
 import { useCancelPairRequest, useMyActiveJoin, useMyActiveRequest, useMyActiveSession } from "../hooks/usePairQueries";
 import { formatCountdown, useCountdown } from "./GlobalPairAlertBanner";
 import { cn } from "@/lib";
+import { usePathname, useSearchParams } from "next/navigation";
 
 /**
  * Button that sits on the challenge detail page ("top of the editor" per spec
@@ -45,6 +46,20 @@ export function PairProgramButton({
       : myJoin && myJoin.status === "PENDING"
         ? "You have a pending join request"
         : null;
+
+  // const pathname = usePathname();
+  // const searchParams = useSearchParams();
+
+  // useEffect(() => {
+
+  //   const isSidebarParam = searchParams.get('isSidebarOpen') === 'true';
+
+  //   if (isSidebarParam) {
+  //     setSidebarOpen(true);
+  //   }
+  // }, [pathname, searchParams,]); 
+
+
 
   if (isBroadcasting) {
     return (

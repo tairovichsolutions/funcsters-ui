@@ -30,6 +30,7 @@ export function IncomingJoinsSidebar({ open, onClose, pairRequestId, onAccept }:
 const remaining = useCountdown(myRequest?.expiresAtEpochMs || 0);
   if (!open) return null;
 
+
   return (
     <div className="fixed inset-0 z-40 flex" onClick={onClose}>
       <div className="flex-1" />
@@ -102,9 +103,8 @@ const remaining = useCountdown(myRequest?.expiresAtEpochMs || 0);
                 ? "Loading…"
                 :   <div className="w-full max-w-[400px] bg-white   shadow-sm flex flex-col font-sans mx-auto">
           {/* Top Banner */}
-          <div className="p-4 text-xs font-medium text-gray-400  border-red-100">
-            0 developers want to pair with you on this challenge.
-          </div>
+           <p className="p-4 bg-[#FBFCFC]!  border-b-[1px]">{joins.length} developer {joins.length === 1 ? "" : "s"} want to pair with you on this challenge.</p>
+        
 
           {/* Main Content */}
           <div className="flex-1 flex flex-col items-center px-8 pt-12 pb-8  text-center relative overflow-hidden">
