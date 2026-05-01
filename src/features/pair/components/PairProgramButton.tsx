@@ -55,8 +55,10 @@ export function PairProgramButton({
             className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-[#038CFF0F] py-1.5 pl-3 pr-1.5 text-sm font-semibold text-[#008CFF] transition-colors hover:bg-blue-100"
           >
             {/* Pulsing Blue Dot */}
-            <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-
+            <span className="relative inline-flex h-2 w-2">
+              <span className="absolute inset-0 animate-ping rounded-full bg-[#008CFF] opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#008CFF]" />
+            </span>
             {/* Truncated Text */}
             <span className="max-w-[200px] truncate">
               Broadcasting For Missing Number O....

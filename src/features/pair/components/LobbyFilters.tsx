@@ -18,7 +18,7 @@ interface LobbyFiltersProps {
 }
 
 const DIFFICULTY_OPTIONS = ["EASY", "MEDIUM", "HARD", "EXPERT"];
-const SPOKEN_LANGUAGES = ["EN", "ES", "FR", "DE", "PT", "ZH", "JA", "KO", "HI", "AR", "RU"];
+const SPOKEN_LANGUAGES = ["English", "Spanish", "French", "German", "Portuguese", "Chinese", "Japanese", "Korean", "Hindi", "Arabic", "Russian"];
 // const COUNTRIES = ["US", "CA", "UK", "DE", "FR", "IN", "BR", "JP", "KR", "CN"];
 
 export const COUNTRIES1 = [

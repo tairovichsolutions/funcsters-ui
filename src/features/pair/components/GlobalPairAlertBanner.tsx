@@ -1,9 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Clock, Mic, UserRoundPlus, Users } from "lucide-react";
+import { Clock, Mic, Share2, UserRoundPlus, Users } from "lucide-react";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { useCancelJoinRequest, useCancelPairRequest, useMyActiveJoin, useMyActiveRequest, useMyActiveSession } from "../hooks/usePairQueries";
 import PrimaryContainer from "@/components/shared/container/PrimaryContainer";
@@ -35,7 +36,7 @@ export function GlobalPairAlertBanner() {
     : null;
   const onChallengePage =
     mySession && pathname.startsWith(`/challenges/${mySession.challengeSlug}/detail`);
-
+  console.log({ mySession, myRequest, onChallengePage, sessionChallengeHref,currentUser });
   if (mySession && mySession.status === "ACTIVE" && !onChallengePage) {
     const partner =
       currentUser?.username === mySession.hostUsername
@@ -53,7 +54,7 @@ export function GlobalPairAlertBanner() {
     );
   }
   if (myJoin && myJoin.status === "PENDING") {
-    return <JoinPendingBanner joinId={myJoin.id} expiresAtEpochMs={myJoin.expiresAtEpochMs} />;
+    return <JoinPendingBanner mySession={sessionChallengeHref} joinId={myJoin.id} expiresAtEpochMs={myJoin.expiresAtEpochMs} />;
   }
   if (myRequest && (myRequest.status === "BROADCASTING" || myRequest.status === "AWAITING_JOINER")) {
     return (
@@ -71,8 +72,8 @@ export function GlobalPairAlertBanner() {
 function ActiveSessionBanner({ href, partnerUsername }: { href: string; partnerUsername: string }) {
   return (
     <PrimaryContainer >
-      <div className="relative flex items-center gap-4 rounded-lg border border-indigo-200 bg-indigo-50 p-4 pl-5 dark:border-indigo-900/50 dark:bg-indigo-950/30">
-        <span className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-indigo-500" />
+      <div className="relative overflow-hidden flex items-center gap-4 rounded-lg border border-blue-200 bg-blue-50 p-4 pl-5 dark:border-blue-900/50 dark:bg-blue-950/30">
+        <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#008CFF]" />
         <Mic className="h-5 w-5 shrink-0 text-indigo-600 dark:text-indigo-400" />
         <div className="flex-1 min-w-0">
           <div className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">
@@ -106,8 +107,8 @@ function PermissionGrantedBanner({
 
   return (
     <PrimaryContainer >
-      <div className="relative flex items-center gap-4 rounded-lg border border-orange-200 bg-orange-50 p-4 pl-5 dark:border-orange-900/50 dark:bg-orange-950/30">
-        <span className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-orange-500" />
+      <div className="relative overflow-hidden flex items-center gap-4 rounded-lg border border-blue-200 bg-blue-50 p-4 pl-5 dark:border-blue-900/50 dark:bg-blue-950/30">
+        <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#008CFF]" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 text-sm">
             <span className="font-semibold text-orange-700 dark:text-orange-300">PERMISSION GRANTED!</span>
@@ -132,34 +133,71 @@ function PermissionGrantedBanner({
   );
 }
 
-function JoinPendingBanner({ joinId, expiresAtEpochMs }: { joinId: number; expiresAtEpochMs: number }) {
+function JoinPendingBanner({ joinId, expiresAtEpochMs, mySession }: { joinId: number; expiresAtEpochMs: number }) {
   const remaining = useCountdown(expiresAtEpochMs);
   const cancel = useCancelJoinRequest();
 
   return (
     <PrimaryContainer >
-      <div className="relative flex items-center gap-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 pl-5 dark:border-emerald-900/50 dark:bg-emerald-950/30">
-        <span className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-emerald-500" />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 text-sm">
-            <span className="font-semibold text-emerald-700 dark:text-emerald-300">REQUEST SENT:</span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/70 px-2 py-0.5 text-xs text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200">
-              <Clock className="h-3 w-3" />
-              {formatCountdown(remaining)}
-            </span>
-          </div>
-          <div className="mt-1 text-sm text-emerald-900 dark:text-emerald-100">
-            Waiting for the host to respond to your join request.
+      <div
+        className="relative overflow-hidden flex items-center gap-4 p-4 pl-6"
+        style={{
+          borderRadius: '12px',
+          borderTop: '1px solid #BEE9D0',
+          borderRight: '1px solid #BEE9D0',
+          borderBottom: '1px solid #BEE9D0',
+          background: '#EBF5F3',
+          boxShadow: '0 10px 14px 0 rgba(0, 199, 73, 0.10)',
+        }}
+      >
+        {/* Left Accent Bar */}
+        <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#00C749]" />
+        <div className="relative h-12 w-12 shrink-0">
+          <img
+            src={'https://lh3.googleusercontent.com/a/ACg8ocJR6GXSaAwU-Qs1DTc7B8zuObbvc4bh2UXPB2XKnB7e_WN6uEE=s96-c'} // Replace with your image variable
+            alt="Profile"
+            className="h-full w-full rounded-full border-2 border-emerald-400 object-cover"
+          />
+          <div className="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#00C749] border-2 border-[#EBF5F3]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8" fill="none">
+              <g clip-path="url(#clip0_62254_16042)">
+                <path d="M1.13749 3.58149C0.939044 3.50432 0.839819 3.46573 0.810851 3.41013C0.785738 3.36193 0.785704 3.30451 0.81076 3.25629C0.839663 3.20065 0.938842 3.16195 1.1372 3.08454L6.76645 0.887758C6.94551 0.817881 7.03504 0.782942 7.09225 0.802054C7.14193 0.818652 7.18092 0.857641 7.19752 0.907324C7.21663 0.964533 7.18169 1.05406 7.11181 1.23312L4.91503 6.86237C4.83763 7.06073 4.79892 7.15991 4.74329 7.18881C4.69506 7.21387 4.63764 7.21383 4.58944 7.18872C4.53384 7.15975 4.49525 7.06053 4.41808 6.86208L3.54204 4.60941C3.52638 4.56913 3.51854 4.54899 3.50645 4.53203C3.49572 4.517 3.48258 4.50385 3.46754 4.49313C3.45058 4.48103 3.43044 4.4732 3.39016 4.45753L1.13749 3.58149Z" stroke="white" stroke-linecap="round" stroke-linejoin="round" />
+              </g>
+              <defs>
+                <clipPath id="clip0_62254_16042">
+                  <rect width="8" height="8" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
           </div>
         </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-slate-800">REQUEST SENT:</span>
+            <span className="inline-flex items-center gap-1 rounded-[4px] border border-[#64748B] bg-white/50 px-2 py-0.5 text-[10px] font-medium text-black">
+              <Clock className="h-3 w-3" />
+              <span className="font-bold">{formatCountdown(remaining)}</span>
+            </span>
+          </div>
+
+          <div className="mt-0.5 text-base font-bold text-slate-900">
+            Requested to Help <span className="text-slate-700">{mySession?.hostUsername}</span>
+          </div>
+
+          <div className="text-xs text-slate-500">
+            Challenge: <span className="font-semibold underline decoration-slate-400 decoration-1 underline-offset-2 text-slate-700">"Minimum Element in Array"</span>
+          </div>
+        </div>
+
         <button
           onClick={() => cancel.mutate(joinId)}
           disabled={cancel.isPending}
-          className="text-sm font-medium text-emerald-700 hover:text-emerald-900 disabled:opacity-50 dark:text-emerald-300 dark:hover:text-emerald-100"
+          className="text-sm font-medium text-[#808080] hover:text-emerald-900 disabled:opacity-50"
         >
           Cancel Request
         </button>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200">
+
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-800">
           <span className="relative inline-flex h-2 w-2">
             <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
@@ -192,7 +230,7 @@ function BroadcastingBanner({
   return (
     <PrimaryContainer >
       <div className="relative overflow-hidden flex items-center gap-4 rounded-lg border border-blue-200 bg-blue-50 p-4 pl-5 dark:border-blue-900/50 dark:bg-blue-950/30">
-       <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#008CFF]" />
+        <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#008CFF]" />
         <UserRoundPlus className="h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 text-sm">
@@ -202,7 +240,7 @@ function BroadcastingBanner({
               {formatCountdown(remaining)}
             </span>
           </div>
-  
+
           <div className="mt-1 truncate text-sm text-blue-900 dark:text-blue-100">
             Waiting for a pair on{" "}
             <Link href={challengeHref} className="font-medium underline-offset-2 hover:underline">

@@ -16,15 +16,14 @@ export function LobbyNavLink({ className = "" }: { className?: string }) {
   const pathname = usePathname();
   const { data: count = 0 } = useLobbyCount();
   const active = pathname?.startsWith("/pair/lobby") ?? false;
-
   return (
     <Link
       href="/pair/lobby"
-      className={`relative inline-flex items-center gap-2 px-1 pb-2 text-sm font-medium transition-colors ${
-        active ? "text-blue-600 dark:text-blue-400" : "text-foreground/70 hover:text-foreground"
+      className={`relative inline-fle my-auto items-center gap-2 px-1  text-sm font-medium   transition-colors ${
+        active ? "text-blue-600 dark:text-blue-400" : "text-medium-gray  hover:text-foreground"
       } ${className}`}
     >
-      Lobby
+      Lobby 
       {count > 0 && (
         <span
           aria-label={`${count} active pair requests`}
@@ -33,7 +32,7 @@ export function LobbyNavLink({ className = "" }: { className?: string }) {
           {count > 99 ? "99+" : count}
         </span>
       )}
-      {active && <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-blue-600" />}
+      {active && <span className="absolute inset-x-0 -bottom-[21px] h-[2.5px] bg-primary  " />}
     </Link>
   );
 }

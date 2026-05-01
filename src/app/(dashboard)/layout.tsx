@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import { DashboardHeader } from "@/containers/Dashboard/DashboardHeader";
 import StickyPairAlertWrapper from "@/features/pair/components/StickyPairAlertWrapper";
 import { GlobalPairAlertBanner } from "@/features/pair/components/GlobalPairAlertBanner";
+import GlobalJoinRequestAlert from "@/features/pair/components/GlobalJoinRequestAlert";
 
 interface LayoutProps {
   children: ReactNode;
@@ -32,7 +33,8 @@ const Layout = ({ children }: LayoutProps) => {
      </div>
     
       <main className="flex-1 custom-scrollbar outline-none!  overflow-hidden w-full overflow-y-auto bg-dashboard-background">
-         <GlobalPairAlertBanner />
+         {/* <GlobalPairAlertBanner /> */}
+         <GlobalJoinRequestAlert/>
         {children}
       </main>
     </div>

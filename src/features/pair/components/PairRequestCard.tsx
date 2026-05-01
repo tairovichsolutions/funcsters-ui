@@ -129,7 +129,7 @@ export function PairRequestCard({ card }: { card: PairRequestCardDto }) {
         title={lockedReason ?? undefined}
         onClick={() => createJoin.mutate(card.id)}
         className={`flex items-center justify-center gap-1 w-full rounded-md py-2 text-sm font-medium transition-colors ${disabled
-          ? "bg-blue-200 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400/60"
+          ? "bg-blue-200 text-white dark:bg-blue-900/30 dark:text-blue-400/60"
           : "bg-blue-600 text-white hover:bg-blue-700"
           }`}
       >
