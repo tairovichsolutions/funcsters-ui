@@ -55,13 +55,14 @@ export const ChallengesWorkSpaceHeader = () => {
       {/* Pair-programming session widget — renders null when there's no
           active session, otherwise shows avatars + timer + mic + leave. */}
 
-      <div className="flex items-center">
-        
-        <PairSessionWidget />
-      </div>
   
       <div className=" flex gap-3">
-            {isAuthenticated && challengesDetailData?.id && (
+        
+     
+        
+        <PairSessionWidget />
+     
+       {isAuthenticated && challengesDetailData?.id && (
         <PairProgramButton
           challengeId={Number(challengesDetailData.id)}
           challengeTitle={challengesDetailData.title ?? ""}

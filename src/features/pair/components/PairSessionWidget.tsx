@@ -1,6 +1,6 @@
 "use client";
 
-import { Mic, MicOff, UserRound } from "lucide-react";
+import { Clock, Mic, MicOff, UserRound } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -38,11 +38,12 @@ export function PairSessionWidget() {
   const partner = isHost ? session.joinerUsername : session.hostUsername;
 
   return (
-    <div className="flex items-center gap-3 rounded-full border border-border bg-muted/50 px-2 py-1">
+    <div className="flex items-center gap-2 rounded-full border border-[#EFEFEF] bg-white px-2 py-1">
       <div className="flex -space-x-2">
         <Avatar label="ME" accent="emerald" />
         <Avatar label={(partner ?? "??").slice(0, 2).toUpperCase()} accent="indigo" />
       </div>
+      <div className="h-6 w-px bg-[#EFEFEF]"></div>
       <SessionTimerCompact endsAtEpochMs={session.endsAtEpochMs} />
       <MicButton muted={localMuted} connected={connectionState === "connected"} onClick={localMuted ? unmute : mute} />
       <LeaveButton onLeave={async () => {
@@ -83,12 +84,14 @@ function SessionTimerCompact({ endsAtEpochMs }: { endsAtEpochMs: number | null }
     remaining < 5 * 60_000
       ? "text-rose-700 bg-rose-50 dark:bg-rose-950/40 dark:text-rose-300"
       : remaining < 15 * 60_000
-      ? "text-amber-700 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-300"
-      : "text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-300";
+        ? "text-amber-700 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-300"
+        : "text-[#03CE63] bg-white dark:bg-emerald-950/40 dark:text-emerald-300";
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold tabular-nums ${urgency}`}>
-      <span className="inline-block h-1.5 w-1.5 rounded-full bg-current" />
-      {m}:{s}
+    <span className={`inline-flex items-center gap-2 rounded-full border  border-slate-100  px-4 py-1.5 text-sm font-bold tabular-nums  ${urgency}`}>
+      <Clock className="h-5 w-5" strokeWidth={2.5} />
+      <span>
+        {m}:{s}
+      </span>
     </span>
   );
 }
@@ -98,15 +101,15 @@ function MicButton({ muted, connected, onClick }: { muted: boolean; connected: b
     <button
       onClick={onClick}
       title={muted ? "Unmute" : "Mute"}
-      className={`inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors ${
-        !connected
+      className={`inline-flex h-7 w-7  items-center justify-center rounded-full transition-colors ${!connected
           ? "bg-muted text-muted-foreground"
           : muted
-          ? "bg-rose-100 text-rose-700 hover:bg-rose-200 dark:bg-rose-900/40 dark:text-rose-300"
-          : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300"
-      }`}
+            ? "bg-[#EFEFEF]  text-rose-700 hover:bg-rose-200 dark:bg-rose-900/40 dark:text-rose-300"
+            : "bg-[#EFEFEF]  text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300"
+        }`}
     >
-      {muted ? <MicOff className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
+
+      {muted ? <MicOff className="h-3.5 w-3.5 font-bold text-neutral-01 text-2xl! " /> : <Mic className="h-3.5 w-3.5 font-bold text-neutral-01 text-2xl! " />}
     </button>
   );
 }
@@ -123,7 +126,7 @@ function LeaveButton({ onLeave }: { onLeave: () => void | Promise<void> }) {
         className="h-7 rounded-full border-rose-300 bg-rose-50 px-3 py-0 text-xs font-medium text-rose-700 hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300"
         onClick={() => setConfirming(true)}
       >
-        <UserRound className="mr-1 h-3 w-3" /> Leave Session
+        Leave
       </Button>
       {confirming && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => !busy && setConfirming(false)}>

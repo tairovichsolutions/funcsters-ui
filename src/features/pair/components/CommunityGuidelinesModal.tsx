@@ -103,7 +103,15 @@ export function CommunityGuidelinesModal({
 
           {/* Guideline 3 */}
           <div className="flex items-start gap-4 rounded-xl border border-[#E4E4E4] bg-[#FAFAFA] p-4">
-            <CheckCircle className="mt-0.5 h-6 w-6 shrink-0 text-blue-500" />
+    <svg className="w-fit" width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path
+    d="M7.5 12L10.5 15L16.5 9M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+    stroke="#008CFF"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  />
+</svg>
             <div>
               <h3 className="font-semibold text-neutral-01">Stay On Topic</h3>
               <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-05">

@@ -6,6 +6,7 @@ import { CreatePairRequestModal } from "./CreatePairRequestModal";
 import { IncomingJoinsSidebar } from "./IncomingJoinsSidebar";
 import { useCancelPairRequest, useMyActiveJoin, useMyActiveRequest, useMyActiveSession } from "../hooks/usePairQueries";
 import { formatCountdown, useCountdown } from "./GlobalPairAlertBanner";
+import { cn } from "@/lib";
 
 /**
  * Button that sits on the challenge detail page ("top of the editor" per spec
@@ -63,7 +64,7 @@ export function PairProgramButton({
 
             {/* Timer Badge */}
             <span className="rounded-md bg-[#FF6C0A29] min-w-[2.8rem] px-1.5 py-0.5 text-xs font-bold text-[#FF6C0A]">
-             {formatCountdown(remaining)}
+              {formatCountdown(remaining)}
             </span>
           </button>
 
@@ -86,7 +87,10 @@ export function PairProgramButton({
 
   return (
     <>
-      <div className="group relative inline-block">
+      <div className={cn(
+        lockedReason === "You are in an active session" ? "hidden" : "inline-block",
+        "group relative "
+      )}>
         <button
           onClick={() => setModalOpen(true)}
           disabled={lockedReason != null}
