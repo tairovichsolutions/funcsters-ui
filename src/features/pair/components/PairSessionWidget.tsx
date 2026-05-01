@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, Mic, MicOff, UserRound } from "lucide-react";
+import { AlertTriangle, Clock, Mic, MicOff, UserRound } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -102,10 +102,10 @@ function MicButton({ muted, connected, onClick }: { muted: boolean; connected: b
       onClick={onClick}
       title={muted ? "Unmute" : "Mute"}
       className={`inline-flex h-7 w-7  items-center justify-center rounded-full transition-colors ${!connected
-          ? "bg-muted text-muted-foreground"
-          : muted
-            ? "bg-[#EFEFEF]  text-rose-700 hover:bg-rose-200 dark:bg-rose-900/40 dark:text-rose-300"
-            : "bg-[#EFEFEF]  text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300"
+        ? "bg-muted text-muted-foreground"
+        : muted
+          ? "bg-[#EFEFEF]  text-rose-700 hover:bg-rose-200 dark:bg-rose-900/40 dark:text-rose-300"
+          : "bg-[#EFEFEF]  text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300"
         }`}
     >
 
@@ -129,19 +129,85 @@ function LeaveButton({ onLeave }: { onLeave: () => void | Promise<void> }) {
         Leave
       </Button>
       {confirming && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => !busy && setConfirming(false)}>
-          <div className="w-full max-w-sm rounded-xl bg-card p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-sm font-semibold">Leave the session?</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              This ends the session for both you and your partner.
-            </p>
-            <div className="mt-5 flex justify-end gap-2">
-              <button onClick={() => setConfirming(false)} disabled={busy} className="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted">Stay</button>
+
+
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.10)',
+            backdropFilter: 'blur(6px)'
+          }}
+          onClick={() => !busy && setConfirming(false)}
+        >
+          <div
+            className="w-full max-w-lg rounded-3xl bg-white py-8 px-12 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              borderRadius: '12px', // Applying the 12px box-radius you requested
+              boxShadow: '0 8px 24px 0 rgba(0, 0, 0, 0.15)' // Applying the 0.15 shadow requested
+            }}
+          >
+
+            {/* Icon Section */}
+            <div className="flex justify-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-50">
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M59.3333 46L37.7733 8.66666C37.1881 7.65328 36.3465 6.81177 35.3331 6.2267C34.3197 5.64163 33.1701 5.33362 31.9999 5.33362C30.8297 5.33362 29.6802 5.64163 28.6667 6.2267C27.6533 6.81177 26.8117 7.65328 26.2266 8.66666L4.6666 46C4.08126 47.0138 3.77321 48.1639 3.77344 49.3346C3.77366 50.5053 4.08216 51.6553 4.66789 52.6689C5.25363 53.6825 6.09594 54.524 7.11013 55.1088C8.12431 55.6935 9.27459 56.0009 10.4453 56H53.5546C54.7248 56 55.8744 55.6919 56.8879 55.1068C57.9013 54.5216 58.7429 53.68 59.328 52.6666C59.9131 51.6531 60.2211 50.5035 60.2211 49.3333C60.2211 48.1631 59.913 47.0134 59.3279 46H59.3333Z" fill="url(#paint0_linear_62485_6843)" />
+                  <path d="M32 40C32.6986 40.0032 33.3732 39.7451 33.8913 39.2764C34.4093 38.8076 34.7335 38.1622 34.8 37.4667L36.3733 21.7334C36.4293 21.1766 36.3678 20.6143 36.1928 20.0827C36.0179 19.5512 35.7333 19.0623 35.3576 18.6476C34.9819 18.2329 34.5233 17.9017 34.0116 17.6753C33.4998 17.4489 32.9463 17.3324 32.3867 17.3334H31.6133C31.0543 17.3334 30.5015 17.4505 29.9905 17.6773C29.4796 17.9041 29.0218 18.2355 28.6468 18.6501C28.2718 19.0647 27.9879 19.5532 27.8133 20.0843C27.6387 20.6154 27.5774 21.1772 27.6333 21.7334L29.2067 37.4667C29.2731 38.161 29.5963 38.8056 30.1129 39.2741C30.6296 39.7427 31.3025 40.0016 32 40Z" fill="url(#paint1_linear_62485_6843)" />
+                  <path d="M32.0007 50.6667C34.578 50.6667 36.6673 48.5774 36.6673 46C36.6673 43.4227 34.578 41.3334 32.0007 41.3334C29.4233 41.3334 27.334 43.4227 27.334 46C27.334 48.5774 29.4233 50.6667 32.0007 50.6667Z" fill="url(#paint2_linear_62485_6843)" />
+                  <defs>
+                    <linearGradient id="paint0_linear_62485_6843" x1="16.1786" y1="27.1147" x2="56.0359" y2="55.1853" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#FED200" />
+                      <stop offset="1" stopColor="#F59815" />
+                    </linearGradient>
+                    <linearGradient id="paint1_linear_62485_6843" x1="27.0907" y1="20.784" x2="36.7333" y2="34.82" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#3E4154" />
+                      <stop offset="1" stopColor="#1B2129" />
+                    </linearGradient>
+                    <linearGradient id="paint2_linear_62485_6843" x1="29.0393" y1="43.0387" x2="34.7687" y2="48.768" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#3E4154" />
+                      <stop offset="1" stopColor="#1B2129" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+
+            {/* Text Section */}
+            <div className=" text-center mt-5">
+              <h3 className="text-xl font-bold text-neutral-01">Are you sure you want to leave?</h3>
+              <p className="mt-2 text-sm leading-relaxed text-neutral-05">
+                You&apos;ll lose your current progress in this pair programming session
+              </p>
+            </div>
+
+            {/* Divider */}
+            <hr className="my-6 border-slate-100" />
+
+            {/* Action Buttons */}
+            <div className="flex justify-center gap-3">
               <button
-                onClick={async () => { setBusy(true); try { await onLeave(); } finally { setBusy(false); setConfirming(false); } }}
+                onClick={() => setConfirming(false)}
                 disabled={busy}
-                className="rounded-md bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-700 disabled:opacity-60"
-              >{busy ? "Leaving…" : "Leave Session"}</button>
+                className="min-w-[120px] rounded-xl border-2 border-blue-100 px-6 py-2.5 text-sm font-bold text-blue-500 transition-colors hover:bg-blue-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  setBusy(true);
+                  try {
+                    await onLeave();
+                  } finally {
+                    setBusy(false);
+                    setConfirming(false);
+                  }
+                }}
+                disabled={busy}
+                className="min-w-[120px] rounded-xl bg-[#DB122B] px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-rose-700 disabled:opacity-60"
+              >
+                {busy ? "Leaving…" : "Leave"}
+              </button>
             </div>
           </div>
         </div>
