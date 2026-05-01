@@ -61,7 +61,7 @@ export function PairProgramButton({
             </span>
             {/* Truncated Text */}
             <span className="max-w-[200px] truncate">
-              Broadcasting For Missing Number O....
+              Broadcasting For {myRequest?.challengeTitle}
             </span>
 
             {/* Timer Badge */}
