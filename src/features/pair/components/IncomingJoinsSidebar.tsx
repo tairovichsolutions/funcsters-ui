@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Clock, Code2, MessageCircle, X } from "lucide-react";
@@ -42,8 +43,8 @@ const remaining = useCountdown(myRequest?.expiresAtEpochMs || 0);
               <span className="absolute inset-0 animate-ping rounded-full bg-orange-400 opacity-75" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-orange-500" />
             </span>
-            <h2 className="text-base font-semibold">Pair Requests</h2>
-            <span className="inline-flex min-w-[1.5rem] items-center justify-center rounded-full bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">
+            <h2 className="text-base font-bold">Pair Requests</h2>
+            <span className="inline-flex w-6 h-6 min-w-6 items-center justify-center rounded-full bg-[#FF6C0A29]  py-0.5 text-xs font-semibold text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">
               {joins.length}
             </span>
           </div>
@@ -244,19 +245,41 @@ function JoinRequestCard({
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
           <div className="relative h-8 w-8 shrink-0 rounded-full bg-muted">
-            <span className="absolute -bottom-0.5 -right-0.5 block h-2 w-2 rounded-full border-2 border-background bg-emerald-500" />
+             <span className="relative h-10 w-10 shrink-0 rounded-full bg-muted">
+            <img alt="jahid" className="rounded-full " src={"https://lh3.googleusercontent.com/a/ACg8ocJR6GXSaAwU-Qs1DTc7B8zuObbvc4bh2UXPB2XKnB7e_WN6uEE=s96-c"} />
+            <div className="h-2 w-2 bg-[#00C851] rounded-full absolute -bottom-0.5 -right-0.5"></div>
+          </span>
           </div>
           <div>
-            <div className="text-sm font-semibold">{jr.joinerUsername}</div>
-            <div className="text-xs text-muted-foreground">Developer</div>
+            <div className="text-sm text-[#0F172A] font-semibold">{jr.joinerUsername}</div>
+            <div className="text-xs text-[#64748B]">Developer</div>
           </div>
         </div>
-        {jr.joinerCountry && (
+        {jr.joinerCountry ? (
           <div className="text-right text-xs text-muted-foreground">{jr.joinerCountry}</div>
-        )}
+        ):   <div className="flex flex-col gap-1">
+                <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs  py-0.5 rounded-md">1200 xp</span>
+                <div className="flex gap-1">
+                  <span><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 14 14" fill="none">
+                    <g clip-path="url(#clip0_62469_9721)">
+                      <path d="M7 14C10.866 14 14 10.866 14 7C14 3.13401 10.866 0 7 0C3.13401 0 0 3.13401 0 7C0 10.866 3.13401 14 7 14Z" fill="#009B3A" />
+                      <path d="M1.16699 7L7.00033 10.7333L12.8337 7L7.00033 3.26666L1.16699 7Z" fill="#FEDF00" />
+                      <path d="M6.9997 9.47334C8.36569 9.47334 9.47303 8.36599 9.47303 7.00001C9.47303 5.63402 8.36569 4.52667 6.9997 4.52667C5.63372 4.52667 4.52637 5.63402 4.52637 7.00001C4.52637 8.36599 5.63372 9.47334 6.9997 9.47334Z" fill="#002776" />
+                      <path d="M4.76012 6.02001C4.71345 6.16001 4.66678 6.25334 4.62012 6.39334C6.34678 6.11334 8.07345 6.58001 9.38012 7.74667C9.42678 7.60667 9.42678 7.46667 9.47345 7.37334C8.12012 6.25334 6.44012 5.78667 4.76012 6.02001Z" fill="white" />
+                    </g>
+                    <defs>
+                      <clipPath id="clip0_62469_9721">
+                        <rect width="14" height="14" fill="white" />
+                      </clipPath>
+                    </defs>
+                  </svg></span>
+                  <span className="text-[10px]">Brazil</span>
+                </div>
+              </div>}
+
       </div>
 
-      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+      {/* <div className="mt-2 hidden flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1">
           <Code2 className="h-3 w-3" />
           Multiple
@@ -265,20 +288,20 @@ function JoinRequestCard({
           <MessageCircle className="h-3 w-3" />
           English
         </span>
-      </div>
+      </div> */}
 
-      <div className="mt-3 flex gap-2">
+      <div className="mt-6 flex gap-2">
         <button
           onClick={handleAccept}
           disabled={acceptMutation.isPending}
-          className="flex-1 rounded-md bg-blue-600 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+          className="flex-1 min-h-10 rounded-md bg-[#008CFF] py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-60"
         >
           {acceptMutation.isPending ? "Accepting…" : "Accept & Pair"}
         </button>
         <button
           onClick={() => rejectMutation.mutate(jr.id)}
           disabled={rejectMutation.isPending}
-          className="rounded-md border border-border px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted"
+          className="rounded-md min-h-10 bg-white dark:bg-transparent border border-border px-3 py-2 text-sm font-medium text-[#64748B] hover:bg-muted"
           aria-label="Reject"
         >
           Reject

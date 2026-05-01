@@ -12,6 +12,7 @@ import { useMyCommunitySolutions } from "@/queries/useMyCommunitySolutions";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
 import { performTAGarbageCollection } from "@/hooks/useThinkingAssistant";
+import StickyPairAlertWrapper from "@/features/pair/components/StickyPairAlertWrapper";
 
 interface LayoutProps {
   children: ReactNode;
@@ -114,6 +115,7 @@ const Layout = ({ children }: LayoutProps) => {
                 className="flex-1 overflow-y-auto px-4 py-4 overflow-hidden custom-scrollbar"
                 data-scroll-restoration-id="main"
               >
+          
                 {children}
               </main>
             </div>

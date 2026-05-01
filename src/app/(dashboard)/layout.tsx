@@ -1,6 +1,8 @@
 
 import { ReactNode } from "react";
 import { DashboardHeader } from "@/containers/Dashboard/DashboardHeader";
+import StickyPairAlertWrapper from "@/features/pair/components/StickyPairAlertWrapper";
+import { GlobalPairAlertBanner } from "@/features/pair/components/GlobalPairAlertBanner";
 
 interface LayoutProps {
   children: ReactNode;
@@ -28,8 +30,9 @@ const Layout = ({ children }: LayoutProps) => {
      <div className="pb-7 bg-dashboard-background dark:bg-transparent">
        <div className="bg-white dark:bg-transparent"><DashboardHeader /></div>
      </div>
-
+    
       <main className="flex-1 custom-scrollbar outline-none!  overflow-hidden w-full overflow-y-auto bg-dashboard-background">
+         <GlobalPairAlertBanner />
         {children}
       </main>
     </div>
