@@ -52,7 +52,7 @@ console.log({data});
         )}
       </div>
 
-      {active && <span className="absolute inset-x-0 -bottom-[15px] h-[2.5px] bg-primary  " ></span>}
+      {active && <span className={`absolute inset-x-0 ${users.length > 0 ? "-bottom-[15px]" :"-bottom-[21px]"}   h-[2.5px] bg-primary  `} ></span>}
     </Link>
   );
 }

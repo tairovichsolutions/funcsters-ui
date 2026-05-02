@@ -1,13 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { Code2, MessageCircle } from "lucide-react";
-import { useCreateJoinRequest, useMyActiveJoin, useMyActiveRequest, useMyActiveSession } from "../hooks/usePairQueries";
-import type { PairRequestCardDto } from "../types";
-import Image from "next/image";
-import { Span } from "next/dist/trace";
 import { DifficultyChip } from "@/components";
 import { DifficultyLevelTypes } from "@/types";
+import { useCreateJoinRequest, useMyActiveJoin, useMyActiveRequest, useMyActiveSession } from "../hooks/usePairQueries";
+import type { PairRequestCardDto } from "../types";
 
 /**
  * Lobby / request list card. Mirrors the Figma "Jane Cooper" card structure:
@@ -50,7 +47,7 @@ export function PairRequestCard({ card }: { card: PairRequestCardDto }) {
           </span>
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold">{card.hostUsername}</div>
-            <div className="truncate text-xs text-muted-foreground">Developer</div>
+            <div className="truncate text-xs text-muted-foreground">{card?.occupation || "Developer"}</div>
           </div>
         </div>
         <div className="shrink-0 text-right text-xs">
@@ -61,7 +58,7 @@ export function PairRequestCard({ card }: { card: PairRequestCardDto }) {
                 {/* {card.hostCountryFlag && <span className="mr-1">{card.hostCountryFlag}</span>} */}
 
                 <div className="flex flex-col justify-end gap-1">
-                  <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs   text-center   py-0.5 rounded-md">1200 xp</span>
+                  <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs   text-center   py-0.5 rounded-md">{card?.xp  } xp</span>
                   <div className="flex gap-1">
                     {card.hostCountryFlag && <img src={card.hostCountryFlag || ''} className="w-3 h-3" alt="country flag" />}
                     <span className="text-[10px]">{card.hostCountry}</span>
@@ -70,22 +67,10 @@ export function PairRequestCard({ card }: { card: PairRequestCardDto }) {
               </>
             ) :
               <div className="flex flex-col gap-1">
-                <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs  py-0.5 rounded-md">1200 xp</span>
+                <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs  py-0.5 rounded-md">00 xp</span>
                 <div className="flex gap-1">
-                  <span><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 14 14" fill="none">
-                    <g clip-path="url(#clip0_62469_9721)">
-                      <path d="M7 14C10.866 14 14 10.866 14 7C14 3.13401 10.866 0 7 0C3.13401 0 0 3.13401 0 7C0 10.866 3.13401 14 7 14Z" fill="#009B3A" />
-                      <path d="M1.16699 7L7.00033 10.7333L12.8337 7L7.00033 3.26666L1.16699 7Z" fill="#FEDF00" />
-                      <path d="M6.9997 9.47334C8.36569 9.47334 9.47303 8.36599 9.47303 7.00001C9.47303 5.63402 8.36569 4.52667 6.9997 4.52667C5.63372 4.52667 4.52637 5.63402 4.52637 7.00001C4.52637 8.36599 5.63372 9.47334 6.9997 9.47334Z" fill="#002776" />
-                      <path d="M4.76012 6.02001C4.71345 6.16001 4.66678 6.25334 4.62012 6.39334C6.34678 6.11334 8.07345 6.58001 9.38012 7.74667C9.42678 7.60667 9.42678 7.46667 9.47345 7.37334C8.12012 6.25334 6.44012 5.78667 4.76012 6.02001Z" fill="white" />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_62469_9721">
-                        <rect width="14" height="14" fill="white" />
-                      </clipPath>
-                    </defs>
-                  </svg></span>
-                  <span className="text-[10px]">Brazil</span>
+                  <span></span>
+                  <span className="text-[10px]"></span>
                 </div>
               </div>
             }
@@ -170,7 +155,7 @@ function focusAreaLabel(f: PairRequestCardDto["focusArea"]): string {
       return "Looking for someone to pair with.";
   }
 }
-
+//TODO: delete after pr done
 function difficultyClass(d: string): string {
   switch (d.toUpperCase()) {
     case "EASY":

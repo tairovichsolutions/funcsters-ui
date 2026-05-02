@@ -26,8 +26,8 @@ interface IncomingJoinsSidebarProps {
 
 export function IncomingJoinsSidebar({ open, onClose, pairRequestId, onAccept }: IncomingJoinsSidebarProps) {
   const { data: joins = [], isLoading } = useIncomingJoins(open ? pairRequestId ?? undefined : undefined);
-   const { data: myRequest } = useMyActiveRequest();
-const remaining = useCountdown(myRequest?.expiresAtEpochMs || 0);
+  const { data: myRequest } = useMyActiveRequest();
+  const remaining = useCountdown(myRequest?.expiresAtEpochMs || 0);
   if (!open) return null;
 
 
@@ -95,122 +95,122 @@ const remaining = useCountdown(myRequest?.expiresAtEpochMs || 0);
         }
       `}</style>
 
-      
+
         <div className="overflow-y-auto ">
           <p className="mb-4 text-sm  bg-[#FBFCFC] text-muted-foreground">
             {joins.length === 0
               ? isLoading
                 ? "Loading…"
-                :   <div className="w-full max-w-[400px] bg-white   shadow-sm flex flex-col font-sans mx-auto">
-          {/* Top Banner */}
-           <p className="p-4 bg-[#FBFCFC]!  border-b-[1px]">{joins.length} developer want to pair with you on this challenge.</p>
-        
+                : <div className="w-full max-w-[400px] bg-white   shadow-sm flex flex-col font-sans mx-auto">
+                  {/* Top Banner */}
+                  <p className="p-4 bg-[#FBFCFC]!  border-b-[1px]">{joins.length} developer want to pair with you on this challenge.</p>
 
-          {/* Main Content */}
-          <div className="flex-1 flex flex-col items-center px-8 pt-12 pb-8  text-center relative overflow-hidden">
 
-            {/* Wave Animation Wrapper */}
-            <div className="relative flex items-center justify-center w-40 h-40 mb-6">
-              <div className="absolute inset-0 bg-blue-100 rounded-full animate-wave delay-0s opacity-0"></div>
-              <div className="absolute inset-0 bg-blue-100 rounded-full animate-wave delay-1s opacity-0"></div>
-              <div className="absolute inset-0 bg-blue-100 rounded-full animate-wave delay-2s opacity-0"></div>
+                  {/* Main Content */}
+                  <div className="flex-1 flex flex-col items-center px-8 pt-12 pb-8  text-center relative overflow-hidden">
 
-              <div className="relative border-2 border-[#008CFF33] flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+                    {/* Wave Animation Wrapper */}
+                    <div className="relative flex items-center justify-center w-40 h-40 mb-6">
+                      <div className="absolute inset-0 bg-blue-100 rounded-full animate-wave delay-0s opacity-0"></div>
+                      <div className="absolute inset-0 bg-blue-100 rounded-full animate-wave delay-1s opacity-0"></div>
+                      <div className="absolute inset-0 bg-blue-100 rounded-full animate-wave delay-2s opacity-0"></div>
 
-                <svg
-                  width="38"
-                  height="39"
-                  viewBox="0 0 38 39"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="animate-[spin_3s_linear_infinite]"
-                >
-                  <path
-                    d="M13.9893 20.5L1.98926 25C3.32259 29 8.98926 37.1 20.9893 37.5"
-                    stroke="#008CFF"
-                    strokeWidth="3"
-                  />
-                  <circle
-                    cx="18.9893"
-                    cy="19.5"
-                    r="4"
-                    stroke="#008CFF"
-                    strokeWidth="3"
-                  />
-                  <circle
-                    cx="27.2393"
-                    cy="35.25"
-                    r="1.75"
-                    fill="#008CFF"
-                  />
-                  <circle
-                    cx="23.2393"
-                    cy="10.25"
-                    r="1.75"
-                    fill="#008CFF"
-                  />
-                  <path
-                    d="M1.48926 18C2.15592 12.5 6.48926 1.5 18.4893 1.5C33.4893 1.5 36.4893 14 36.4893 19C36.4893 24 34.9893 28.5 32.4893 31M7.98926 23C9.32259 26.0925 13.4893 31 20.4893 30C29.2007 28.7555 30.8649 21.5 28.9893 14.5"
-                    stroke="#008CFF"
-                    strokeWidth="3"
-                  />
-                  <path
-                    d="M8.48926 16.5C9.15592 14.1667 11.8893 9.4 17.4893 9"
-                    stroke="#008CFF"
-                    strokeWidth="3"
-                  />
-                </svg>
-              </div>
-            </div>
+                      <div className="relative border-2 border-[#008CFF33] flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
 
-            <h2 className="text-xl font-bold text-gray-900 mb-3 tracking-tight">Broadcasting...</h2>
-            <p className="text-sm text-gray-500 leading-relaxed mb-8 max-w-[280px]">
-              Your request is live in the Lobby! Hang tight while we find the perfect partner for your challenge.
-            </p>
+                        <svg
+                          width="38"
+                          height="39"
+                          viewBox="0 0 38 39"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="animate-[spin_3s_linear_infinite]"
+                        >
+                          <path
+                            d="M13.9893 20.5L1.98926 25C3.32259 29 8.98926 37.1 20.9893 37.5"
+                            stroke="#008CFF"
+                            strokeWidth="3"
+                          />
+                          <circle
+                            cx="18.9893"
+                            cy="19.5"
+                            r="4"
+                            stroke="#008CFF"
+                            strokeWidth="3"
+                          />
+                          <circle
+                            cx="27.2393"
+                            cy="35.25"
+                            r="1.75"
+                            fill="#008CFF"
+                          />
+                          <circle
+                            cx="23.2393"
+                            cy="10.25"
+                            r="1.75"
+                            fill="#008CFF"
+                          />
+                          <path
+                            d="M1.48926 18C2.15592 12.5 6.48926 1.5 18.4893 1.5C33.4893 1.5 36.4893 14 36.4893 19C36.4893 24 34.9893 28.5 32.4893 31M7.98926 23C9.32259 26.0925 13.4893 31 20.4893 30C29.2007 28.7555 30.8649 21.5 28.9893 14.5"
+                            stroke="#008CFF"
+                            strokeWidth="3"
+                          />
+                          <path
+                            d="M8.48926 16.5C9.15592 14.1667 11.8893 9.4 17.4893 9"
+                            stroke="#008CFF"
+                            strokeWidth="3"
+                          />
+                        </svg>
+                      </div>
+                    </div>
 
-            {/* Timer Card with Morphing Spinner */}
-            <div className="w-full flex items-center justify-between bg-[#00000005] rounded-xl p-4 mb-10">
-              <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5 text-blue-500" strokeWidth={2.5} />
-                <div className="flex flex-col text-left">
-                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Expires In</span>
-                  <span className="text-lg font-bold text-gray-900 tabular-nums leading-tight mt-0.5">      {formatCountdown(remaining)}</span>
+                    <h2 className="text-xl font-bold text-gray-900 mb-3 tracking-tight">Broadcasting...</h2>
+                    <p className="text-sm text-gray-500 leading-relaxed mb-8 max-w-[280px]">
+                      Your request is live in the Lobby! Hang tight while we find the perfect partner for your challenge.
+                    </p>
+
+                    {/* Timer Card with Morphing Spinner */}
+                    <div className="w-full flex items-center justify-between bg-[#00000005] rounded-xl p-4 mb-10">
+                      <div className="flex items-center gap-3">
+                        <Clock className="w-5 h-5 text-blue-500" strokeWidth={2.5} />
+                        <div className="flex flex-col text-left">
+                          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Expires In</span>
+                          <span className="text-lg font-bold text-gray-900 tabular-nums leading-tight mt-0.5">      {formatCountdown(remaining)}</span>
+                        </div>
+                      </div>
+
+                      {/* Morphing Circular Loading Spinner */}
+                      <div className="relative w-8 h-8">
+                        {/* Added animate-spin-slow directly to the SVG container */}
+                        <svg className="w-full h-full animate-spin-slow" viewBox="0 0 36 36">
+                          {/* Background track */}
+                          <path
+                            className="text-gray-200"
+                            strokeWidth="3.5"
+                            stroke="currentColor"
+                            fill="none"
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          />
+                          {/* Blue spinner path with morphing dash animation */}
+                          <path
+                            className="text-blue-500 animate-dash-morph"
+                            strokeWidth="3.5"
+                            strokeLinecap="round"
+                            stroke="currentColor"
+                            fill="none"
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+
+                    <p className="text-[13px] text-gray-400 max-w-[250px] leading-relaxed">
+                      You can browse other pages; we&#39;ll alert you if someone wants to join.
+                    </p>
+                  </div>
                 </div>
-              </div>
-
-              {/* Morphing Circular Loading Spinner */}
-              <div className="relative w-8 h-8">
-                {/* Added animate-spin-slow directly to the SVG container */}
-                <svg className="w-full h-full animate-spin-slow" viewBox="0 0 36 36">
-                  {/* Background track */}
-                  <path
-                    className="text-gray-200"
-                    strokeWidth="3.5"
-                    stroke="currentColor"
-                    fill="none"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  {/* Blue spinner path with morphing dash animation */}
-                  <path
-                    className="text-blue-500 animate-dash-morph"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                    stroke="currentColor"
-                    fill="none"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            <p className="text-[13px] text-gray-400 max-w-[250px] leading-relaxed">
-              You can browse other pages; we&#39;ll alert you if someone wants to join.
-            </p>
-          </div>
-        </div>
-              : <p className="p-4 bg-[#FBFCFC]!  border-b-[1px]">{joins.length} developer {joins.length === 1 ? "" : "s"} want to pair with you on this challenge.</p>}
+              : <span className="p-4 bg-[#FBFCFC]!  border-b-[1px]">{joins.length} developer {joins.length === 1 ? "" : "s"} want to pair with you on this challenge.</span>}
           </p>
-<div>{JSON.stringify(joins)}</div>
+          {/* <div>{JSON.stringify(joins)}</div> */}
           <div className="space-y-3 p-4">
             {joins.map((jr) => (
               <JoinRequestCard key={jr.id} jr={jr} onAccept={onAccept} />
@@ -245,37 +245,39 @@ function JoinRequestCard({
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
           <div className="relative h-8 w-8 shrink-0 rounded-full bg-muted">
-             <span className="relative h-10 w-10 shrink-0 rounded-full bg-muted">
-            <img alt="jahid" className="rounded-full " src={"https://lh3.googleusercontent.com/a/ACg8ocJR6GXSaAwU-Qs1DTc7B8zuObbvc4bh2UXPB2XKnB7e_WN6uEE=s96-c"} />
-            <div className="h-2 w-2 bg-[#00C851] rounded-full absolute -bottom-0.5 -right-0.5"></div>
-          </span>
+            <span className="relative h-10 w-10 shrink-0 rounded-full bg-muted">
+              <img alt="jahid" className="rounded-full " src={"https://lh3.googleusercontent.com/a/ACg8ocJR6GXSaAwU-Qs1DTc7B8zuObbvc4bh2UXPB2XKnB7e_WN6uEE=s96-c"} />
+              <div className="h-2 w-2 bg-[#00C851] rounded-full absolute -bottom-0.5 -right-0.5"></div>
+            </span>
           </div>
           <div>
             <div className="text-sm text-[#0F172A] font-semibold">{jr.joinerUsername}</div>
-            <div className="text-xs text-[#64748B]">Developer</div>
+            <div className="text-xs text-[#64748B]">{jr?.joinerOccupation || "Developer"}</div>
           </div>
         </div>
-        {jr.joinerCountry ? (
-          <div className="text-right text-xs text-muted-foreground">{jr.joinerCountry}</div>
-        ):   <div className="flex flex-col gap-1">
-                <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs  py-0.5 rounded-md">1200 xp</span>
-                <div className="flex gap-1">
-                  <span><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 14 14" fill="none">
-                    <g clip-path="url(#clip0_62469_9721)">
-                      <path d="M7 14C10.866 14 14 10.866 14 7C14 3.13401 10.866 0 7 0C3.13401 0 0 3.13401 0 7C0 10.866 3.13401 14 7 14Z" fill="#009B3A" />
-                      <path d="M1.16699 7L7.00033 10.7333L12.8337 7L7.00033 3.26666L1.16699 7Z" fill="#FEDF00" />
-                      <path d="M6.9997 9.47334C8.36569 9.47334 9.47303 8.36599 9.47303 7.00001C9.47303 5.63402 8.36569 4.52667 6.9997 4.52667C5.63372 4.52667 4.52637 5.63402 4.52637 7.00001C4.52637 8.36599 5.63372 9.47334 6.9997 9.47334Z" fill="#002776" />
-                      <path d="M4.76012 6.02001C4.71345 6.16001 4.66678 6.25334 4.62012 6.39334C6.34678 6.11334 8.07345 6.58001 9.38012 7.74667C9.42678 7.60667 9.42678 7.46667 9.47345 7.37334C8.12012 6.25334 6.44012 5.78667 4.76012 6.02001Z" fill="white" />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_62469_9721">
-                        <rect width="14" height="14" fill="white" />
-                      </clipPath>
-                    </defs>
-                  </svg></span>
-                  <span className="text-[10px]">Brazil</span>
-                </div>
-              </div>}
+        {jr.joinerUsername ? (
+          <div className="flex flex-col justify-end gap-1">
+            <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs   text-center   py-0.5 rounded-md">{jr?.xp || 0} xp</span>
+            <div className="flex gap-1">
+              {jr.joinedCountryFlag && !jr.joinedCountryFlag.includes('undefined') && (
+                <img
+                  src={jr.joinedCountryFlag}
+                  className="w-3 h-3"
+                  alt="country flag"
+                />
+              )}
+              <span className="text-[10px]">{jr.joinerCountry}</span>
+            </div>
+          </div>
+        ) :
+          <div className="flex flex-col gap-1">
+            <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs  py-0.5 rounded-md">0 xp</span>
+            <div className="flex gap-1">
+              <span></span>
+              <span className="text-[10px]"></span>
+            </div>
+          </div>
+        }
 
       </div>
 

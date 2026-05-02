@@ -27,6 +27,8 @@ export type PairSessionStatus = "AWAITING_GUIDELINES" | "ACTIVE" | "ENDED";
 
 export interface PairRequestCardDto {
   description?: string;
+  occupation?:string;
+  xp?:string;
   id: number;
   hostUsername: string;
   hostCountry: string | null;
