@@ -7,6 +7,7 @@ import type { PairRequestCardDto } from "../types";
 import Image from "next/image";
 import { Span } from "next/dist/trace";
 import { DifficultyChip } from "@/components";
+import { DifficultyLevelTypes } from "@/types";
 
 /**
  * Lobby / request list card. Mirrors the Figma "Jane Cooper" card structure:
@@ -102,8 +103,10 @@ export function PairRequestCard({ card }: { card: PairRequestCardDto }) {
               `}
           //  ${difficultyClass(              card.challengeDifficulty            )}
           >
-            <DifficultyChip className="text-[10px] px-4 py-[5px] mb-1" level={card?.challengeDifficulty || ''} />
-            {/* {toTitle(card.challengeDifficulty)} */}
+            <DifficultyChip
+              className="text-[10px] px-4 py-[5px] mb-1"
+              level={(card?.challengeDifficulty as DifficultyLevelTypes)}
+            />           
           </span>
         )}
       </div>

@@ -1,38 +1,58 @@
-"use client";
-
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLobbyCount } from "../hooks/usePairQueries";
 
-/**
- * Top-nav "Lobby(X)" link. X is the live count of currently-broadcasting
- * pair requests (spec v2 global rule 2).
- *
- * Rendered as: the word "Lobby" + a pill badge with the number (> 99 shows "99+").
- * In the Figma the count is shown with a tiny stack of user avatars; we skip
- * that ornament for the functional version — the FE dev can re-skin.
- */
+interface LobbyUser {
+  hostId: string;
+  hostAvatarUrl: string;
+  hostUsername: string;
+}
+
+interface LobbyData {
+  users?: LobbyUser[];
+  count?: number;
+}
+
 export function LobbyNavLink({ className = "" }: { className?: string }) {
   const pathname = usePathname();
-  const { data: count = 0 } = useLobbyCount();
+  const { data } = useLobbyCount() as { data: LobbyData | undefined };
   const active = pathname?.startsWith("/pair/lobby") ?? false;
+
+  const users = data?.users ?? [];
+  const count = data?.count ?? 0;
+console.log({data});
   return (
     <Link
       href="/pair/lobby"
-      className={`relative inline-fle my-auto items-center gap-2 px-1  text-sm font-medium   transition-colors ${
-        active ? "text-blue-600 dark:text-blue-400" : "text-medium-gray  hover:text-foreground"
+      className={`relative flex my-auto items-center gap-1 px-1 text-sm font-medium transition-colors ${
+        active ? "text-blue-600 dark:text-blue-400" : "text-medium-gray hover:text-foreground"
       } ${className}`}
     >
-      Lobby 
-      {count > 0 && (
-        <span
-          aria-label={`${count} active pair requests`}
-          className="inline-flex min-w-[1.5rem] items-center justify-center rounded-full bg-blue-600 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white"
-        >
-          {count > 99 ? "99+" : count}
-        </span>
-      )}
-      {active && <span className="absolute inset-x-0 -bottom-[21px] h-[2.5px] bg-primary  " />}
+      <span> Lobby</span>
+
+      <div className="flex -space-x-4 items-center">
+        {users.slice(0, 3).map((user, index) => (
+          <img
+            key={user.hostId}
+            src={user.hostAvatarUrl}
+            alt={user.hostUsername}
+            style={{ zIndex: (index + 1) * 10 }}
+            className="relative h-8 w-8 rounded-full border-2 border-white object-cover dark:border-gray-900"
+          />
+        ))}
+
+        {count > 0 && (
+          <div
+            style={{ zIndex: 40 }}
+            className="relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-blue-500 text-sm font-bold text-white dark:border-gray-900"
+          >
+            {count > 99 ? "99+" : count}
+          </div>
+        )}
+      </div>
+
+      {active && <span className="absolute inset-x-0 -bottom-[15px] h-[2.5px] bg-primary  " ></span>}
     </Link>
   );
 }

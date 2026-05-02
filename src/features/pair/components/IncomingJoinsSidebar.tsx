@@ -103,7 +103,7 @@ const remaining = useCountdown(myRequest?.expiresAtEpochMs || 0);
                 ? "Loading…"
                 :   <div className="w-full max-w-[400px] bg-white   shadow-sm flex flex-col font-sans mx-auto">
           {/* Top Banner */}
-           <p className="p-4 bg-[#FBFCFC]!  border-b-[1px]">{joins.length} developer {joins.length === 1 ? "" : "s"} want to pair with you on this challenge.</p>
+           <p className="p-4 bg-[#FBFCFC]!  border-b-[1px]">{joins.length} developer want to pair with you on this challenge.</p>
         
 
           {/* Main Content */}
@@ -210,7 +210,7 @@ const remaining = useCountdown(myRequest?.expiresAtEpochMs || 0);
         </div>
               : <p className="p-4 bg-[#FBFCFC]!  border-b-[1px]">{joins.length} developer {joins.length === 1 ? "" : "s"} want to pair with you on this challenge.</p>}
           </p>
-{/* <div>{JSON.stringify(joins)}</div> */}
+<div>{JSON.stringify(joins)}</div>
           <div className="space-y-3 p-4">
             {joins.map((jr) => (
               <JoinRequestCard key={jr.id} jr={jr} onAccept={onAccept} />
