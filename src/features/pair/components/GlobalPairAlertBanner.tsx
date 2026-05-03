@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import PrimaryContainer from "@/components/shared/container/PrimaryContainer";
+import { Clock, Mic, UserRoundPlus, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Clock, Mic, Share2, UserRoundPlus, Users } from "lucide-react";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { useCancelJoinRequest, useCancelPairRequest, useIncomingJoins, useMyActiveJoin, useMyActiveRequest, useMyActiveSession } from "../hooks/usePairQueries";
-import PrimaryContainer from "@/components/shared/container/PrimaryContainer";
+import { usePairSession } from "../providers/PairSessionProvider";
 
 /**
  * Spec v2 global rule 3: persistent banner on every page when the current user
@@ -21,7 +23,7 @@ import PrimaryContainer from "@/components/shared/container/PrimaryContainer";
  *
  * Priority: session > join > request.
  */
-export function GlobalPairAlertBanner() {
+export function GlobalPairAlertBanner({ data }: { data: any }) {
   const pathname = usePathname() ?? "";
   const { data: currentUser } = useCurrentUser();
   const { data: mySession } = useMyActiveSession();
@@ -29,15 +31,18 @@ export function GlobalPairAlertBanner() {
   const { data: myRequest } = useMyActiveRequest();
   const { data: joins = [] } = useIncomingJoins(myRequest?.id);
 
+
+
   // The session/pair context is always tied to a specific challenge. When a
   // session exists, we link to THAT challenge's detail page rather than a
   // separate session route — that's where the inline session UI lives.
   const sessionChallengeHref = mySession
     ? `/challenges/${mySession.challengeSlug}/detail`
     : null;
+    const sessionChallengeTitle= mySession?.challengeTitle
   const onChallengePage =
     mySession && pathname.startsWith(`/challenges/${mySession.challengeSlug}/detail`);
-    console.log({ mySession, myRequest, onChallengePage, sessionChallengeHref,currentUser,myJoin,joins });
+  console.log({ mySession, myRequest, onChallengePage, sessionChallengeHref, currentUser, myJoin, joins });
   if (mySession && mySession.status === "ACTIVE" && !onChallengePage) {
     const partner =
       currentUser?.username === mySession.hostUsername
@@ -48,14 +53,31 @@ export function GlobalPairAlertBanner() {
   if (mySession && mySession.status === "AWAITING_GUIDELINES" && !onChallengePage) {
     return (
       <PermissionGrantedBanner
+        currentUser={currentUser} data={data} pairRequestId={myJoin?.pairRequestId} joinId={myJoin?.id}
         href={sessionChallengeHref!}
+        sessionChallengeTitle={sessionChallengeTitle}
         hostUsername={mySession.hostUsername}
         expiresAtEpochMs={mySession.acceptedAtEpochMs + 2 * 60 * 1000}
       />
     );
   }
-  if (myJoin && myJoin.status === "PENDING") {
-    return <JoinPendingBanner  joinId={myJoin.id} expiresAtEpochMs={myJoin.expiresAtEpochMs} />;
+
+  // Better - assert myJoin.pairrequestId if needed
+  // Current - has unnecessary assertion at the end
+  if (myJoin && myJoin.status === "PENDING" && data.some((item: { id: any; }) => item.id === myJoin?.pairRequestId)) {
+
+
+    //TODO: delete after pr done
+    return <>
+
+
+      {/* <div>{JSON.stringify(data)}<br/> <div className="mt-10"></div>
+      myjoin:{JSON.stringify(myJoin)}<br/> <div className="mt-10"></div>
+      myRequest:{JSON.stringify(myRequest)}<br/> <div className="mt-10"></div>
+      mySession:{JSON.stringify(mySession)}<br/> <div className="mt-10"></div>
+      joins:{JSON.stringify(joins)}<br/> <div className="mt-10"></div>
+      </div> */}
+      <JoinPendingBanner currentUser={currentUser} data={data} pairRequestId={myJoin.pairRequestId} joinId={myJoin.id} expiresAtEpochMs={myJoin.expiresAtEpochMs} /></>;
   }
   if (myRequest && (myRequest.status === "BROADCASTING" || myRequest.status === "AWAITING_JOINER")) {
     return (
@@ -74,6 +96,7 @@ function ActiveSessionBanner({ href, partnerUsername }: { href: string; partnerU
   return (
     <PrimaryContainer >
       <div className="relative overflow-hidden flex items-center gap-4 rounded-lg border border-blue-200 bg-blue-50 p-4 pl-5 dark:border-blue-900/50 dark:bg-blue-950/30">
+
         <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#008CFF]" />
         <Mic className="h-5 w-5 shrink-0 text-indigo-600 dark:text-indigo-400" />
         <div className="flex-1 min-w-0">
@@ -98,33 +121,72 @@ function ActiveSessionBanner({ href, partnerUsername }: { href: string; partnerU
 function PermissionGrantedBanner({
   href,
   hostUsername,
+  sessionChallengeTitle,
   expiresAtEpochMs,
+  currentUser, 
 }: {
   href: string;
+  sessionChallengeTitle:string;
   hostUsername: string;
   expiresAtEpochMs: number;
 }) {
   const remaining = useCountdown(expiresAtEpochMs);
 
+  const pair = usePairSession();
   return (
     <PrimaryContainer >
-      <div className="relative overflow-hidden flex items-center gap-4 rounded-lg border border-blue-200 bg-blue-50 p-4 pl-5 dark:border-blue-900/50 dark:bg-blue-950/30">
-        <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#008CFF]" />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 text-sm">
-            <span className="font-semibold text-orange-700 dark:text-orange-300">PERMISSION GRANTED!</span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/70 px-2 py-0.5 text-xs text-orange-800 dark:bg-orange-900/40 dark:text-orange-200">
-              <Clock className="h-3 w-3" />
-              {formatCountdown(remaining)}
-            </span>
-          </div>
-          <div className="mt-1 truncate text-sm text-orange-900 dark:text-orange-100">
-            @{hostUsername} accepted your request. Join the session before this timer runs out.
+      <div className="relative overflow-hidden flex items-center gap-4 rounded-lg border-2 border-[#F372111A] bg-[#F372111A] p-4 pl-5 dark:border-blue-900/50 dark:bg-orange-950/30">
+        <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#F27313]" />
+        <div className="relative h-12 w-12 shrink-0">      
+          <img        
+            src={
+              currentUser?.avatarUrl
+                ? currentUser?.avatarUrl.startsWith("https")
+                  ? currentUser.avatarUrl
+                  : `https://www.funcsters.io/static${currentUser?.avatarUrl}`
+                : null
+            }
+            alt="Profile"
+            className="h-full w-full rounded-full border-2 border-[#F37211] object-cover"
+          />
+          <div className="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-white  border-[#EBF5F3]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16" fill="none">
+              <rect x="0.5" y="0.5" width="15" height="15" rx="7.5" fill="#F37211" />
+              <rect x="0.5" y="0.5" width="15" height="15" rx="7.5" stroke="white" />
+              <path d="M8.97222 10.0556H10.7778L10.2704 9.54822C10.1329 9.41063 10.0556 9.22402 10.0556 9.02944V7.88889C10.0556 6.94551 9.45264 6.14295 8.61111 5.84551V5.72222C8.61111 5.32335 8.28776 5 7.88889 5C7.49002 5 7.16667 5.32335 7.16667 5.72222V5.84551C6.32514 6.14295 5.72222 6.94551 5.72222 7.88889V9.02944C5.72222 9.22402 5.64493 9.41063 5.50734 9.54822L5 10.0556H6.80556M8.97222 10.0556V10.4167C8.97222 11.015 8.4872 11.5 7.88889 11.5C7.29058 11.5 6.80556 11.015 6.80556 10.4167V10.0556M8.97222 10.0556H6.80556" stroke="white" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </div>
         </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="font-semibold text-[#F27313] dark:text-orange-300">PERMISSION GRANTED!</span>
+            <span className="inline-flex items-center gap-1 rounded-[4px] border border-[#64748B] bg-white/50 px-2 py-0.5 text-[10px] font-medium text-black">
+              <Clock className="h-3 w-3" />
+              <span className="font-bold">{formatCountdown(remaining)}</span>
+            </span>
+          </div>
+          <div className="mt-0.5 text-base font-bold text-slate-900">
+            Requested to Help @{hostUsername}
+          </div>
+          <Link
+           href={href}
+          >
+            <div className="text-xs text-[#64748B]">
+              Challenge: <span className="font-semibold underline decoration-slate-400 decoration-1 underline-offset-2 text-slate-700">
+                &ldquo;{sessionChallengeTitle}&ldquo;
+                </span>
+            </div></Link>
+        </div>
+        <button
+          onClick={() => pair.leave()}
+          // disabled={cancel.isPending}
+          className="text-sm font-medium text-[#808080] hover:text-orange-900  disabled:opacity-50"
+        >
+          Cancel Request
+        </button>
         <Link
           href={href}
-          className="inline-flex items-center gap-1.5 rounded-full bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700"
+          className="inline-flex items-center gap-1.5 rounded-full bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-[#F27313]"
         >
           <Users className="h-4 w-4" />
           Join Session Now
@@ -134,9 +196,14 @@ function PermissionGrantedBanner({
   );
 }
 
-function JoinPendingBanner({ joinId, expiresAtEpochMs, }: { joinId: number; expiresAtEpochMs: number }) {
+function JoinPendingBanner({ currentUser, data, pairRequestId, joinId, expiresAtEpochMs, }: { joinId: number; expiresAtEpochMs: number }) {
+  console.log({ currentUser }, 'yhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh');
+
+  const challengeCardData = [...data].find(item => item.id === pairRequestId);
+
   const remaining = useCountdown(expiresAtEpochMs);
   const cancel = useCancelJoinRequest();
+
 
   return (
     <PrimaryContainer >
@@ -151,11 +218,19 @@ function JoinPendingBanner({ joinId, expiresAtEpochMs, }: { joinId: number; expi
           boxShadow: '0 10px 14px 0 rgba(0, 199, 73, 0.10)',
         }}
       >
+
         {/* Left Accent Bar */}
         <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#00C749]" />
         <div className="relative h-12 w-12 shrink-0">
           <img
-            src={'https://lh3.googleusercontent.com/a/ACg8ocJR6GXSaAwU-Qs1DTc7B8zuObbvc4bh2UXPB2XKnB7e_WN6uEE=s96-c'} // Replace with your image variable
+            // src={currentUser.avatarUrl || ""} // Replace with your image variable
+            src={
+              currentUser?.avatarUrl
+                ? currentUser?.avatarUrl.startsWith("https")
+                  ? currentUser.avatarUrl
+                  : `https://www.funcsters.io/static${currentUser.avatarUrl}`
+                : null
+            }
             alt="Profile"
             className="h-full w-full rounded-full border-2 border-emerald-400 object-cover"
           />
@@ -182,12 +257,13 @@ function JoinPendingBanner({ joinId, expiresAtEpochMs, }: { joinId: number; expi
           </div>
 
           <div className="mt-0.5 text-base font-bold text-slate-900">
-            Requested to Help <span className="text-slate-700">{"mySession?.hostUsername"}</span>
+            Requested to Help <span className="text-neutral-01"> @{challengeCardData?.hostUsername}</span>
           </div>
 
-          <div className="text-xs text-slate-500">
-            Challenge: <span className="font-semibold underline decoration-slate-400 decoration-1 underline-offset-2 text-slate-700">"Minimum Element in Array"</span>
-          </div>
+          <Link href={`/challenges/${challengeCardData?.challengeSlug}/detail`}>
+            <div className="text-xs text-[#64748B]">
+              Challenge: <span className="font-semibold underline decoration-slate-400 decoration-1 underline-offset-2 text-slate-700">{challengeCardData?.challengeTitle}</span>
+            </div></Link>
         </div>
 
         <button
