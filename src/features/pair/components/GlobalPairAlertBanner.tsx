@@ -39,7 +39,7 @@ export function GlobalPairAlertBanner({ data }: { data: any }) {
   const sessionChallengeHref = mySession
     ? `/challenges/${mySession.challengeSlug}/detail`
     : null;
-    const sessionChallengeTitle= mySession?.challengeTitle
+  const sessionChallengeTitle = mySession?.challengeTitle
   const onChallengePage =
     mySession && pathname.startsWith(`/challenges/${mySession.challengeSlug}/detail`);
   console.log({ mySession, myRequest, onChallengePage, sessionChallengeHref, currentUser, myJoin, joins });
@@ -123,10 +123,10 @@ function PermissionGrantedBanner({
   hostUsername,
   sessionChallengeTitle,
   expiresAtEpochMs,
-  currentUser, 
+  currentUser,
 }: {
   href: string;
-  sessionChallengeTitle:string;
+  sessionChallengeTitle: string;
   hostUsername: string;
   expiresAtEpochMs: number;
 }) {
@@ -137,8 +137,8 @@ function PermissionGrantedBanner({
     <PrimaryContainer >
       <div className="relative overflow-hidden flex items-center gap-4 rounded-lg border-2 border-[#F372111A] bg-[#F372111A] p-4 pl-5 dark:border-blue-900/50 dark:bg-orange-950/30">
         <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#F27313]" />
-        <div className="relative h-12 w-12 shrink-0">      
-          <img        
+        <div className="relative h-12 w-12 shrink-0">
+          <img
             src={
               currentUser?.avatarUrl
                 ? currentUser?.avatarUrl.startsWith("https")
@@ -169,12 +169,12 @@ function PermissionGrantedBanner({
             Requested to Help @{hostUsername}
           </div>
           <Link
-           href={href}
+            href={href}
           >
             <div className="text-xs text-[#64748B]">
               Challenge: <span className="font-semibold underline decoration-slate-400 decoration-1 underline-offset-2 text-slate-700">
                 &ldquo;{sessionChallengeTitle}&ldquo;
-                </span>
+              </span>
             </div></Link>
         </div>
         <button
@@ -303,41 +303,68 @@ function BroadcastingBanner({
   // renders in "Broadcasting" mode and opens the incoming-joins sidebar.
   // Detail page route uses challenge SLUG, not numeric id.
   const challengeHref = `/challenges/${challengeSlug}/detail`;
+  const { data: joins = [], isLoading } = useIncomingJoins(requestId);
 
   return (
     <PrimaryContainer >
-      <div className="relative overflow-hidden flex items-center gap-4 rounded-lg border border-blue-200 bg-blue-50 p-4 pl-5 dark:border-blue-900/50 dark:bg-blue-950/30">
+      <div className="relative overflow-hidden flex items-center gap-4 rounded-lg border border-blue-200 bg-blue-50 p-4 py-6 pl-5 dark:border-blue-900/50 dark:bg-blue-950/30">
         <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#008CFF]" />
-        <UserRoundPlus className="h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
+
+
+        {joins.length > 0 ?
+
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="40" height="40" rx="20" fill="#FF6800" fill-opacity="0.06"/>
+  <rect x="0.5" y="0.5" width="39" height="39" rx="19.5" stroke="#FF6800" stroke-opacity="0.2"/>
+  <path d="M28.6078 24.7545L27.3866 22.9977C27.2199 22.7589 27.1301 22.4748 27.1295 22.1835V17.1416C27.1295 15.2475 26.377 13.431 25.0377 12.0917C23.6984 10.7524 21.8819 10 19.9879 10C18.0938 10 16.2773 10.7524 14.938 12.0917C13.5987 13.431 12.8463 15.2475 12.8463 17.1416V22.1835C12.8456 22.4748 12.7559 22.7589 12.5892 22.9977L11.368 24.7545C11.1831 24.9594 11.0615 25.2134 11.0179 25.486C10.9743 25.7585 11.0107 26.0378 11.1225 26.2901C11.2343 26.5424 11.4168 26.757 11.6479 26.9078C11.8791 27.0585 12.149 27.1391 12.4249 27.1398H16.4885C16.6524 27.947 17.0903 28.6727 17.7281 29.194C18.3659 29.7152 19.1642 30 19.9879 30C20.8116 30 21.6099 29.7152 22.2477 29.194C22.8854 28.6727 23.3233 27.947 23.4873 27.1398H27.5508C27.8268 27.1391 28.0967 27.0585 28.3278 26.9078C28.559 26.757 28.7415 26.5424 28.8533 26.2901C28.9651 26.0378 29.0014 25.7585 28.9578 25.486C28.9143 25.2134 28.7927 24.9594 28.6078 24.7545ZM19.9879 28.5681C19.5459 28.5669 19.115 28.4289 18.7545 28.1732C18.3939 27.9175 18.1213 27.5565 17.974 27.1398H22.0018C21.8545 27.5565 21.5818 27.9175 21.2213 28.1732C20.8607 28.4289 20.4299 28.5669 19.9879 28.5681ZM12.4249 25.7115C12.4572 25.6815 12.486 25.648 12.5106 25.6115L13.7604 23.8118C14.0938 23.3342 14.2732 22.766 14.2746 22.1835V17.1416C14.2746 15.6263 14.8765 14.1731 15.948 13.1017C17.0194 12.0302 18.4726 11.4283 19.9879 11.4283C21.5031 11.4283 22.9563 12.0302 24.0278 13.1017C25.0992 14.1731 25.7011 15.6263 25.7011 17.1416V22.1835C25.7025 22.766 25.8819 23.3342 26.2153 23.8118L27.4651 25.6115C27.4898 25.648 27.5185 25.6815 27.5508 25.7115H12.4249Z" fill="#FF6800"/>
+</svg>
+          :
+
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="20" fill="#D8EEFF" />
+            <rect x="0.5" y="0.5" width="39" height="39" rx="19.5" stroke="#008CFF" stroke-opacity="0.2" />
+            <path d="M20 16V20L23 23M29 20C29 24.9706 24.9706 29 20 29C15.0294 29 11 24.9706 11 20C11 15.0294 15.0294 11 20 11C24.9706 11 29 15.0294 29 20Z" stroke="#008CFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>}
+
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 text-sm">
-            <span className="font-semibold text-blue-700 dark:text-blue-300">BROADCASTING:</span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/70 px-2 py-0.5 text-xs text-blue-800 dark:bg-blue-900/40 dark:text-blue-200">
-              <Clock className="h-3 w-3" />
-              {formatCountdown(remaining)}
+            <span className="font-bold text-neutral-01 dark:text-blue-300">Active Broadcast:</span>
+            <Link href={challengeHref} className="font-medium text-[#008CFF] underline-offset-2 hover:underline">
+              &quot;{challengeTitle}&quot;
+            </Link>
+            <span className="inline-flex items-center gap-1 rounded-[4px] border border-[#64748B] bg-[#f4f4ff] px-2 py-0.5 text-[10px] font-medium text-black">
+              <Clock className="h-3 w-3 text-[#64748B]" />
+              <span className="font-bold text-black">{formatCountdown(remaining)}</span>
             </span>
           </div>
 
-          <div className="mt-1 truncate text-sm text-blue-900 dark:text-blue-100">
-            Waiting for a pair on{" "}
-            <Link href={challengeHref} className="font-medium underline-offset-2 hover:underline">
-              “{challengeTitle}”
-            </Link>
+          <div className="mt-1 truncate text-sm text-[#64748B]  dark:text-blue-100">
+             {joins.length>0 ? `🎉 Good news! ${joins.length} developer wants to solve this with you.`:"  your request is currently in the lobby. someone will join you soon!"} 
+          
           </div>
+
         </div>
+
+        <Link
+          href={challengeHref}
+          className={`text-sm flex gap-1 items-center justify-center font-medium  
+             ${joins.length>0 ? `text-white bg-[#FF6800]`:" border border-[#008CFF33] bg-[#008CFF0F] text-[#008CFF] dark:text-blue-300 dark:hover:text-blue-100 "}  py-2 px-4 rounded-full   disabled:opacity-50  `}
+        >
+          {joins.length > 0 ? `View ${joins.length} Requests` : "View Request Status"}
+        </Link>
         <button
           onClick={() => cancel.mutate(requestId)}
           disabled={cancel.isPending}
-          className="text-sm font-medium text-blue-700 hover:text-blue-900 disabled:opacity-50 dark:text-blue-300 dark:hover:text-blue-100"
-        >
-          Cancel Request
+          className={`text-sm flex gap-1 items-center justify-center font-medium border border-[#DB122B33] bg-[#DB122B0F] py-2 px-4 rounded-full     
+            text-[#DB122B]  disabled:opacity-50 dark:text-blue-300 dark:hover:text-blue-100`} >
+
+
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 15L15 5M5 5L15 15" stroke="#DB122B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Stop Broadcast
         </button>
-        <Link
-          href={challengeHref}
-          className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
-        >
-          View Incoming
-        </Link>
       </div>
     </PrimaryContainer>
   );
