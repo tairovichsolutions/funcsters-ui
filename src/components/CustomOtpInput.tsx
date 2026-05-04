@@ -6,6 +6,7 @@ interface CustomOtpInputProps {
   value: string;
   error?: string;
   label?: string;
+  numInputs?: number;
   onChange: (value: string) => void;
 }
 
@@ -13,6 +14,7 @@ export const CustomOtpInput: React.FC<CustomOtpInputProps> = ({
   error,
   label,
   value,
+  numInputs = 6,
   onChange,
 }) => {
   return (
@@ -21,7 +23,7 @@ export const CustomOtpInput: React.FC<CustomOtpInputProps> = ({
       <OtpInput
         value={value}
         onChange={onChange}
-        numInputs={5}
+        numInputs={numInputs}
         renderInput={(props) => (
           <input
             {...props}

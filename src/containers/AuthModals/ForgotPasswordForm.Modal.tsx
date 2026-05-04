@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import { useTheme } from "next-themes";
 import { Input } from "@/components/Input";
@@ -10,11 +10,14 @@ import { Assets } from "@/constants/assets";
 import { Button } from "@/components/ui/button";
 import { ForgotpasswordSchema } from "./ForgotPassword.schema";
 import { useAuthModal } from "@/providers/AuthModalsProvider";
+import { useForgotPassword } from "@/mutations/useForgotPassword";
 
 export const ForgotPasswordFormModal = () => {
-  const { openModal } = useAuthModal();
+  const [apiError, setApiError] = useState<string | null>(null);
+  const { openModal, setResetEmail } = useAuthModal();
   const { theme } = useTheme();
   const dark = theme === "dark";
+  const { mutateAsync: forgotPasswordFc, isPending } = useForgotPassword();
 
   const initialValues = React.useMemo(
     () => ({
@@ -22,8 +25,19 @@ export const ForgotPasswordFormModal = () => {
     }),
     []
   );
-  const onSubmit = () => {
-    openModal("resetPassword");
+  const onSubmit = async (values: { email: string }) => {
+    try {
+      setApiError(null);
+      const res = await forgotPasswordFc(values);
+      if (res?.status === 200) {
+        setResetEmail(values.email);
+        openModal("resetPassword");
+      } else {
+        setApiError(res?.data?.message || "Failed to send reset instructions");
+      }
+    } catch (error: any) {
+      setApiError(error?.response?.data?.message || "Failed to send reset instructions");
+    }
   };
 
   const { values, errors, handleChange, handleSubmit } = useFormik({
@@ -47,10 +61,13 @@ export const ForgotPasswordFormModal = () => {
                 placeholder="Type here"
                 label="Enter Your Email"
                 value={values.email}
-                error={errors.email}
-                onChange={handleChange}
+                error={apiError || errors.email}
+                onChange={(e) => {
+                  setApiError(null);
+                  handleChange(e);
+                }}
               />
-              <Button type="submit">Reset Password</Button>
+              <Button loading={isPending} type="submit">Reset Password</Button>
               <div
                 onClick={() => openModal("login")}
                 className="cursor-pointer flex items-center gap-2 text-medium-gray text-xs font-normal mt-3  "
