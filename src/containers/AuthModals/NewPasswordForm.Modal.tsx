@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import { useTheme } from "next-themes";
 import { Input } from "@/components/Input";
@@ -10,11 +10,15 @@ import { Assets } from "@/constants/assets";
 import { Button } from "@/components/ui/button";
 import { NewPasswordSchema } from "./NewPassword.schema";
 import { useAuthModal } from "@/providers/AuthModalsProvider";
+import { useResetPassword } from "@/mutations/useResetPassword";
+import toast from "react-hot-toast";
 
 export const NewPasswordFormModal = () => {
+  const [error, setError] = useState<string | null>(null);
   const { theme } = useTheme();
   const dark = theme === "dark";
-  const { openModal } = useAuthModal();
+  const { openModal, resetEmail, resetOtp } = useAuthModal();
+  const { mutateAsync: resetPasswordFc, isPending } = useResetPassword();
 
   const initialValues = React.useMemo(
     () => ({
@@ -23,8 +27,18 @@ export const NewPasswordFormModal = () => {
     }),
     []
   );
-  const onSubmit = () => {
-    openModal("congratulation");
+  const onSubmit = async (values: any) => {
+    try {
+      setError(null);
+      const res = await resetPasswordFc({ email: resetEmail, otp: resetOtp, newPassword: values.password });
+      if (res?.status === 200) {
+        openModal("congratulation");
+      } else {
+        setError(res?.data?.message || "Failed to update password");
+      }
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to update password");
+    }
   };
 
   const { values, errors, handleChange, handleSubmit } = useFormik({
@@ -61,8 +75,14 @@ export const NewPasswordFormModal = () => {
                 error={errors.confirmPassword}
                 onChange={handleChange}
               />
+              
+              {error && (
+                <p className="text-destructive font-semibold text-[13px] text-center">
+                  {error}
+                </p>
+              )}
 
-              <Button type="submit">Save Password</Button>
+              <Button loading={isPending} type="submit">Save Password</Button>
               <div
                 onClick={() => openModal("login")}
                 className="cursor-pointer flex items-center gap-2 text-medium-gray text-xs font-normal mt-3  "
