@@ -3,7 +3,7 @@
 "use client";
 
 import PrimaryContainer from "@/components/shared/container/PrimaryContainer";
-import { Clock, Mic, UserRoundPlus, Users } from "lucide-react";
+import { Clock, Mic, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -23,7 +23,7 @@ import { usePairSession } from "../providers/PairSessionProvider";
  *
  * Priority: session > join > request.
  */
-export function GlobalPairAlertBanner({ data }: { data: any }) {
+export function GlobalPairAlertBanner({ data }: { data?: any }) {
   const pathname = usePathname() ?? "";
   const { data: currentUser } = useCurrentUser();
   const { data: mySession } = useMyActiveSession();
@@ -53,7 +53,8 @@ export function GlobalPairAlertBanner({ data }: { data: any }) {
   if (mySession && mySession.status === "AWAITING_GUIDELINES" && !onChallengePage) {
     return (
       <PermissionGrantedBanner
-        currentUser={currentUser} data={data} pairRequestId={myJoin?.pairRequestId} joinId={myJoin?.id}
+        currentUser={currentUser} data={data} 
+        joinId={myJoin?.id}
         href={sessionChallengeHref!}
         sessionChallengeTitle={sessionChallengeTitle}
         hostUsername={mySession.hostUsername}
@@ -125,8 +126,10 @@ function PermissionGrantedBanner({
   expiresAtEpochMs,
   currentUser,
 }: {
+  data:any; currentUser:any; 
+  joinId:any;
   href: string;
-  sessionChallengeTitle: string;
+  sessionChallengeTitle?: string;
   hostUsername: string;
   expiresAtEpochMs: number;
 }) {
@@ -196,7 +199,10 @@ function PermissionGrantedBanner({
   );
 }
 
-function JoinPendingBanner({ currentUser, data, pairRequestId, joinId, expiresAtEpochMs, }: { joinId: number; expiresAtEpochMs: number }) {
+
+//TODO: move in another file after pr desing final
+
+function JoinPendingBanner({ currentUser, data, pairRequestId, joinId, expiresAtEpochMs, }: { data:any; currentUser:any; joinId: number;pairRequestId:number; expiresAtEpochMs: number }) {
   console.log({ currentUser }, 'yhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh');
 
   const challengeCardData = [...data].find(item => item.id === pairRequestId);

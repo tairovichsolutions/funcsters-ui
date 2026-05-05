@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { Clock, Code2, MessageCircle, X } from "lucide-react";
+import { Clock, X } from "lucide-react";
 import { useAcceptJoin, useIncomingJoins, useMyActiveRequest, useRejectJoin } from "../hooks/usePairQueries";
 import type { PairJoinRequestDto } from "../types";
 import { formatCountdown, useCountdown } from "./GlobalPairAlertBanner";

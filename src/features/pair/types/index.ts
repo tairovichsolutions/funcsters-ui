@@ -48,6 +48,9 @@ export interface PairRequestCardDto {
 
 export interface PairJoinRequestDto {
   id: number;
+  joinerOccupation:string;
+  joinedCountryFlag:string;
+  xp:number|string;
   pairRequestId: number;
   joinerUsername: string;
   joinerCountry: string | null;
