@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import * as api from "../api/pairApi";
 import type { LobbyFilter } from "../api/pairApi";
 import type { CreatePairRequestDto } from "../types";
@@ -23,6 +24,18 @@ function useHasUserCookie(): boolean {
   return present;
 }
 
+/**
+ * With the introduction of global STOMP event subscriptions in PairSessionProvider,
+ * we no longer need aggressive polling for real-time updates! The STOMP connection
+ * pushes events (e.g., JOIN_ACCEPTED, NEW_JOIN, lobby updates) instantly.
+ * 
+ * We keep a very slow 60-second fallback polling interval here just as a safety 
+ * net in case a websocket message is dropped.
+ */
+function usePollInterval(): number {
+  return 60_000; // 60 seconds fallback polling
+}
+
 export const pairKeys = {
   all: ["pair"] as const,
   lobbyCount: () => [...pairKeys.all, "lobby-count"] as const,
@@ -38,65 +51,87 @@ export const pairKeys = {
 
 // ---------- read ----------
 
-// Polling interval for live-updating queries. 3s is aggressive but keeps the
-// UI responsive enough that users don't need to refresh. Phase 5 STOMP events
-// can replace this with event-driven invalidation for zero-lag updates.
-const LIVE_POLL_MS = 3_000;
-
 export function useLobbyCount() {
   const authed = useHasUserCookie();
+  const pollMs = usePollInterval();
   return useQuery({
     queryKey: pairKeys.lobbyCount(),
     queryFn: api.fetchLobbyCount,
     staleTime: 2_000,
     enabled: authed,
-    refetchInterval: authed ? LIVE_POLL_MS : false,
+    refetchInterval: authed ? pollMs : false,
     refetchIntervalInBackground: false,
+    // Don't retry on 401 — the interceptor handles token refresh. If
+    // the user is logged out, retrying just adds more 401 noise.
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) return false;
+      return failureCount < 2;
+    },
   });
 }
 
 export function useLobby(filter: LobbyFilter) {
   const authed = useHasUserCookie();
+  const pollMs = usePollInterval();
   return useQuery({
     queryKey: pairKeys.lobby(filter),
     queryFn: () => api.fetchLobby(filter),
     staleTime: 2_000,
     enabled: authed,
-    refetchInterval: authed ? LIVE_POLL_MS : false,
+    refetchInterval: authed ? pollMs : false,
     refetchIntervalInBackground: false,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) return false;
+      return failureCount < 2;
+    },
   });
 }
 
 export function useMyActiveRequest() {
   const authed = useHasUserCookie();
+  const pollMs = usePollInterval();
   return useQuery({
     queryKey: pairKeys.myRequest(),
     queryFn: api.fetchMyActiveRequest,
     staleTime: 2_000,
     enabled: authed,
-    refetchInterval: authed ? LIVE_POLL_MS : false,
+    refetchInterval: authed ? pollMs : false,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) return false;
+      return failureCount < 2;
+    },
   });
 }
 
 export function useMyActiveJoin() {
   const authed = useHasUserCookie();
+  const pollMs = usePollInterval();
   return useQuery({
     queryKey: pairKeys.myJoin(),
     queryFn: api.fetchMyActiveJoin,
     staleTime: 2_000,
     enabled: authed,
-    refetchInterval: authed ? LIVE_POLL_MS : false,
+    refetchInterval: authed ? pollMs : false,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) return false;
+      return failureCount < 2;
+    },
   });
 }
 
 export function useMyActiveSession() {
   const authed = useHasUserCookie();
+  const pollMs = usePollInterval();
   return useQuery({
     queryKey: pairKeys.mySession(),
     queryFn: api.fetchMyActiveSession,
     staleTime: 2_000,
     enabled: authed,
-    refetchInterval: authed ? LIVE_POLL_MS : false,
+    refetchInterval: authed ? pollMs : false,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 401) return false;
+      return failureCount < 2;
+    },
   });
 }
 
@@ -105,7 +140,6 @@ export function useIncomingJoins(pairRequestId: number | undefined) {
     queryKey: pairKeys.incomingJoins(pairRequestId ?? 0),
     queryFn: () => api.fetchIncomingJoins(pairRequestId!),
     enabled: pairRequestId != null,
-    refetchInterval: 5_000,
   });
 }
 

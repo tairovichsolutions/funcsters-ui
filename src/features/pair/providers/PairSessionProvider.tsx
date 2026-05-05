@@ -1,9 +1,10 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import type { editor as monacoEditor } from "monaco-editor";
 import { useCurrentUser } from "../hooks/useCurrentUser";
-import { useIceServers, useLeaveSession, useMyActiveSession } from "../hooks/usePairQueries";
+import { useIceServers, useLeaveSession, useMyActiveSession, pairKeys } from "../hooks/usePairQueries";
 import { useStompPair } from "../hooks/useStompPair";
 import { useWebRTCSession } from "../hooks/useWebRTCSession";
 import { clearYjsPersistence, useYjsMonaco } from "../hooks/useYjsMonaco";
@@ -57,15 +58,18 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
   const { data: currentUser } = useCurrentUser();
   const currentUsername = currentUser?.username ?? "";
   const { data: session } = useMyActiveSession();
+  const queryClient = useQueryClient();
+  
   // Only fetch ICE creds when a session is actually active (or imminent).
   // Avoids 401 noise on the landing/challenges page for logged-out visitors.
   const iceServersNeeded = session != null && session.status !== "ENDED";
   const { data: iceServers } = useIceServers(iceServersNeeded);
   const leaveMutation = useLeaveSession();
 
-  // STOMP should connect + subscribe as soon as we have any non-ended session so
-  // the joiner's signal subscription is ready before the host sends OFFER.
-  const hasSession = session != null && session.status !== "ENDED";
+  // STOMP should connect as long as the user is logged in. This allows us
+  // to receive real-time global notifications (like join accepts) without polling.
+  const stomp = useStompPair({ enabled: !!currentUser });
+
   // WebRTC peer connection only activates when both peers have committed
   // (status === ACTIVE). Activating in AWAITING_GUIDELINES would make the host
   // publish an OFFER that the joiner's not-yet-created pc cannot consume.
@@ -73,7 +77,29 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
   const sessionId = session?.id ?? null;
   const isHost = session?.hostUsername === currentUsername;
 
-  const stomp = useStompPair({ enabled: hasSession });
+  // Global user events listener: instantly invalidates React Query data when
+  // someone wants to join you, or when your join request is accepted, allowing
+  // us to disable background polling.
+  useEffect(() => {
+    if (!stomp.connected || !currentUser?.id) return;
+    
+    // User-specific events (e.g. JOIN_ACCEPTED, INCOMING_JOIN)
+    const subUser = stomp.subscribe(`/user/${currentUser.id}/queue/pair/events`, () => {
+      queryClient.invalidateQueries({ queryKey: pairKeys.all });
+    });
+
+    // Global lobby updates (count changed, new requests)
+    const subLobby = stomp.subscribe(`/topic/pair/lobby-update`, () => {
+      // Invalidate lobby-related queries
+      queryClient.invalidateQueries({ queryKey: pairKeys.lobbyCount() });
+      queryClient.invalidateQueries({ queryKey: pairKeys.all }); 
+    });
+
+    return () => {
+      subUser.unsubscribe();
+      subLobby.unsubscribe();
+    };
+  }, [stomp.connected, currentUser?.id, queryClient, stomp]);
 
   const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -109,6 +135,12 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
         const event = JSON.parse(msg.body) as PairControlEvent;
         if (event.type === "SESSION_ENDED" || event.type === "PEER_LEFT") {
           setSessionEndedReason(event.reason ?? event.type);
+          
+          // CRITICAL FIX: Instantly invalidate the React Query cache so the
+          // useMyActiveSession hook realizes the session is over, causing
+          // the session UI (mic, code editor) to disappear immediately.
+          queryClient.invalidateQueries({ queryKey: pairKeys.all });
+
           // Session is over for both sides — wipe persisted Yjs state so
           // the editor doesn't replay stale content if this tab ever joins
           // another session with the same id.

@@ -1,6 +1,7 @@
 import { QueryKey } from "@/constants/queryKey";
 import { loginType } from "@/containers/AuthModals/LoginForm.Modal";
 import { apiClient } from "@/lib/axiosClient";
+import { clearLoggedOut } from "@/lib/refreshToken";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useLogin = () => {
@@ -18,6 +19,9 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: loginfc,
     onSuccess: () => {
+      // Clear the logged-out flag so the interceptor resumes normal
+      // token-refresh behavior for the newly authenticated session.
+      clearLoggedOut();
       client.refetchQueries({ queryKey: [QueryKey.GetUserProfile] });
       client.refetchQueries({ queryKey: [QueryKey.GetMetrics] });
       client.refetchQueries({ queryKey: [QueryKey.GetAllChallenges] });

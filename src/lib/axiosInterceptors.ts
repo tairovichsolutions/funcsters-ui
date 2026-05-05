@@ -1,10 +1,15 @@
 "use client";
 import { getCookie } from "cookies-next";
-import { refreshAccessToken } from "./refreshToken";
-import { logout } from "./logout";
+import { refreshAccessToken, isMarkedLoggedOut } from "./refreshToken";
 import { apiClient } from "./axiosClient";
 
 apiClient.interceptors.request.use((config) => {
+  // If a logout is in progress, skip attaching the token entirely so
+  // subsequent requests fail fast rather than looking authenticated.
+  if (isMarkedLoggedOut()) {
+    return config;
+  }
+
   const token = getCookie("accessToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -20,15 +25,30 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // If the user has initiated logout, do NOT attempt a refresh. Let
+    // the 401 propagate so React Query marks the queries as failed and
+    // stops polling. This breaks the race where polling re-authenticates
+    // the user after logout.
+    if (isMarkedLoggedOut()) {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
         const newToken = await refreshAccessToken();
+        if (!newToken) {
+          return Promise.reject(error);
+        }
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return apiClient(originalRequest);
-      } catch (err) {
-        await logout();
+      } catch {
+        // Refresh failed — do NOT call logout() from here. The
+        // refresh failure during logout is expected and calling
+        // logout again would create an infinite loop. Simply reject
+        // so the caller (React Query, mutation, etc.) handles it.
+        return Promise.reject(error);
       }
     }
 
