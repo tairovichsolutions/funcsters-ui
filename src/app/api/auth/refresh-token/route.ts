@@ -6,7 +6,41 @@ export async function POST() {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refreshToken")?.value;
 
+  // If there's no refresh token cookie at all, the user is logged out.
+  // Return 401 immediately — do NOT set any cookies.
+  if (!refreshToken) {
+    return NextResponse.json(
+      { message: "No refresh token" },
+      { status: 401 },
+    );
+  }
+
   try {
+    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/auth/refresh-token`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: "refreshToken=" + refreshToken,
+      },
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    // CRITICAL: Only set cookies if the backend actually returned a
+    // valid response. Previously, cookies were set unconditionally,
+    // which meant a failed refresh could set accessToken/userId to
+    // "undefined" and — worse — during a logout race, a slightly-
+    // delayed refresh call would re-establish the session.
+    if (!res.ok || !data?.accessToken) {
+      return NextResponse.json(
+        { message: data?.message || "Refresh token invalid or expired" },
+        { status: res.status || 401 },
+      );
+    }
+
+    // Re-persist the refresh token (backend may have rotated it).
     cookieStore.set("refreshToken", String(refreshToken), {
       path: "/",
       httpOnly: true,
@@ -14,42 +48,20 @@ export async function POST() {
       secure: true,
     });
 
-    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/auth/refresh-token`;
-    let res;
-    if (refreshToken) {
-      res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: "refreshToken=" + refreshToken,
-        },
-        cache: "no-store",
-      });
-    } else {
-      res = await fetch(url, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    }
-
-    const data = await res.json();
-
-    cookieStore.set("accessToken", data?.accessToken, {
+    cookieStore.set("accessToken", data.accessToken, {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
     });
 
-    cookieStore.set("userId", data?.id, {
+    cookieStore.set("userId", String(data.id), {
       path: "/",
       httpOnly: false,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
     });
+
     return NextResponse.json(data, { status: res.status });
   } catch (err: any) {
     return NextResponse.json(

@@ -5,7 +5,6 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
 import { Iconify } from "@/components/ui/iconify";
 import { useLogout } from "@/mutations/useLogout";
 import { DisplayAvatar } from "@/components/ui/display-avatar";
@@ -13,23 +12,14 @@ import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { useProfileSettingModal } from "@/providers/ProfileSettingModalsProvider";
 
 export const ProfileAvatar = ({ userData }: any) => {
-  const router = useRouter();
-  const { mutateAsync: logoutFn } = useLogout();
+  const { mutate: doLogout } = useLogout();
   const { openModal: openSettingModal } = useProfileSettingModal();
   const firstLetter = userData?.username?.charAt(0)?.toUpperCase();
 
-  const handleLogout = async () => {
-    try {
-      const { status, data } = await logoutFn();
-      if (data.success && status === 200) {
-        router.refresh();
-      } else {
-        console.error("Unexpected logout response:", data);
-      }
-    } catch (error) {
-      // Error while logout
-
-    }
+  const handleLogout = () => {
+    // The logout mutation handles everything: cancels queries, clears
+    // cookies, calls the server, and does a hard redirect.
+    doLogout();
   };
 
   return (
