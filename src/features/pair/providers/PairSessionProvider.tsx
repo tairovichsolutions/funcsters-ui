@@ -96,8 +96,8 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
     });
 
     return () => {
-      subUser.unsubscribe();
-      subLobby.unsubscribe();
+      subUser?.unsubscribe();
+      subLobby?.unsubscribe();
     };
   }, [stomp.connected, currentUser?.id, queryClient, stomp]);
 
