@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { useState, useRef } from "react";
-import { ChevronDown,  } from "lucide-react"; 
+import { ChevronDown, } from "lucide-react";
 import GlobeIcon from "../../../../public/svgs/leaderBoard/GlobeIcon";
 const COUNTRIES = [
   { name: "All Countries", code: null },
@@ -35,15 +35,14 @@ export default function CountryDropdown() {
               className="w-5 h-5 object-cover rounded-full drop-shadow-sm"
             />
           ) : (
-         <GlobeIcon />
+            <GlobeIcon />
           )}
-          
+
           <span className="truncate  dark:text-black">{country}</span>
         </div>
         <span
-          className={`text-neutral-05 text-xs transition-transform ${
-            isDropdownOpen ? "rotate-180" : ""
-          }`}
+          className={`text-neutral-05 text-xs transition-transform ${isDropdownOpen ? "rotate-180" : ""
+            }`}
         >
           <ChevronDown size={24} />
         </span>
@@ -58,11 +57,10 @@ export default function CountryDropdown() {
                 setCountry(c.name);
                 setIsDropdownOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
-                country === c.name
+              className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${country === c.name
                   ? "bg-blue-50 text-[#385DFC] font-medium"
                   : "text-gray-700 hover:bg-gray-50"
-              }`}
+                }`}
             >
               {/* Dropdown Menu Icon Logic */}
               {c.code ? (
@@ -75,7 +73,7 @@ export default function CountryDropdown() {
               ) : (
                 <GlobeIcon className="w-5 h-5 text-gray-500" />
               )}
-              
+
               <span>{c.name}</span>
             </button>
           ))}

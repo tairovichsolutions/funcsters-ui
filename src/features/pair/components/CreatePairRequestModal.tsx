@@ -79,6 +79,7 @@ export function CreatePairRequestModal({
         challengeId,
         languageId,
         focusArea,
+        description,
         spokenLanguages: Array.from(selectedSpoken),
       });
       // description intentionally dropped — no backend column yet.
@@ -88,34 +89,38 @@ export function CreatePairRequestModal({
     }
   };
 
+  console.log({ description });
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
       <div
-        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl bg-card p-6 shadow-xl"
+        className="max-h-[95vh] w-full max-w-xl overflow-y-auto rounded-xl bg-card p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-lg font-semibold">Request Pair Programming</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Fill in the details below to find a programming partner for{" "}
-              <span className="font-medium text-foreground">&ldquo;{challengeTitle}&rdquo;</span>.
-            </p>
+            <h2 className="text-xl text-neutral-01 font-semibold">Request Pair Programming</h2>
+
           </div>
           <button onClick={onClose} className="rounded-md p-1 hover:bg-muted" aria-label="Close">
-            <X className="h-4 w-4" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M9.11606 10L3.93231 4.8175C3.8742 4.75939 3.82811 4.6904 3.79666 4.61448C3.76521 4.53855 3.74902 4.45718 3.74902 4.375C3.74902 4.29282 3.76521 4.21144 3.79666 4.13552C3.82811 4.05959 3.8742 3.99061 3.93231 3.9325C3.99042 3.87439 4.05941 3.82829 4.13533 3.79684C4.21126 3.76539 4.29263 3.74921 4.37481 3.74921C4.45699 3.74921 4.53837 3.76539 4.61429 3.79684C4.69022 3.82829 4.7592 3.87439 4.81731 3.9325L9.99981 9.11625L15.1823 3.9325C15.2997 3.81514 15.4588 3.74921 15.6248 3.74921C15.7908 3.74921 15.95 3.81514 16.0673 3.9325C16.1847 4.04985 16.2506 4.20903 16.2506 4.375C16.2506 4.54097 16.1847 4.70014 16.0673 4.8175L10.8836 10L16.0673 15.1825C16.1847 15.2999 16.2506 15.459 16.2506 15.625C16.2506 15.791 16.1847 15.9501 16.0673 16.0675C15.95 16.1849 15.7908 16.2508 15.6248 16.2508C15.4588 16.2508 15.2997 16.1849 15.1823 16.0675L9.99981 10.8837L4.81731 16.0675C4.69995 16.1849 4.54078 16.2508 4.37481 16.2508C4.20884 16.2508 4.04967 16.1849 3.93231 16.0675C3.81495 15.9501 3.74902 15.791 3.74902 15.625C3.74902 15.459 3.81495 15.2999 3.93231 15.1825L9.11606 10Z" fill="#4D4D4D" />
+            </svg>
           </button>
         </div>
-
+        <hr className="my-4 border-t w-full border border-[#F0F0F0]"></hr>
+        <p className="mt-1 text-sm text-[#4D4D4D]">
+          Fill in the details below to find a programming partner for{" "}
+          <span className="font-semibold text-[#008CFF]">&ldquo;{challengeTitle}&rdquo;</span>.
+        </p>
         <div className="mt-4 space-y-5">
           <div>
-            <label className="block text-sm font-medium">What do you need help with?</label>
+            <label className="block text-sm text-neutral-01 font-medium">What do you need help with?</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe what you're stuck on (optional)"
-              className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+              className="mt-1 w-full rounded-md border border-border bg-[#FAFAFA] px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40"
             />
           </div>
 
@@ -159,18 +164,19 @@ export function CreatePairRequestModal({
               setSelectedSpoken(next);
             }}
           />
+        <hr className="my-4 border-t w-full border border-[#F0F0F0]"/>
 
-          <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-border bg-muted/40 p-3 text-sm">
+          <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-[#038CFF33] bg-[#f0f8ff] p-4 text-sm">
             <input
               type="checkbox"
               checked={agreed}
               onChange={(e) => setAgreed(e.target.checked)}
               className="mt-0.5 h-4 w-4 rounded border-border accent-blue-600"
             />
-            <span>
-              <span className="font-medium">I agree to be respectful &amp; collaborative.</span>
+            <span className="">
+              <span className="font-semibold text-neutral-01   ">I agree to be respectful &amp; collaborative.</span>
               <br />
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-[#808080] ">
                 I understand that I am joining a community and that my behavior must be respectful and collaborative.
               </span>
             </span>
@@ -186,14 +192,14 @@ export function CreatePairRequestModal({
         <div className="mt-6 flex items-center justify-end gap-2">
           <button
             onClick={onClose}
-            className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
+            className="rounded-md border border-[#008CFF] text-[#008CFF] px-4 py-2 text-sm font-medium hover:bg-muted"
           >
             Cancel
           </button>
           <button
             onClick={submit}
             disabled={!canSubmit}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            className="rounded-md bg-[#008CFF] px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
           >
             {createRequest.isPending ? "Sending…" : "Request Partner"}
           </button>
@@ -214,9 +220,9 @@ interface PillGroupProps {
 function PillGroup({ label, multi, options, selected, onToggle }: PillGroupProps) {
   return (
     <div>
-      <div className="mb-2 text-sm font-medium">
+      <div className="mb-2 text-neutral-01 text-sm font-medium">
         {label}
-        {multi && <span className="ml-1 text-xs font-normal text-muted-foreground">(multi-select)</span>}
+        {multi && <span className="ml-1 ">(multi-select):</span>}
       </div>
       <div className="flex flex-wrap gap-2">
         {options.map((opt) => {
@@ -226,11 +232,10 @@ function PillGroup({ label, multi, options, selected, onToggle }: PillGroupProps
               key={opt.value}
               type="button"
               onClick={() => onToggle(opt.value)}
-              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-                on
-                  ? "border-blue-600 bg-blue-600 text-white"
-                  : "border-border bg-background text-foreground hover:bg-muted"
-              }`}
+              className={`rounded-full border px-4 py-1.5 text-xs font-medium transition-colors ${on
+                ? "border-[#038CFF] bg-[#038CFF] text-white"
+                : "border-border bg-[#FAFAFA] text-foreground hover:bg-muted"
+                }`}
             >
               {opt.label}
             </button>

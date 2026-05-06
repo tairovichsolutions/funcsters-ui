@@ -5,6 +5,8 @@ import { useState } from "react";
 import { LobbyFilters, type LobbyFilterState } from "@/features/pair/components/LobbyFilters";
 import { PairRequestCard } from "@/features/pair/components/PairRequestCard";
 import { useLobby } from "@/features/pair/hooks/usePairQueries";
+import PrimaryContainer from "@/components/shared/container/PrimaryContainer";
+import { GlobalPairAlertBanner } from "@/features/pair/components/GlobalPairAlertBanner";
 
 // TODO(FE-dev): replace with real /api/languages fetch. Kept as a stub list to
 // keep the lobby filter self-contained until the languages endpoint is wired.
@@ -20,44 +22,51 @@ export default function PairLobbyPage() {
   const [page, setPage] = useState(0);
   const { data, isLoading, isError } = useLobby({ ...filter, page, size: 20 });
 
+  console.log({data});
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6">
-      <header>
-        <h1 className="flex items-center gap-2 text-2xl font-bold">
-          <Users className="h-6 w-6 text-blue-600" />
-          Pair Programming Lobby
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Connect with other developers, share knowledge, and solve challenges together in real-time.
-        </p>
-      </header>
+    <section className="">
+      <PrimaryContainer as="div">
+        <div className="  w-full  space-y-6  py-6">
+          <header>
+            <h1 className="flex items-center gap-2 text-2xl md:text-[1.8rem] text-neutral-01 dark:text-white font-bold">
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+              Pair Programming Lobby
+            </h1>
+            <p className="mt-1 text-sm  text-muted-foreground ">
+              Connect with other developers, share knowledge, and solve challenges together in real-time.
+            </p>
+          </header>
+           <GlobalPairAlertBanner  data={data?.content ||[]} />
+          <LobbyFilters value={filter} onChange={(next) => { setFilter(next); setPage(0); }} languageOptions={LANGUAGE_STUBS} />
 
-      <LobbyFilters value={filter} onChange={(next) => { setFilter(next); setPage(0); }} languageOptions={LANGUAGE_STUBS} />
-
-      {isLoading && <LobbyGridSkeleton />}
-      {isError && (
-        <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-          Failed to load pair requests. Try again in a moment.
-        </div>
-      )}
-      {data && data.content.length === 0 && !isLoading && (
-        <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-          No active pair requests match these filters. Try widening them, or create your own request from any challenge page.
-        </div>
-      )}
-      {data && data.content.length > 0 && (
-        <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {data.content.map((card) => (
-              <PairRequestCard key={card.id} card={card} />
-            ))}
-          </div>
-          {data.totalPages > 1 && (
-            <Pagination page={page} totalPages={data.totalPages} onPage={setPage} />
+          {isLoading && <LobbyGridSkeleton />}
+          {isError && (
+            <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+              Failed to load pair requests. Try again in a moment.
+            </div>
           )}
-        </>
-      )}
-    </div>
+          {data && data.content.length === 0 && !isLoading && (
+            <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+              No active pair requests match these filters. Try widening them, or create your own request from any challenge page.
+            </div>
+          )}
+          {data && data.content.length > 0 && (
+            <>
+           {/* <div>{JSON.stringify(data.content)}</div> */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {[...data.content,].map((card) => (
+                  <PairRequestCard key={card.id} card={card} />
+                ))}
+              </div>
+              {data.totalPages > 1 && (
+                <Pagination page={page} totalPages={data.totalPages} onPage={setPage} />
+              )}
+            </>
+          )}
+        </div>
+      </PrimaryContainer>
+    </section>
+
   );
 }
 

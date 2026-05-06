@@ -14,6 +14,7 @@ import { ProfileSetingModalsProvider } from "@/providers/ProfileSettingModalsPro
 import { LanguageImplementationsProvider } from "@/context/languageImplementationsContext";
 import { PairSessionProvider } from "@/features/pair/providers/PairSessionProvider";
 import { GlobalPairAlertBanner } from "@/features/pair/components/GlobalPairAlertBanner";
+import StickyPairAlertWrapper from "@/features/pair/components/StickyPairAlertWrapper";
 
 export const metadata: Metadata = {
   title: "funcsters",
@@ -42,9 +43,7 @@ export default function RootLayout({
                           page when the user has any in-flight pair-programming
                           state (broadcasting, pending join, permission granted,
                           or active session). Self-renders null when no state. */}
-                      <div className="sticky top-0 z-40 w-full pt-2">
-                        <GlobalPairAlertBanner />
-                      </div>
+                    
                       {children}
                       <AuthModal />
                       <ToasterComponent />

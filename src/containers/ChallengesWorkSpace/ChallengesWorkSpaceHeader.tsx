@@ -18,6 +18,8 @@ import { ThemeButton } from "@/components/ui/theme-button";
 import { EditerSettingPopover } from "./EditerSettingPopover";
 import { useGetUserProfile } from "@/queries/useGetUserProfile";
 import { PairSessionWidget } from "@/features/pair/components/PairSessionWidget";
+import { PairProgramButton } from "@/features/pair/components/PairProgramButton";
+import { useChallengeById } from "@/queries/useChallengeById";
 
 export const ChallengesWorkSpaceHeader = () => {
   const { id } = useParams();
@@ -26,6 +28,10 @@ export const ChallengesWorkSpaceHeader = () => {
   const { data: userData } = useGetUserProfile();
   const isAuthenticated = userData?.data?.authenticated || false;
 
+  const { data, isLoading, error } = useChallengeById(String(id));
+
+
+  const challengesDetailData = data?.data ?? data;
   return (
     <header className="dashboard-headers-class px-12 py-3.5 h-[60px] flex justify-between items-center">
       <div className=" flex items-center gap-5">
@@ -48,11 +54,26 @@ export const ChallengesWorkSpaceHeader = () => {
 
       {/* Pair-programming session widget — renders null when there's no
           active session, otherwise shows avatars + timer + mic + leave. */}
-      <div className="flex items-center">
-        <PairSessionWidget />
-      </div>
 
+  
       <div className=" flex gap-3">
+        
+     
+        
+        <PairSessionWidget />
+     
+       {isAuthenticated && challengesDetailData?.id && (
+        <PairProgramButton
+          challengeId={Number(challengesDetailData.id)}
+          challengeTitle={challengesDetailData.title ?? ""}
+          languageOptions={
+            (challengesDetailData?.languageImplementations ?? []).map((l: any) => ({
+              id: Number(l.languageId),
+              name: l.languageName ?? l.language ?? `Language ${l.languageId}`,
+            }))
+          }
+        />
+      )}
         <ThemeButton iconClass="size-4!" />
 
         <Timer
@@ -77,6 +98,7 @@ export const ChallengesWorkSpaceHeader = () => {
           </PopoverContent>
         </Popover>
       </div>
+      
     </header>
   );
 };
