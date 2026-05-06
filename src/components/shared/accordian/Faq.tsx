@@ -164,7 +164,7 @@ function Row({
   const btnId = `faq-trigger-${idx}`;
 
   return (
-    <div onClick={() => { onToggle() }} className={` group rounded-[12px] ${isOpen ? "bg-[#e8ebed] border-neutral-05 shadow-xs " : "bg-[#F5F8FB]"}   cursor-pointer border border-[#e8ebed]`}>
+    <div onClick={() => { onToggle() }} className={` group rounded-[12px] ${isOpen ? "bg-[#e8ebed] border-neutral-05 shadow-xs " : "bg-[#F5F8FB]"}   cursor-pointer border border-neutral-05`}>
       <button
         id={btnId}
         aria-controls={panelId}

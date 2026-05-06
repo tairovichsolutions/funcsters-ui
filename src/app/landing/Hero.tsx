@@ -50,7 +50,7 @@ const HeroSection = () => {
 
                 <div className="flex   cursor-default">
          
-                 <FeaturesMarquee speed={50} />
+                 <FeaturesMarquee speed={35} />
                 </div>
               </div>
 

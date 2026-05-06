@@ -51,8 +51,8 @@ const LearnFasterSection = () => {
 
             <>
 
-                <div className='flex lg:flex-row flex-col justify-between'>
-                    <div className='pt-10'>
+                <div className='flex lg:flex-row flex-col justify-between bg-[#f5f8fb] '>
+                    <div className='pt-25'>
                     <PrimaryHeader
                         eyebrow="Core Features"
                         eyebrowColor="text-orange-500 font-medium"
@@ -78,7 +78,7 @@ const LearnFasterSection = () => {
                     </button>
                 </div>
                 </div>
-                <div className="relative w-full  bg-[#f8f9fb] ">
+                <div className="relative w-full  bg-[#f5f8fb] ">
 
                     <div className="flex flex-col min-h-128  lg:flex-row items-center gap-2 lg:gap-8">
 
