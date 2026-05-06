@@ -5,7 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import SecondaryContainer from "@/components/shared/container/SecondaryContainer";
 import { Assets } from "@/constants/assets";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuthModal } from "@/providers/AuthModalsProvider";
 
 type NavItem = {
   name: string;
@@ -19,6 +20,8 @@ type NavbarProps = {
 export default function Navbar({ navItems }: NavbarProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { openModal } = useAuthModal();
   return (
     <header className="sticky top-0 z-50 text-neutral-04 w-full border-b border-gray-200 bg-white">
       <SecondaryContainer>
@@ -66,19 +69,20 @@ export default function Navbar({ navItems }: NavbarProps) {
 
           {/* Right buttons */}
           <div className="hidden md:flex items-center gap-4">
-            <Link
-              href="/login"
+            <button
+              onClick={() => openModal("login")}
+
               className="text-[14px] hover:text-neutral-05 lg:text-base text-neutral-04"
             >
               Log in
-            </Link>
+            </button>
 
-            <Link
-              href="/signup"
+            <button
+              onClick={() => openModal("signUp")}
               className="bg-[#008CFF] text-white text-base lg:text-lg px-4 py-1.5 rounded-md hover:bg-blue-600 transition"
             >
               Sign Up
-            </Link>
+            </button>
           </div>
           {/* <div className="hidden md:flex items-center gap-4">
   <Link
@@ -157,25 +161,25 @@ export default function Navbar({ navItems }: NavbarProps) {
             })}
 
             <div className=" ">
-              <Link
-                href="/login"
+              <button
+                onClick={() => openModal("login")}
                 className="border w-full block text-center my-2 border-blue-600 bg-blue-50 text-blue-600 rounded-md px-4 py-1.5 
                hover:bg-blue-100 hover:border-blue-700 hover:text-blue-700 
                hover:scale-105 active:scale-95 
                transition-all duration-200 ease-in-out"
               >
                 Log in
-              </Link>
+              </button>
 
-              <Link
-                href="/signup"
+              <button
+                onClick={() => openModal("signUp")}
                 className="bg-blue-600 w-full block text-center my-2 text-white px-4 py-1.5 rounded-md 
                hover:bg-blue-700 hover:shadow-lg hover:scale-105 
                active:scale-95 
                transition-all duration-200 ease-in-out"
               >
                 Sign Up
-              </Link>
+              </button>
             </div>
           </div>
         )}
