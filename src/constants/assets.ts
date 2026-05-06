@@ -20,7 +20,7 @@ export const Assets = {
       personalgrowthcuate1:"/images/landingPage/personal growth-cuate 1.png",
       Progressoverviewcuate1:"/images/landingPage/Progress overview-cuate 1.png",
       Careerprogresscuate1:"/images/landingPage/Career progress-cuate 1.png",
-      ThinkingAsisstanceBanner:"/images/landingPage/Chat 2 (2).png",
+      ThinkingAsisstanceBanner:"/images/landingPage/Chat 2 (3).png",
       ReactIcon:"/images/landingPage/ReactIcon2.png",
       reactShadowIcon:"/images/landingPage/reactShadowIcon.png" ,
       reactShadowIcon2:"/images/landingPage/reactShadowIcon2.png" ,

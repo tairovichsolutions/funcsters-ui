@@ -1,14 +1,12 @@
 
-import React from 'react';
-import type { NextPage } from 'next';
-import Head from 'next/head';
-import Image from 'next/image';
-import { Assets } from '@/constants/assets';
-import SecondaryContainer from '@/components/shared/container/SecondaryContainer';
 import { StatCard } from '@/components/animations/AnimatedCounter';
+import SecondaryContainer from '@/components/shared/container/SecondaryContainer';
 import PrimaryHeader from '@/components/shared/Headers/PrimaryHeader';
-  import { Brain, NotebookPen, Sparkle } from 'lucide-react';
-  import { SquareCode, Handshake, Sprout, LaptopMinimalCheck } from 'lucide-react';
+import { Assets } from '@/constants/assets';
+import { Brain, NotebookPen, Sparkle } from 'lucide-react';
+import type { NextPage } from 'next';
+import Image from 'next/image';
+import React from 'react';
 interface LogicFeature {
   id: number;
   icon: React.ReactNode;
