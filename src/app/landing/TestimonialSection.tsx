@@ -65,7 +65,7 @@ export default function TestimonialSlider() {
 
     <SecondaryContainer>
       <>,
-        <div className='flex lg:flex-row flex-col my-5 md:my-12  justify-between'>
+        <div className='flex lg:flex-row flex-col my-5 md:pt-12  justify-between'>
           <div className='pt-10'>
             <PrimaryHeader
               eyebrow="Testimonial"

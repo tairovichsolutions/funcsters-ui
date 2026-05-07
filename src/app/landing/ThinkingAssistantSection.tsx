@@ -141,7 +141,7 @@ const logicFeatures: LogicFeature[] = [
         </div>
 
             {/* XP and CTA */}
-            <div className="flex flex-col items-center lg:items-start my-5 md:my-0  gap-6 ">
+            <div className="flex flex-col  h-full items-center lg:items-start my-5  md:my-0  gap-6 ">
               <div className="bg-white rounded-xl flex items-center gap-4 pl-4 pr-8 py-3.5 shadow-lg border border-neutral-100 w-full max-w-60">
                 <div className="bg-[#FFC107] text-black w-10 h-10 rounded-full flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">

@@ -44,7 +44,7 @@ export default function HeroArc() {
 
 
 
-  <div className=' pt-16  bg-white text-black'>
+  <div className=' pt-16  bg-white rounded-2xl text-black'>
             <PrimaryHeader             
             
 
@@ -61,7 +61,7 @@ export default function HeroArc() {
                 alignLg="center"
             />
         </div>
-   <div className="w-full flex flex-col items-center pt-10  font-sans bg-white overflow-hidden">
+   <div className="w-full flex flex-col items-center pt-10  font-sans bg-white  overflow-hidden">
       
       {/* Top UI */}
       <div className="z-20 flex flex-col items-center gap-4 md:gap-6 mb-6 md:mb-8 px-4 w-full">

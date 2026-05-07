@@ -81,7 +81,26 @@ export default function MasterYourLogicSection() {
 
 
           <div className="absolute right-14 2xl:right-0  -top-4 translate-x-1/2  bg-white border border-blue-500 hidden lg:flex rounded-md shadow-sm  p-2  flex-col items-start justify-center z-10 w-25 float-icon-2">
-            <Network className="w-5 h-5 text-gray-600 mb-1" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+  <path 
+    d="M15 17.5C16.3807 17.5 17.5 16.3807 17.5 15C17.5 13.6193 16.3807 12.5 15 12.5C13.6193 12.5 12.5 13.6193 12.5 15C12.5 16.3807 13.6193 17.5 15 17.5Z" 
+    stroke="black" 
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+  />
+  <path 
+    d="M5 7.5C6.38071 7.5 7.5 6.38071 7.5 5C7.5 3.61929 6.38071 2.5 5 2.5C3.61929 2.5 2.5 3.61929 2.5 5C2.5 6.38071 3.61929 7.5 5 7.5Z" 
+    stroke="black" 
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+  />
+  <path 
+    d="M5 17.5V7.5C5 9.48912 5.79018 11.3968 7.1967 12.8033C8.60322 14.2098 10.5109 15 12.5 15" 
+    stroke="black" 
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+  />
+</svg>
             <span className="text-[9px] font-medium text-gray-600 text-center leading-tight">Recursion Tree</span>
           </div>
 
