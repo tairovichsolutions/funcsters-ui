@@ -1,10 +1,13 @@
+"use client";
+
 import React from 'react';
 import BrainNodeSvg from '../../../../public/svgs/leaderBoard/BrainNodeSvg';
 import FlameIcon from '../../../../public/svgs/leaderBoard/FlameIcon';
 import LightningIcon from '../../../../public/svgs/leaderBoard/LightningIcon';
 import AnimatedProgressBar from './AnimatedProgressBar';
 import SecondaryContainer from '@/components/shared/container/SecondaryContainer';
-
+import { LeaderboardBannerSkeleton } from '@/skeletons/LeaderboardBannerSkeleton';
+import type { CurrentUserRank } from '@/types/leaderboard-types';
 
 // --- Types ---
 interface StatItem {
@@ -12,61 +15,60 @@ interface StatItem {
   value: string | number;
   label: string;
   icon: React.ReactNode;
-  color: string,
+  color: string;
 }
 
-interface DashboardData {
-  rank: number;
-  rankMessage: string;
-  weeklyXp: string;
-  nextRank: number;
-  xpNeeded: number;
-  progressPercentage: number;
-  stats: StatItem[];
+interface LeaderboardBannerProps {
+  currentUserRank: CurrentUserRank | undefined;
+  isLoading: boolean;
 }
 
-// --- Mock Data Array ---
-const dashboardData: DashboardData = {
-  rank: 8,
-  rankMessage: "Top 10! Keep pushing!",
-  weeklyXp: "+ 1,420 XP this week",
-  nextRank: 7,
-  xpNeeded: 150,
-  progressPercentage: 70,
-  stats: [
+function getRankMessage(rank: number): string {
+  if (rank <= 3) return "🏆 You're a champion!";
+  if (rank <= 10) return "Top 10! Keep pushing!";
+  if (rank <= 25) return "Almost there! Keep climbing!";
+  if (rank <= 50) return "Great progress! Keep going!";
+  return "Keep solving to climb up!";
+}
+
+export default function LeaderboardBanner({ currentUserRank, isLoading }: LeaderboardBannerProps) {
+  if (isLoading || !currentUserRank) {
+    return (
+      <SecondaryContainer>
+        <LeaderboardBannerSkeleton />
+      </SecondaryContainer>
+    );
+  }
+
+  const { rank, xpEarnedPeriod, xpNeededForNextRank, totalChallengesSolved, totalXp, currentStreak, longestStreak } = currentUserRank;
+
+  const progressPercentage = xpNeededForNextRank > 0
+    ? Math.min(Math.round((xpEarnedPeriod / (xpEarnedPeriod + xpNeededForNextRank)) * 100), 100)
+    : 100;
+
+  const stats: StatItem[] = [
     {
       id: 'streak',
-      value: 15,
+      value: currentStreak,
       label: 'Day Streak',
-      icon: (
-        <FlameIcon />
-      ),
-      color: "#FEEAD4"
+      icon: <FlameIcon />,
+      color: "#FEEAD4",
     },
     {
       id: 'problems',
-      value: 142,
+      value: totalChallengesSolved,
       label: 'Problems solved',
-      icon: (
-        <BrainNodeSvg />
-      ),
-      color: "#E9E6FC"
+      icon: <BrainNodeSvg />,
+      color: "#E9E6FC",
     },
     {
       id: 'total_xp',
-      value: 320,
+      value: totalXp,
       label: 'Total XP',
-      icon: (
-        <LightningIcon />
-      ),
-      color: "#FEEAD4"
+      icon: <LightningIcon />,
+      color: "#FEEAD4",
     },
-  ],
-};
-
-
-export default function LeaderboardBanner() {
-
+  ];
 
   return (
     <SecondaryContainer>
@@ -95,7 +97,7 @@ export default function LeaderboardBanner() {
                 </defs>
               </svg>
               <span className="relative z-10 text-[28px] font-extrabold text-[#FF480F] mt-1 tracking-tighter">
-                #{dashboardData.rank}
+                #{rank}
               </span>
             </div>
 
@@ -103,17 +105,17 @@ export default function LeaderboardBanner() {
             <div className="flex flex-col">
               <span className="text-white/70 text-sm font-medium mb-0.5">Your Rank</span>
               <h2 className="text-white text-xl md:text-2xl  font-semibold py-1 tracking-tight mb-0.5">
-                🔥 {dashboardData.rankMessage}
+                {getRankMessage(rank)}
               </h2>
               <span className="text-white/80 text-sm font-medium">
-                {dashboardData.weeklyXp}
+                + {xpEarnedPeriod.toLocaleString()} XP earned
               </span>
             </div>
           </div>
 
           {/* Right: Stats Array Mapping */}
           <div className="flex justify-center items-center gap-3 w-full  md:w-auto overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
-            {dashboardData.stats.map((stat) => (
+            {stats.map((stat) => (
               <div
                 key={stat.id}
                 className="bg-white rounded-[10px] p-2 flex flex-col items-center justify-between min-w-[90px] lg:justify-start lg:min-w-[120px]  shrink-0 shadow-sm"
@@ -140,9 +142,9 @@ export default function LeaderboardBanner() {
 
         {/* Replaced with the Client Component */}
         <AnimatedProgressBar
-          nextRank={dashboardData.nextRank}
-          xpNeeded={dashboardData.xpNeeded}
-          progressPercentage={dashboardData.progressPercentage}
+          nextRank={rank > 1 ? rank + 1 : 1}
+          xpNeeded={xpNeededForNextRank}
+          progressPercentage={progressPercentage}
         />
 
       </div>

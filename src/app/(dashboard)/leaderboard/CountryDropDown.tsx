@@ -12,10 +12,25 @@ const COUNTRIES = [
   { name: "Spain", code: "es" },
 ];
 
-export default function CountryDropdown() {
-  const [country, setCountry] = useState("All Countries");
+interface CountryDropdownProps {
+  value?: string;
+  onChange?: (country: string) => void;
+}
+
+export default function CountryDropdown({ value, onChange }: CountryDropdownProps) {
+  const [internalCountry, setInternalCountry] = useState("All Countries");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  // Support both controlled and uncontrolled usage
+  const country = value !== undefined ? value : internalCountry;
+  const handleCountryChange = (newCountry: string) => {
+    if (onChange) {
+      onChange(newCountry);
+    } else {
+      setInternalCountry(newCountry);
+    }
+  };
 
   const selectedCountryData = COUNTRIES.find((c) => c.name === country) || COUNTRIES[0];
 
@@ -54,7 +69,7 @@ export default function CountryDropdown() {
             <button
               key={c.name}
               onClick={() => {
-                setCountry(c.name);
+                handleCountryChange(c.name);
                 setIsDropdownOpen(false);
               }}
               className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${country === c.name
@@ -81,4 +96,4 @@ export default function CountryDropdown() {
       )}
     </div>
   );
-}
+}
