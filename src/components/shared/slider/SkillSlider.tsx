@@ -154,11 +154,11 @@ import { useState } from 'react';
 
 export default function SkillSlider({
     autoplay = true,
-    loop = false, 
+    loop = false,
     speed = 800,
 }: any) {
     const swiperRef = useRef<any>(null);
-    
+
     // State to track if we are at the beginning or end
     const [isBeginning, setIsBeginning] = useState(true);
     const [isEnd, setIsEnd] = useState(false);
@@ -211,7 +211,7 @@ export default function SkillSlider({
                         1024: { slidesPerView: 4.5, spaceBetween: 25 },
                         1280: { slidesPerView: 5.9, spaceBetween: 30 },
                     }}
-                    className="max-w-7xl mx-auto"
+                    className="max-w-480 mx-auto"
                 >
                     {skills.map((item, index) => (
                         <SwiperSlide key={index} className="flex! items-center! justify-center! h-[350px]">

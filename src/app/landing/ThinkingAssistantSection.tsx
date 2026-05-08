@@ -1,14 +1,12 @@
 
-import React from 'react';
-import type { NextPage } from 'next';
-import Head from 'next/head';
-import Image from 'next/image';
-import { Assets } from '@/constants/assets';
-import SecondaryContainer from '@/components/shared/container/SecondaryContainer';
 import { StatCard } from '@/components/animations/AnimatedCounter';
+import SecondaryContainer from '@/components/shared/container/SecondaryContainer';
 import PrimaryHeader from '@/components/shared/Headers/PrimaryHeader';
-  import { Brain, NotebookPen, Sparkle } from 'lucide-react';
-  import { SquareCode, Handshake, Sprout, LaptopMinimalCheck } from 'lucide-react';
+import { Assets } from '@/constants/assets';
+import { Brain, NotebookPen, Sparkle } from 'lucide-react';
+import type { NextPage } from 'next';
+import Image from 'next/image';
+import React from 'react';
 interface LogicFeature {
   id: number;
   icon: React.ReactNode;
@@ -143,7 +141,7 @@ const logicFeatures: LogicFeature[] = [
         </div>
 
             {/* XP and CTA */}
-            <div className="flex flex-col items-center lg:items-start my-5 md:my-0  gap-6 ">
+            <div className="flex flex-col  h-full items-center lg:items-start my-5  md:my-0  gap-6 ">
               <div className="bg-white rounded-xl flex items-center gap-4 pl-4 pr-8 py-3.5 shadow-lg border border-neutral-100 w-full max-w-60">
                 <div className="bg-[#FFC107] text-black w-10 h-10 rounded-full flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">

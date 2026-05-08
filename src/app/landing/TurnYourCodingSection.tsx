@@ -75,8 +75,9 @@ const TurnYourCodingSection: NextPage = () => {
                                     src={Assets.Images.landingPage.banner5}
                                     alt="Activities Calendar Image"
                                     fill
-                                    className="object-contain   "
+                                    className="object-contain    "
                                     sizes="100vw"
+                                    
                                 />
                             </div>
 
@@ -86,7 +87,7 @@ const TurnYourCodingSection: NextPage = () => {
                     </div>
 
                     {/* Right Side: Features and CTA */}
-                    <div className="flex flex-col          ">
+                    <div className="flex flex-col  xl:-ml-12        ">
                         {/* Logic Features List */}
                         <div className='flex flex-col justify-between gap-8 md:gap-10 lg:gap-0  h-full '>
                             {logicFeatures.map(feature => (

@@ -429,10 +429,10 @@ button:not([disabled]),
 
 @keyframes keenlys-marquee {
   from {
-    transform: translateX(0);
+    transform: translateX(-50%);
   }
   to {
-    transform: translateX(-50%);
+    transform: translateX(0);
   } /* move by half because we duplicated items */
 }
 

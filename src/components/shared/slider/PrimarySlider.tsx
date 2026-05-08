@@ -265,11 +265,11 @@ export default function PrimarySlider({
             </SwiperSlide>
           );
         })}
-      </Swiper>
+      </Swiper>   
       <style jsx>{`
   @keyframes keenlys-marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); } /* move by half because we duplicated items */
+    from { transform: translateX(-50%); }
+    to   { transform: translateX(0); } /* move by half because we duplicated items */
   }
 
   .keenlys-marquee-group {

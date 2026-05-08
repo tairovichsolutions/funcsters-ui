@@ -32,7 +32,7 @@ export const AuthModalsProvider = ({
   );
 };
 
-export const useAuthModal = () => {
+export const  useAuthModal = () => {
   const context = useContext(ModalContext);
   if (!context) {
     throw new Error("useAuthModal must be used within an AuthModalsProvider");
