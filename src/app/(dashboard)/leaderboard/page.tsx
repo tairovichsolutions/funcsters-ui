@@ -1,13 +1,36 @@
-import Leaderboard from './Leaderboard';
-import LeaderboardBanner from './LeaderBoardBanner';
+"use client";
 
-const page = () => {
+import { useLeaderboard } from "@/queries/useLeaderboard";
+import { useState } from "react";
+import type { LeaderboardPeriod } from "@/types/leaderboard-types";
+import LeaderboardBanner from "./LeaderBoardBanner";
+import Leaderboard from "./Leaderboard";
+
+const LeaderboardPage = () => {
+  const [selectedPeriod, setSelectedPeriod] = useState<LeaderboardPeriod>("all_time");
+  const [selectedCountry, setSelectedCountry] = useState("All Countries");
+
+  // Convert "All Countries" to empty string for the API
+  const countryParam = selectedCountry === "All Countries" ? "" : selectedCountry;
+  const { data: leaderboardData, isLoading } = useLeaderboard(selectedPeriod, countryParam);
+
   return (
     <>
-      <LeaderboardBanner />
-      <Leaderboard />
+      <LeaderboardBanner
+        currentUserRank={leaderboardData?.currentUserRank}
+        isLoading={isLoading}
+      />
+      <Leaderboard
+        leaderboard={leaderboardData?.leaderboard ?? []}
+        currentUserRank={leaderboardData?.currentUserRank}
+        isLoading={isLoading}
+        selectedPeriod={selectedPeriod}
+        onPeriodChange={setSelectedPeriod}
+        selectedCountry={selectedCountry}
+        onCountryChange={setSelectedCountry}
+      />
     </>
   );
 };
 
-export default page;
+export default LeaderboardPage;

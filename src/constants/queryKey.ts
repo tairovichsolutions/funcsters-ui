@@ -7,4 +7,5 @@ export const QueryKey = {
   GetActivityCalendar: "get-activity-calendar",
   GetMyCommunitySolutions: "get-my-community-solutions",
   GetAllCommunitySolutions: "get-all-community-solutions",
+  GetLeaderboard: "get-leaderboard",
 };
