@@ -81,10 +81,12 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
   // someone wants to join you, or when your join request is accepted, allowing
   // us to disable background polling.
   useEffect(() => {
-    if (!stomp.connected || !currentUser?.id) return;
+    if (!stomp.connected || !currentUsername) return;
     
-    // User-specific events (e.g. JOIN_ACCEPTED, INCOMING_JOIN)
-    const subUser = stomp.subscribe(`/user/${currentUser.id}/queue/pair/events`, () => {
+    // User-specific events (e.g. JOIN_ACCEPTED, INCOMING_JOIN).
+    // Spring's convertAndSendToUser resolves by Principal.getName() which
+    // returns the USERNAME, not the numeric userId.
+    const subUser = stomp.subscribe(`/user/${currentUsername}/queue/pair/events`, () => {
       queryClient.invalidateQueries({ queryKey: pairKeys.all });
     });
 
@@ -99,7 +101,7 @@ export function PairSessionProvider({ children }: PairSessionProviderProps) {
       subUser?.unsubscribe();
       subLobby?.unsubscribe();
     };
-  }, [stomp.connected, currentUser?.id, queryClient, stomp]);
+  }, [stomp.connected, currentUsername, queryClient, stomp]);
 
   const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);

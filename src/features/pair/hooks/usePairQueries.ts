@@ -29,11 +29,13 @@ function useHasUserCookie(): boolean {
  * we no longer need aggressive polling for real-time updates! The STOMP connection
  * pushes events (e.g., JOIN_ACCEPTED, NEW_JOIN, lobby updates) instantly.
  * 
- * We keep a very slow 60-second fallback polling interval here just as a safety 
- * net in case a websocket message is dropped.
+ * We keep a 15-second fallback polling interval as a safety net in case a
+ * WebSocket message is dropped (e.g., brief disconnect, browser throttling).
+ * 60 seconds was too long — users could wait a full minute before seeing an
+ * update if a single STOMP event was missed.
  */
 function usePollInterval(): number {
-  return 60_000; // 60 seconds fallback polling
+  return 15_000; // 15 seconds fallback polling
 }
 
 export const pairKeys = {
@@ -136,10 +138,14 @@ export function useMyActiveSession() {
 }
 
 export function useIncomingJoins(pairRequestId: number | undefined) {
+  const pollMs = usePollInterval();
   return useQuery({
     queryKey: pairKeys.incomingJoins(pairRequestId ?? 0),
     queryFn: () => api.fetchIncomingJoins(pairRequestId!),
+    staleTime: 2_000,
     enabled: pairRequestId != null,
+    refetchInterval: pairRequestId != null ? pollMs : false,
+    refetchIntervalInBackground: false,
   });
 }
 
