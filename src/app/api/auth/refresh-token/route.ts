@@ -40,12 +40,29 @@ export async function POST() {
       );
     }
 
-    // Re-persist the refresh token (backend may have rotated it).
-    cookieStore.set("refreshToken", String(refreshToken), {
+    // Parse the new Set-Cookie headers from the backend response.
+    // The backend rotates the refresh token (deletes the old one and generates a new one).
+    const cookiesFormApi = res.headers.getSetCookie();
+    let newRefreshToken = String(refreshToken);
+    let newMaxAge: number | undefined;
+    let newExpires: Date | undefined;
+
+    if (cookiesFormApi && cookiesFormApi.length > 0) {
+      const cookie2dArr = cookiesFormApi[0]?.split("; ").map((c) => c.split("="));
+      cookie2dArr?.forEach((a) => {
+        if (a[0] === "refreshToken") newRefreshToken = a[1];
+        if (a[0] === "Max-Age") newMaxAge = parseInt(a[1], 10);
+        if (a[0] === "Expires") newExpires = new Date(a[1]);
+      });
+    }
+
+    cookieStore.set("refreshToken", newRefreshToken, {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
+      ...(newMaxAge !== undefined && { maxAge: newMaxAge }),
+      ...(newExpires !== undefined && { expires: newExpires }),
     });
 
     cookieStore.set("accessToken", data.accessToken, {

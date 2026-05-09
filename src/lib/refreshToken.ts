@@ -33,7 +33,7 @@ const processQueue = (token: string) => {
 };
 
 const refreshHttp = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_FUNCSTER_BACKEND_URL, 
+  baseURL: process.env.NEXT_PUBLIC_FUNCSTER_BACKEND_URL,
   withCredentials: true,
 });
 

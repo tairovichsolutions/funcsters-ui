@@ -29,13 +29,10 @@ function useHasUserCookie(): boolean {
  * we no longer need aggressive polling for real-time updates! The STOMP connection
  * pushes events (e.g., JOIN_ACCEPTED, NEW_JOIN, lobby updates) instantly.
  * 
- * We keep a 15-second fallback polling interval as a safety net in case a
- * WebSocket message is dropped (e.g., brief disconnect, browser throttling).
- * 60 seconds was too long — users could wait a full minute before seeing an
- * update if a single STOMP event was missed.
+ * We now rely 100% on event-driven invalidation to keep the UI fresh.
  */
-function usePollInterval(): number {
-  return 15_000; // 15 seconds fallback polling
+function usePollInterval(): false {
+  return false; // Polling disabled, rely entirely on WebSockets
 }
 
 export const pairKeys = {
