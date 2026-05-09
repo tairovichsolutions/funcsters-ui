@@ -129,7 +129,7 @@ export const CodePlaygroundScreen = memo(() => {
       if (editorRef.current) {
         pair.attachEditor(editorRef.current);
       } else {
-        window.setTimeout(tryAttach, 15000000000000);
+        window.setTimeout(tryAttach, 150);
       }
     };
     tryAttach();
