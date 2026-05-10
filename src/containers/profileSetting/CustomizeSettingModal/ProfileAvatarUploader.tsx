@@ -2,6 +2,7 @@
 
 import React from "react";
 import { ImageUploader } from "@/components";
+import { getAvatarUrl } from "@/lib/utils";
 
 type ProfileAvatarUploaderProps = {
   username?: string;
@@ -21,12 +22,7 @@ export const ProfileAvatarUploader: React.FC<ProfileAvatarUploaderProps> = ({
   const fallbackLetter = username?.[0]?.toUpperCase() ?? "";
 
   const imageProp: string | File | null =
-    pendingFile ??
-    (avatarUrl
-      ? avatarUrl.startsWith("http")
-        ? avatarUrl
-        : `http://www.funcsters.io/static${avatarUrl}`
-      : null);
+    pendingFile ?? (avatarUrl ? getAvatarUrl(avatarUrl, username) : null);
 
   return (
     <div>

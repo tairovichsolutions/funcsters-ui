@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useLeaderboard } from "@/queries/useLeaderboard";
 import type { LeaderboardPeriod } from "@/types/leaderboard-types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getAvatarUrl } from "@/lib/utils";
 
 const TABS: { label: string; value: LeaderboardPeriod }[] = [
   { label: "Weekly", value: "weekly" },
@@ -95,7 +96,7 @@ export default function MiniLeaderBoard() {
                 
                 <div className="flex items-center gap-3">
                   <img
-                    src={user.avatarUrl || `https://api.dicebear.com/7.x/identicon/svg?seed=${user.username}`}
+                    src={getAvatarUrl(user.avatarUrl, user.username)}
                     alt={`${user.username}'s avatar`}
                     className="w-7 h-7 rounded-full object-cover bg-gray-200 dark:bg-gray-700"
                   />

@@ -18,5 +18,6 @@ export function resolveAvatarUrl(
     return url;
   }
   // Relative path from the backend static file server
-  return `${process.env.NEXT_PUBLIC_STATIC_FILE_URL || "https://www.funcsters.io/static"}${url}`;
+  const path = url.startsWith("/") ? url : `/${url}`;
+  return `${process.env.NEXT_PUBLIC_STATIC_FILE_URL || "https://www.funcsters.io/static"}${path}`;
 }

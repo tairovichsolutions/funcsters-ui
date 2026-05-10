@@ -13,6 +13,7 @@ import { LanguageBadge } from "./LanguageBadge";
 import CountryDropdown from "./CountryDropDown";
 import { LeaderboardTableSkeleton } from "@/skeletons/LeaderboardTableSkeleton";
 import type { CurrentUserRank, LeaderboardPeriod, LeaderboardUser } from "@/types/leaderboard-types";
+import { getAvatarUrl } from "@/lib/utils";
 
 // --- Map UI labels to API period values ---
 const PERIOD_OPTIONS: { label: string; value: LeaderboardPeriod }[] = [
@@ -139,7 +140,7 @@ export default function Leaderboard({
 
                                             <td className="py-4 px-6 flex items-center gap-2">
                                                 <img
-                                                    src={user.avatarUrl || `https://api.dicebear.com/7.x/identicon/svg?seed=${user.username}`}
+                                                    src={getAvatarUrl(user.avatarUrl, user.username)}
                                                     alt={user.username}
                                                     className="w-10 h-10 rounded-full object-cover bg-gray-200"
                                                 />

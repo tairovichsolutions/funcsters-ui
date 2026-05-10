@@ -5,7 +5,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axiosClient";
 
 type UploadAvatarVariables = {
-  id: string;
   file: File;
 };
 
@@ -20,12 +19,12 @@ export const useProfileAvatar = () => {
   const profileAvatar = async (
     variables: UploadAvatarVariables,
   ): Promise<UploadAvatarResponse> => {
-    const { id, file } = variables;
+    const { file } = variables;
 
     const formData = new FormData();
     formData.append("file", file);
 
-    const url = `/api/auth/profile-avatar/${id}`;
+    const url = `/api/auth/profile-avatar`;
 
     const { status, data } = await apiClient.post(url, formData, {
       headers: {

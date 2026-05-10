@@ -22,6 +22,7 @@ import { useToggleMySolution } from "@/mutations/useToggleMySolution";
 import { useDeleteMySolution } from "@/mutations/useDeleteMySolution";
 import { useLanguageImplementations } from "@/context/languageImplementationsContext";
 import { CommentsSection } from "./CommentsSection";
+import { getAvatarUrl } from "@/lib/utils";
 
 const Dot = () => (
   <span className="size-1! rounded-full bg-black  dark:bg-white" />
@@ -119,7 +120,7 @@ export const CommunitySolutionsCard = React.memo(
           <div className="flex gap-3 py-1">
             <DisplayAvatar
               FallbackName={firstLetter}
-              src={`http://www.funcsters.io/static/${author?.avatarUrl}`}
+              src={getAvatarUrl(author?.avatarUrl, author?.name)}
             />
             <div className="space-y-1">
               <div className="flex gap-2 items-center">

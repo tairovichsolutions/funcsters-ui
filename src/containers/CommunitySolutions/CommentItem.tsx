@@ -5,6 +5,7 @@ import { DisplayAvatar } from "@/components/ui/display-avatar";
 import { cn } from "@/lib";
 import { useCreateComment, useDeleteComment, useEditComment, useVoteComment } from "@/mutations/useCommentsMutations";
 import { useReplies } from "@/queries/useComments";
+import { getAvatarUrl } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCurrentUser } from "@/features/pair/hooks/useCurrentUser";
 import {
@@ -148,7 +149,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
   return (
     <div className={cn("flex gap-3 w-full", isReply ? "mt-4" : "mt-5")}>
 
-      <DisplayAvatar FallbackName={firstLetter} src={comment.user?.avatarUrl} />
+      <DisplayAvatar FallbackName={firstLetter} src={getAvatarUrl(comment.user?.avatarUrl, comment.user?.name)} />
       <div className="flex-1 space-y-1 overflow-hidden">
         <div className="flex justify-between items-center relative group">
           <div className="flex  items-center gap-2  mt-[6.5px]">

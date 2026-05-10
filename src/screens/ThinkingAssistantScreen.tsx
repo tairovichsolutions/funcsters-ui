@@ -15,7 +15,7 @@ import { MDMarkdown } from "@/components/MDMarkdown";
 import { useTheme } from "next-themes";
 import GPTLikeInput from "./inputdara";
 import { ArrowUp, ChevronRight, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, getAvatarUrl } from "@/lib/utils";
 import { DisplayAvatar } from "@/components/ui";
 import RevealImage from "./RevealImage";
 
@@ -56,9 +56,7 @@ export const ThinkingAssistantScreen = () => {
 
   const user = userData?.data?.user;
   const userAvatarUrl = user?.avatarUrl
-    ? user?.avatarUrl.startsWith("https")
-      ? user.avatarUrl
-      : `https://www.funcsters.io/static${user.avatarUrl}`
+    ? getAvatarUrl(user.avatarUrl)
     : Assets.Images.Avatar;
   const userFirstLetter = user?.username?.charAt(0)?.toUpperCase() || "U";
 

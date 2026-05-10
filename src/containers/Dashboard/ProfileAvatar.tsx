@@ -10,6 +10,7 @@ import { useLogout } from "@/mutations/useLogout";
 import { DisplayAvatar } from "@/components/ui/display-avatar";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { useProfileSettingModal } from "@/providers/ProfileSettingModalsProvider";
+import { getAvatarUrl } from "@/lib/utils";
 
 export const ProfileAvatar = ({ userData }: any) => {
   const { mutate: doLogout } = useLogout();
@@ -28,13 +29,7 @@ export const ProfileAvatar = ({ userData }: any) => {
         <div className="flex gap-3 items-center">
           <DisplayAvatar
             FallbackName={firstLetter}
-            src={
-              userData?.avatarUrl
-                ? userData?.avatarUrl.startsWith("https")
-                  ? userData.avatarUrl
-                  : `https://www.funcsters.io/static${userData.avatarUrl}`
-                : null
-            }
+            src={userData?.avatarUrl ? getAvatarUrl(userData.avatarUrl) : null}
           />
           <div className=" text-start md:block  hidden">
             <h4 className="text-sm font-semibold max-w-28 truncate text-nowrap text-mid-slate">
@@ -56,13 +51,7 @@ export const ProfileAvatar = ({ userData }: any) => {
         >
           <DisplayAvatar
             FallbackName={firstLetter}
-            src={
-              userData?.avatarUrl
-                ? userData?.avatarUrl.startsWith("https")
-                  ? userData.avatarUrl
-                  : `https://www.funcsters.io/static${userData.avatarUrl}`
-                : null
-            }
+            src={userData?.avatarUrl ? getAvatarUrl(userData.avatarUrl) : null}
           />
           <div className=" text-start ">
             <h4 className="text-sm font-semibold w-28 truncate text-nowrap text-mid-slate">

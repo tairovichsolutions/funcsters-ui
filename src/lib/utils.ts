@@ -48,3 +48,15 @@ export function buildRange(
 
   return [1, "...", ...middle, "...", totalPages];
 }
+
+export function getAvatarUrl(avatarUrl?: string | null, username?: string): string {
+  if (avatarUrl) {
+    if (avatarUrl.startsWith("http")) {
+      return avatarUrl;
+    }
+    const path = avatarUrl.startsWith("/") ? avatarUrl : `/${avatarUrl}`;
+    const baseUrl = process.env.NEXT_PUBLIC_STATIC_FILE_URL || "https://www.funcsters.io/static";
+    return `${baseUrl}${path}`;
+  }
+  return `https://api.dicebear.com/7.x/identicon/svg?seed=${username || "default"}`;
+}

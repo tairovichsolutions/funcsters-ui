@@ -80,7 +80,7 @@ export const PersonalInformation = () => {
         isUserNameChange: isUserNameChange,
       });
       if (avatarFile) {
-        await uploadAvatar({ id: userData.id, file: avatarFile });
+        await uploadAvatar({ file: avatarFile });
       }
       // if (profileRes?.status === 200) {
       //   toast.success(profileRes?.data?.message ?? "Profile updated");
