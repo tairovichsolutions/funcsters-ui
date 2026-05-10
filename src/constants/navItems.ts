@@ -13,6 +13,11 @@ export const NavItems: NavItemProps[] = [
     name: "Challenges",
     href: Navigation.Challenges,
   },
+  {
+    id: "1",
+    name: "Leaderboard",
+    href: Navigation.Leaderboard,
+  },
 ];
 
 export const ChallengesItems: NavItemProps[] = [

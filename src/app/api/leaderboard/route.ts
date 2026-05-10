@@ -12,7 +12,8 @@ export async function GET(request: NextRequest) {
   const country = searchParams.get("country") || "";
 
   try {
-    let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/leaderboard?period=${period}&page=${page}&size=${size}`;
+    const endpoint = accessToken ? "/v1/leaderboard" : "/v1/guest/leaderboard";
+    let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${endpoint}?period=${period}&page=${page}&size=${size}`;
     if (country) {
       url += `&country=${encodeURIComponent(country)}`;
     }

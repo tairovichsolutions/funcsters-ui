@@ -2,6 +2,7 @@ export const Navigation = {
   Root: "/",
   NotFound: "/*",
   Challenges: `/challenges`,
+  Leaderboard: `/leaderboard`,
   CrashCourse: `/crash-course`,
   ChallengesDetail: (id: string) => `/challenges/${id}/detail`,
   CommunitySolutions: (id: string) => `/challenges/${id}/community-solutions`,

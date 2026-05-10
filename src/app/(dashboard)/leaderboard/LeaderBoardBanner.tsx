@@ -8,6 +8,9 @@ import AnimatedProgressBar from './AnimatedProgressBar';
 import SecondaryContainer from '@/components/shared/container/SecondaryContainer';
 import { LeaderboardBannerSkeleton } from '@/skeletons/LeaderboardBannerSkeleton';
 import type { CurrentUserRank } from '@/types/leaderboard-types';
+import { useIsLoggedIn } from '@/hooks/useIsLoggedIn';
+import { useAuthModal } from '@/providers/AuthModalsProvider';
+import { Button } from '@/components/ui/button';
 
 // --- Types ---
 interface StatItem {
@@ -32,7 +35,55 @@ function getRankMessage(rank: number): string {
 }
 
 export default function LeaderboardBanner({ currentUserRank, isLoading }: LeaderboardBannerProps) {
-  if (isLoading || !currentUserRank) {
+  const loggedIn = useIsLoggedIn();
+  const { openModal } = useAuthModal();
+
+  if (isLoading) {
+    return (
+      <SecondaryContainer>
+        <LeaderboardBannerSkeleton />
+      </SecondaryContainer>
+    );
+  }
+
+  if (!loggedIn) {
+    return (
+      <SecondaryContainer>
+        <div className="w-full mx-auto p-6 md:p-10 bg-blue-base rounded-xl shadow-lg flex flex-col md:flex-row items-center justify-between gap-8 select-none relative overflow-hidden">
+          {/* Subtle background decoration */}
+          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div className="flex flex-col gap-3 relative z-10 text-center md:text-left">
+            <h2 className="text-white text-2xl md:text-3xl font-extrabold tracking-tight">
+              Ready to join the ranks? 🚀
+            </h2>
+            <p className="text-white/90 text-sm md:text-lg font-medium max-w-xl">
+              Log in to see where you stand, track your daily streak, and compete with other funcsters to climb the global leaderboard.
+            </p>
+          </div>
+          
+          <div className="flex flex-row gap-4 shrink-0 relative z-10 w-full md:w-auto justify-center">
+            <Button 
+              onClick={() => openModal("login")} 
+              className="bg-white text-blue-base hover:bg-white/90 font-bold px-8 py-6 text-base rounded-xl transition-all hover:scale-105 active:scale-95 shadow-md"
+            >
+              Log In
+            </Button>
+            <Button 
+              onClick={() => openModal("signUp")} 
+              variant="outline"
+              className="bg-transparent text-white border-white/30 hover:bg-white/10 hover:border-white font-bold px-8 py-6 text-base rounded-xl transition-all hover:scale-105 active:scale-95"
+            >
+              Sign Up
+            </Button>
+          </div>
+        </div>
+      </SecondaryContainer>
+    );
+  }
+
+  if (!currentUserRank) {
     return (
       <SecondaryContainer>
         <LeaderboardBannerSkeleton />

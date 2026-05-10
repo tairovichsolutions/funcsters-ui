@@ -28,6 +28,6 @@ export const useLeaderboard = (period: LeaderboardPeriod = "all_time", country: 
   return useQuery({
     queryKey: [QueryKey.GetLeaderboard, period, country, loggedIn],
     queryFn: fetcher,
-    enabled: loggedIn,
+    enabled: true,
   });
 };
