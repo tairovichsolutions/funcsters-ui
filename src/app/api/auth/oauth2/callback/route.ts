@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     const cookieStore = await cookies();
     const body = await request.json();
 
-    const { accessToken, id } = body ?? {};
+    const { accessToken, id, refreshToken } = body ?? {};
 
     if (!accessToken || id == null) {
       return NextResponse.json(
@@ -41,15 +41,14 @@ export async function POST(request: Request) {
       maxAge: 90 * 24 * 60 * 60, // 90 days
     });
 
-    // FIX: Forward the refreshToken into the Next.js cookie jar.
-    // The backend's CustomOAuth2SuccessHandler sets a refreshToken cookie
-    // on the redirect response (domain=funcsters.io). The browser stores it
-    // and sends it with this POST request. We re-set it here with consistent
-    // settings (sameSite=lax) matching the login/register routes so that
-    // the refresh-token rotation works correctly after the 1-hour access
-    // token expires. Without this, OAuth2 users would be silently logged
-    // out when the access token expired.
-    const refreshToken = cookieStore.get("refreshToken")?.value;
+    // FIX: Set the refreshToken from the request body (passed via URL data
+    // from the backend redirect). Previously, the backend set a cookie with
+    // sameSite=None on the redirect response AND this route read it back and
+    // re-set it with sameSite=Lax — creating TWO cookies with the same name
+    // but different attributes. Logout could only clear one, leaving the
+    // other orphaned. Now the backend passes the refresh token through the
+    // URL data (same channel as the accessToken), and this route is the
+    // ONLY place that sets the cookie — guaranteeing a single entry.
     if (refreshToken) {
       cookieStore.set("refreshToken", refreshToken, {
         path: "/",

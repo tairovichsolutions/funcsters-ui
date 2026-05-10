@@ -19,13 +19,13 @@ export default function OAuthCallbackPage() {
       try {
         const decoded = decodeURIComponent(code);
         const parsedData = JSON.parse(decoded);
-        const { accessToken, id } = parsedData;
+        const { accessToken, id, refreshToken } = parsedData;
 
         // POST to our server-side API route so cookies are set httpOnly
         const res = await fetch("/api/auth/oauth2/callback", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ accessToken, id }),
+          body: JSON.stringify({ accessToken, id, refreshToken }),
         });
 
         if (!res.ok) {
