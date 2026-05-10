@@ -23,7 +23,7 @@ interface PageEnvelope<T> {
   size: number;
 }
 
-const BASE = "/api/v1/pair";
+const BASE = "/api/pair";
 
 async function unwrap<T>(promise: Promise<{ data: ApiEnvelope<T> }>): Promise<T> {
   const { data } = await promise;

@@ -14,9 +14,9 @@ import { NextRequest, NextResponse } from "next/server";
  *   - Direct browser -> backend calls would have no way to attach the header
  *   - This server-side proxy bridges the two: cookie in, bearer out
  *
- * The upstream is `${NEXT_PUBLIC_API_BASE_URL}/v1/pair/${path}` which resolves
- * to `http://localhost:8091/api/v1/pair/${path}` locally and the production
- * backend URL in deployed environments.
+ * The frontend calls `/api/pair/${path}` which resolves upstream to
+ * `${NEXT_PUBLIC_API_BASE_URL}/v1/pair/${path}` (e.g.
+ * `http://localhost:8091/api/v1/pair/${path}` locally).
  */
 
 async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
