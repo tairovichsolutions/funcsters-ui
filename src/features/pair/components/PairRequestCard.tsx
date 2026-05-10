@@ -6,6 +6,8 @@ import { DifficultyLevelTypes } from "@/types";
 import { useCreateJoinRequest, useMyActiveJoin, useMyActiveRequest, useMyActiveSession } from "../hooks/usePairQueries";
 import type { PairRequestCardDto } from "../types";
 
+import { resolveAvatarUrl } from "../utils/resolveAvatarUrl";
+
 /**
  * Lobby / request list card. Mirrors the Figma "Jane Cooper" card structure:
  *   avatar + name/role | XP + country
@@ -43,7 +45,7 @@ export function PairRequestCard({ card }: { card: PairRequestCardDto }) {
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="relative h-9 w-9 shrink-0 rounded-full bg-muted">
-            <img alt="jahid" className="rounded-full " src={"https://lh3.googleusercontent.com/a/ACg8ocJR6GXSaAwU-Qs1DTc7B8zuObbvc4bh2UXPB2XKnB7e_WN6uEE=s96-c"} />
+            <img alt={card.hostUsername} className="rounded-full h-9 w-9 object-cover" src={resolveAvatarUrl(card.hostProfileImageUrl, card.hostUsername)} />
           </span>
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold">{card.hostUsername}</div>
@@ -52,28 +54,15 @@ export function PairRequestCard({ card }: { card: PairRequestCardDto }) {
         </div>
         <div className="shrink-0 text-right text-xs">
           <div className="text-muted-foreground">
-
-            {card.hostCountry ? (
-              <>
-                {/* {card.hostCountryFlag && <span className="mr-1">{card.hostCountryFlag}</span>} */}
-
-                <div className="flex flex-col justify-end gap-1">
-                  <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs   text-center   py-0.5 rounded-md">{card?.xp  } xp</span>
-                  <div className="flex gap-1">
-                    {card.hostCountryFlag && <img src={card.hostCountryFlag || ''} className="w-3 h-3" alt="country flag" />}
-                    <span className="text-[10px]">{card.hostCountry}</span>
-                  </div>
+            <div className="flex flex-col justify-end gap-1">
+              <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs text-center py-0.5 rounded-md">{card?.xp ?? 0} xp</span>
+              {card.hostCountry && (
+                <div className="flex gap-1 items-center justify-end">
+                  {card.hostCountryFlag && <img src={card.hostCountryFlag} className="w-3 h-3" alt="country flag" />}
+                  <span className="text-[10px]">{card.hostCountry}</span>
                 </div>
-              </>
-            ) :
-              <div className="flex flex-col gap-1">
-                <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs  py-0.5 rounded-md">00 xp</span>
-                <div className="flex gap-1">
-                  <span></span>
-                  <span className="text-[10px]"></span>
-                </div>
-              </div>
-            }
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -91,7 +80,7 @@ export function PairRequestCard({ card }: { card: PairRequestCardDto }) {
             <DifficultyChip
               className="text-[10px] px-4 py-[5px] mb-1"
               level={(card?.challengeDifficulty as DifficultyLevelTypes)}
-            />           
+            />
           </span>
         )}
       </div>

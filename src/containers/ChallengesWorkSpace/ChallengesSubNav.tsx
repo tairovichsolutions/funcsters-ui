@@ -1,18 +1,18 @@
 "use client";
 
 import { cn } from "@/lib";
-import { getCookie } from "cookies-next";
 import { Iconify } from "@/components/ui/iconify";
 import { ChallengesItems } from "@/constants/navItems";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthModal } from "@/providers/AuthModalsProvider";
 import { usePathname, useParams, useRouter } from "next/navigation";
+import { useIsLoggedIn } from "@/hooks/useIsLoggedIn";
 
 export const ChallengesSubNav = () => {
   const router = useRouter();
   const { id } = useParams();
   const pathname = usePathname();
-  const userId = getCookie("userId");
+  const loggedIn = useIsLoggedIn();
   const { openModal } = useAuthModal();
 
   const protectedTabNames = ["Community Solutions", ];
@@ -24,7 +24,7 @@ export const ChallengesSubNav = () => {
   ) => {
     const isProtected = protectedTabNames.includes(itemName);
 
-    if (isProtected && !userId) {
+    if (isProtected && !loggedIn) {
       e.preventDefault();
       openModal("loginRequiredModal");
       return;

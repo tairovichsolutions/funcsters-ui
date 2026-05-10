@@ -34,7 +34,7 @@ export async function POST() {
 
     // Delete all auth cookies from the Next.js cookie jar.
     cookieStore.delete("accessToken");
-    cookieStore.delete("userId");
+    cookieStore.delete("loggedIn");
     cookieStore.delete("refreshToken");
 
     return NextResponse.json(

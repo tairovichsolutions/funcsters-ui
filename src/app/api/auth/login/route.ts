@@ -29,47 +29,45 @@ export async function POST(request: Request) {
     }
 
     const cookiesFormApi = res.headers.getSetCookie();
-
-    const cookieObj: any = {};
-
-    const cookie2dArr = cookiesFormApi[0]?.split("; ").map((c) => c.split("="));
-
-    cookie2dArr.map((a) => {
-      if (
-        cookieObj[`${a[0]}`] === "Secure" ||
-        cookieObj[`${a[0]}`] === "HttpOnly"
-      ) {
-        cookieObj[`${a[0]}`] = true;
-      } else {
-        cookieObj[`${a[0]}`] = a[1];
-      }
-    });
+    const refreshTokenMatch = cookiesFormApi.find((c) => c.includes("refreshToken="))?.match(/refreshToken=([^;]+)/);
+    const refreshTokenValue = refreshTokenMatch ? refreshTokenMatch[1] : null;
 
     cookieStore.set("accessToken", data?.accessToken, {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
+      maxAge: 3600, // 1 hour — matches JWT expiration
     });
 
-    cookieStore.set("userId", String(data.id), {
+    // SECURITY FIX: Replaced the `userId` cookie (which enabled IDOR attacks)
+    // with a simple `loggedIn` flag. This carries no sensitive data — just a
+    // signal for the UI to know the user is authenticated before API calls resolve.
+    cookieStore.set("loggedIn", "true", {
       path: "/",
       httpOnly: false,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
+      maxAge: 90 * 24 * 60 * 60, // 90 days
     });
 
-    cookieStore.set("refreshToken", String(cookieObj.refreshToken), {
-      path: cookieObj.Path,
-      httpOnly: true,
-      sameSite: "lax",
-      secure: true,
-      maxAge: cookieObj["Max-Age"],
-      expires: cookieObj.Expires,
-    });
+    if (refreshTokenValue) {
+      cookieStore.set("refreshToken", refreshTokenValue, {
+        path: "/",
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 90 * 24 * 60 * 60, // 90 days
+      });
+    }
+
+    // SECURITY: Strip the accessToken from the response body before
+    // returning to the client. The token is already set as an httpOnly
+    // cookie — exposing it in the JSON body would allow XSS to steal it.
+    const { accessToken: _strip, ...safeData } = data;
 
     return NextResponse.json(
-      { message: "Login Successful.", user: data },
+      { message: "Login Successful.", user: safeData },
       { status: 200 },
     );
   } catch (e) {

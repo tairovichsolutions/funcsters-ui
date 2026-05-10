@@ -106,7 +106,7 @@ export const ChallengeProgressCardV2: React.FC<ChallengeProgressCardProps> =
             </div>
 
             <div className="relative w-[74px] h-[74px] min-w-[74px] flex-shrink-0">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={74} minHeight={74}>
                 <PieChart className="[&_.recharts-surface]:outline-none">
                   <Pie
                     data={chartData}

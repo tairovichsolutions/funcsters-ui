@@ -6,7 +6,7 @@ import { cn } from "@/lib";
 import { useCreateComment, useDeleteComment, useEditComment, useVoteComment } from "@/mutations/useCommentsMutations";
 import { useReplies } from "@/queries/useComments";
 import { useQueryClient } from "@tanstack/react-query";
-import { getCookie } from "cookies-next";
+import { useCurrentUser } from "@/features/pair/hooks/useCurrentUser";
 import {
   ChevronDown,
   ChevronUp, CircleChevronDown, CircleChevronUp, MessageCircle, MoreHorizontal
@@ -50,7 +50,8 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
   const contentRef = useRef<HTMLParagraphElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
-  const currentUserId = getCookie("userId");
+  const { data: currentUser } = useCurrentUser();
+  const currentUserId = currentUser?.id;
 
   const { data: repliesResponse, isLoading: repliesLoading } = useReplies(
     showReplies ? comment.id : null,

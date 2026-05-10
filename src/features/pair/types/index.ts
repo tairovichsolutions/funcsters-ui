@@ -28,9 +28,10 @@ export type PairSessionStatus = "AWAITING_GUIDELINES" | "ACTIVE" | "ENDED";
 export interface PairRequestCardDto {
   description?: string;
   occupation?:string;
-  xp?:string;
+  xp?: number;
   id: number;
   hostUsername: string;
+  hostProfileImageUrl: string | null;
   hostCountry: string | null;
   hostCountryFlag: string | null;
   challengeId: number;
@@ -48,12 +49,16 @@ export interface PairRequestCardDto {
 
 export interface PairJoinRequestDto {
   id: number;
+  joinerProfileImageUrl: string | null;
   joinerOccupation:string;
+  joinerCountry: string | null;
   joinedCountryFlag:string;
+  joinerXp: number;
   xp:number|string;
   pairRequestId: number;
   joinerUsername: string;
-  joinerCountry: string | null;
+  challengeTitle?: string;
+  challengeSlug?: string;
   status: PairJoinRequestStatus;
   createdAtEpochMs: number;
   expiresAtEpochMs: number;

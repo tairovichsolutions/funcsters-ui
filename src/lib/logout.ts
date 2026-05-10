@@ -1,5 +1,6 @@
 import axios from "axios";
 import { markLoggedOut } from "./refreshToken";
+import { notifyLoginStateChanged } from "@/hooks/useIsLoggedIn";
 import { QueryClient } from "@tanstack/react-query";
 
 /**
@@ -22,10 +23,9 @@ export function registerQueryClient(qc: QueryClient) {
  */
 function clearClientCookies() {
   if (typeof document === "undefined") return;
-  // accessToken is httpOnly so we can't clear it from JS — but userId
-  // and any non-httpOnly tokens we can.
   const expires = "Thu, 01 Jan 1970 00:00:00 GMT";
-  document.cookie = `userId=; path=/; expires=${expires}`;
+  // SECURITY FIX: Clear the `loggedIn` flag (replaced the old `userId` cookie).
+  document.cookie = `loggedIn=; path=/; expires=${expires}`;
   // accessToken is httpOnly, we rely on the server route to delete it.
   // But clear any non-httpOnly copies just in case.
   document.cookie = `accessToken=; path=/; expires=${expires}`;
@@ -43,6 +43,7 @@ export async function logout() {
 
   // 3. Clear client-side cookies immediately.
   clearClientCookies();
+  notifyLoginStateChanged();
 
   // 4. Call the server to delete httpOnly cookies and invalidate the
   //    refresh token in the database.

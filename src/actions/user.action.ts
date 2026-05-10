@@ -2,12 +2,19 @@
 
 import { cookies } from "next/headers";
 
+/**
+ * SECURITY FIX: Fetch the current user via the backend's /v1/users/me
+ * endpoint which derives the user identity from the JWT token.
+ *
+ * Previously, this action read a `userId` cookie (non-httpOnly, client-
+ * manipulable) and used it to call /v1/users/${userId}, allowing any user
+ * to view any other user's profile by changing the cookie in DevTools.
+ */
 export async function getUser() {
   const cookieStore = await cookies();
-  const userId = cookieStore.get("userId")?.value;
   const accessToken = cookieStore.get("accessToken")?.value;
 
-  if (!userId || !accessToken) {
+  if (!accessToken) {
     return {
       success: true,
       authenticated: false,
@@ -16,13 +23,11 @@ export async function getUser() {
   }
 
   const res = await fetch(
-    `${process.env.FUNCSTER_BACKEND_URL}/v1/users/${userId}`,
+    `${process.env.FUNCSTER_BACKEND_URL}/v1/users/me`,
     {
-      headers: accessToken
-        ? {
-            Authorization: `Bearer ${accessToken}`,
-          }
-        : undefined,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
       cache: "no-store",
     },
   );

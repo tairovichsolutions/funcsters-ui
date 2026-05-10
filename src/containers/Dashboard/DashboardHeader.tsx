@@ -13,6 +13,7 @@ import { useGetUserProfile } from "@/queries/useGetUserProfile";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ProfileAvatarSkeleton } from "@/skeletons/ProfileAvatarSkeleton";
 import { LobbyNavLink } from "@/features/pair/components/LobbyNavLink";
+import { useIsLoggedIn } from "@/hooks/useIsLoggedIn";
 
 export const DashboardHeader = () => {
   const router = useRouter();
@@ -21,6 +22,7 @@ export const DashboardHeader = () => {
   const searchParams = useSearchParams();
   const action = searchParams.get("auth");
 
+  const loggedIn = useIsLoggedIn();
   const { data: userData, isLoading } = useGetUserProfile();
   const isAuthenticated = userData?.data?.authenticated || false;
 
@@ -34,6 +36,10 @@ export const DashboardHeader = () => {
     }
     router.replace("/challenges");
   }, [action, openModal, router]);
+
+  // Treat as loading if: (1) we know we're logged in but data hasn't arrived yet,
+  // or (2) the useIsLoggedIn hook hasn't resolved yet (first render).
+  const showSkeleton = (loggedIn && isLoading) || (loggedIn && !userData);
 
   return (
     <header className="py-3.5 h-[60px] w-full px-4 lg:px-12 dashboard-headers-class flex justify-between items-center">
@@ -61,7 +67,7 @@ export const DashboardHeader = () => {
           <SvgColor src={Assets.Svgs.NotificationIcon} />
         </Button>
 
-        {isLoading ? (
+        {showSkeleton ? (
           <ProfileAvatarSkeleton />
         ) : isAuthenticated ? (
           <ProfileAvatar userData={userData?.data?.user} />

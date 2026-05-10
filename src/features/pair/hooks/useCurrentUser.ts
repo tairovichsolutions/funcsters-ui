@@ -3,12 +3,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/axiosClient";
 
-function readCookie(name: string): string | null {
-  if (typeof document === "undefined") return null;
-  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
-  return match ? decodeURIComponent(match[1]) : null;
-}
-
 interface UserDto {
   id: number;
   username: string;
@@ -19,26 +13,32 @@ interface UserDto {
 }
 
 /**
- * Reads the userId from the non-httpOnly cookie (set at login) and fetches
- * the current user's profile via the existing /api/users/[id] route.
+ * SECURITY FIX: Fetch the current user via /api/users/me instead of
+ * reading the userId cookie and calling /api/users/${userId}.
+ *
+ * The userId cookie was non-httpOnly and could be tampered with in
+ * DevTools, enabling IDOR (Insecure Direct Object Reference) attacks.
+ * Now the backend derives the user identity from the JWT token.
+ *
  * Result is cached by React Query so the fetch only happens once per session.
  */
+import { useIsLoggedIn } from "@/hooks/useIsLoggedIn";
+
 export function useCurrentUser() {
-  // `enabled` re-evaluates on every render, so when the user logs in and the
-  // cookie appears, the query fires. Avoids hitting /api/users/X with an empty
-  // cookie on logged-out pages.
-  const userId = typeof document !== "undefined" ? readCookie("userId") : null;
+  const loggedIn = useIsLoggedIn();
+
   return useQuery({
-    queryKey: ["current-user", userId],
+    queryKey: ["current-user", loggedIn],
     queryFn: async (): Promise<UserDto | null> => {
-      if (!userId) return null;
+      if (!loggedIn) return null;
       const { data } = await apiClient.get<{ authenticated: boolean; user?: UserDto }>(
-        `/api/users/${userId}`
+        `/api/users/me`
       );
       return data.authenticated && data.user ? data.user : null;
     },
     staleTime: 5 * 60_000,
     gcTime: 30 * 60_000,
-    enabled: !!userId,
+    retry: false,
+    enabled: loggedIn,
   });
 }

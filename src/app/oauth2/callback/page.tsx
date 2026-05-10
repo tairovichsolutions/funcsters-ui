@@ -3,6 +3,8 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { CustomLoading } from "@/components/ui/custom-loading";
+import { clearLoggedOut } from "@/lib/refreshToken";
+import { notifyLoginStateChanged } from "@/hooks/useIsLoggedIn";
 
 export default function OAuthCallbackPage() {
   const router = useRouter();
@@ -30,6 +32,9 @@ export default function OAuthCallbackPage() {
           console.error("OAuth2 callback route failed:", await res.text());
           return;
         }
+
+        clearLoggedOut();
+        notifyLoginStateChanged();
 
         const redirectUrl = localStorage.getItem("redirectUrl");
         router.replace(redirectUrl || "/");

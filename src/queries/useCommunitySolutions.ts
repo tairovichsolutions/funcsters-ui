@@ -1,9 +1,9 @@
 "use client";
 
-import { getCookie } from "cookies-next";
 import { apiClient } from "@/lib/axiosClient";
 import { QueryKey } from "@/constants/queryKey";
 import { useQuery } from "@tanstack/react-query";
+import { useIsLoggedIn } from "@/hooks/useIsLoggedIn";
 
 export type SortKey = "top_rated" | "most_genius" | "most_solid" | "newest";
 
@@ -13,7 +13,7 @@ export const useCommunitySolutions = (
   enabledFlag: boolean,
   sort: SortKey = "top_rated",
 ) => {
-  const userId = getCookie("userId");
+  const loggedIn = useIsLoggedIn();
   const fetchSolutions = async () => {
     const { data } = await apiClient.get(`/api/community-solution`, {
       params: { challengeId, languageId, sort },
@@ -29,6 +29,6 @@ export const useCommunitySolutions = (
       sort,
     ],
     queryFn: fetchSolutions,
-    enabled: !!userId && enabledFlag,
+    enabled: loggedIn && enabledFlag,
   });
 };

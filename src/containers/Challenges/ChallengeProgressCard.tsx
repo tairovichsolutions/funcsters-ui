@@ -105,7 +105,7 @@ export const ChallengeProgressCard: React.FC<ChallengeProgressCardProps> =
             <StatsScorePoints value={totalCompleted} label="Completed" />
           </div>
           <div className="flex h-full!    me-3 flex-col items-center justify-center">
-            <ResponsiveContainer width="100%" height={"100%"}>
+            <ResponsiveContainer width="100%" height={"100%"} minWidth={150} minHeight={150}>
               <PieChart className="[&_.recharts-layer]:outline-hidden [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-hidden">
                 <Pie
                   data={chartData}

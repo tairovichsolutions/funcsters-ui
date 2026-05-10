@@ -5,6 +5,7 @@ import { Clock, X } from "lucide-react";
 import { useAcceptJoin, useIncomingJoins, useMyActiveRequest, useRejectJoin } from "../hooks/usePairQueries";
 import type { PairJoinRequestDto } from "../types";
 import { formatCountdown, useCountdown } from "./GlobalPairAlertBanner";
+import { resolveAvatarUrl } from "../utils/resolveAvatarUrl";
 
 /**
  * Right-side drawer that appears when a broadcasting host clicks the
@@ -97,7 +98,7 @@ export function IncomingJoinsSidebar({ open, onClose, pairRequestId, onAccept }:
 
 
         <div className="overflow-y-auto ">
-          <p className="mb-4 text-sm  bg-[#FBFCFC] text-muted-foreground">
+          <div className="mb-4 text-sm  bg-[#FBFCFC] text-muted-foreground">
             {joins.length === 0
               ? isLoading
                 ? "Loading…"
@@ -209,7 +210,7 @@ export function IncomingJoinsSidebar({ open, onClose, pairRequestId, onAccept }:
                   </div>
                 </div>
               : <span className="p-4 bg-[#FBFCFC]!  border-b-[1px]">{joins.length} developer {joins.length === 1 ? "" : "s"} want to pair with you on this challenge.</span>}
-          </p>
+          </div>
           {/* <div>{JSON.stringify(joins)}</div> */}
           <div className="space-y-3 p-4">
             {joins.map((jr) => (
@@ -246,7 +247,7 @@ function JoinRequestCard({
         <div className="flex items-center gap-2">
           <div className="relative h-8 w-8 shrink-0 rounded-full bg-muted">
             <span className="relative h-10 w-10 shrink-0 rounded-full bg-muted">
-              <img alt="jahid" className="rounded-full " src={"https://lh3.googleusercontent.com/a/ACg8ocJR6GXSaAwU-Qs1DTc7B8zuObbvc4bh2UXPB2XKnB7e_WN6uEE=s96-c"} />
+              <img alt={jr.joinerUsername} className="rounded-full h-8 w-8 object-cover" src={resolveAvatarUrl(jr.joinerProfileImageUrl, jr.joinerUsername)} />
               <div className="h-2 w-2 bg-[#00C851] rounded-full absolute -bottom-0.5 -right-0.5"></div>
             </span>
           </div>
@@ -255,10 +256,10 @@ function JoinRequestCard({
             <div className="text-xs text-[#64748B]">{jr?.joinerOccupation || "Developer"}</div>
           </div>
         </div>
-        {jr.joinerUsername ? (
-          <div className="flex flex-col justify-end gap-1">
-            <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs   text-center   py-0.5 rounded-md">{jr?.xp || 0} xp</span>
-            <div className="flex gap-1">
+        <div className="flex flex-col justify-end gap-1">
+          <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs text-center py-0.5 rounded-md">{jr?.joinerXp ?? jr?.xp ?? 0} xp</span>
+          {jr.joinerCountry && (
+            <div className="flex gap-1 items-center justify-end">
               {jr.joinedCountryFlag && !jr.joinedCountryFlag.includes('undefined') && (
                 <img
                   src={jr.joinedCountryFlag}
@@ -268,16 +269,8 @@ function JoinRequestCard({
               )}
               <span className="text-[10px]">{jr.joinerCountry}</span>
             </div>
-          </div>
-        ) :
-          <div className="flex flex-col gap-1">
-            <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs  py-0.5 rounded-md">0 xp</span>
-            <div className="flex gap-1">
-              <span></span>
-              <span className="text-[10px]"></span>
-            </div>
-          </div>
-        }
+          )}
+        </div>
 
       </div>
 

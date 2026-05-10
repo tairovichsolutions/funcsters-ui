@@ -18,9 +18,9 @@ import TurnYourCodingSection from "./TurnYourCodingSection";
 export default async function Landing() {
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
-  const userId = cookieStore.get("userId")?.value;
+  const loggedIn = cookieStore.get("loggedIn")?.value;
 
-  // if (token && userId) redirect("/challenges");
+  // if (token && loggedIn) redirect("/challenges");
   const logos = Assets.Images.sponsoredIcons || [];
   const tutorItems = logos.map((path, index) => ({
     src: path,

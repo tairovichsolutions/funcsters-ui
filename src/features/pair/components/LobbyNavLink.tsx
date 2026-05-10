@@ -2,10 +2,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLobbyCount } from "../hooks/usePairQueries";
+import { resolveAvatarUrl } from "../utils/resolveAvatarUrl";
 
 interface LobbyUser {
   hostId: string;
-  hostAvatarUrl: string;
+  hostAvatarUrl: string | null;
   hostUsername: string;
 }
 
@@ -21,7 +22,7 @@ export function LobbyNavLink({ className = "" }: { className?: string }) {
 
   const users = data?.users ?? [];
   const count = data?.count ?? 0;
-console.log({data});
+
   return (
     <Link
       href="/pair/lobby"
@@ -35,7 +36,7 @@ console.log({data});
         {users.slice(0, 3).map((user, index) => (
           <img
             key={user.hostId}
-            src={user.hostAvatarUrl}
+            src={resolveAvatarUrl(user.hostAvatarUrl, user.hostUsername)}
             alt={user.hostUsername}
             style={{ zIndex: (index + 1) * 10 }}
             className="relative h-8 w-8 rounded-full border-2 border-white object-cover dark:border-gray-900"

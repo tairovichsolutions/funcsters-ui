@@ -3,10 +3,10 @@
 import { apiClient } from "@/lib/axiosClient";
 import { QueryKey } from "@/constants/queryKey";
 import { useQuery } from "@tanstack/react-query";
-import { getCookie } from "cookies-next";
+import { useIsLoggedIn } from "@/hooks/useIsLoggedIn";
 
 export const useMetrics = () => {
-  const userId = getCookie("userId");
+  const loggedIn = useIsLoggedIn();
 
   const fetcher = async () => {
     const { data } = await apiClient.get("/api/metrics");
@@ -17,6 +17,6 @@ export const useMetrics = () => {
   return useQuery({
     queryKey: [QueryKey.GetMetrics],
     queryFn: fetcher,
-    enabled: !!userId,
+    enabled: loggedIn,
   });
 };

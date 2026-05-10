@@ -12,9 +12,9 @@ const navItems = [
 export default async function Home() {
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
-  const userId = cookieStore.get("userId")?.value;
+  const loggedIn = cookieStore.get("loggedIn")?.value;
 
-  if (token && userId) redirect("/challenges");
+  if (loggedIn) redirect("/challenges");
 
   return (
     <div className="scroll-smooth bg-black bg-[url('/images/landing-page-bg.png')] bg-cover font-magseva h-full w-full">

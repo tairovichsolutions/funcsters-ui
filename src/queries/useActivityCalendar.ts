@@ -1,12 +1,12 @@
 "use client";
 
-import { getCookie } from "cookies-next";
 import { apiClient } from "@/lib/axiosClient";
 import { QueryKey } from "@/constants/queryKey";
 import { useQuery } from "@tanstack/react-query";
+import { useIsLoggedIn } from "@/hooks/useIsLoggedIn";
 
 export const useActivityCalendar = (month?: string) => {
-  const userId = getCookie("userId");
+  const loggedIn = useIsLoggedIn();
 
   const fetcher = async () => {
     const { data } = await apiClient.get("/api/activity-calendar", {
@@ -18,6 +18,6 @@ export const useActivityCalendar = (month?: string) => {
   return useQuery({
     queryKey: [QueryKey.GetActivityCalendar, month],
     queryFn: fetcher,
-    enabled: !!userId,
+    enabled: loggedIn,
   });
 };

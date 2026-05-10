@@ -29,14 +29,16 @@ export async function POST(request: Request) {
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
+      maxAge: 3600, // 1 hour — matches JWT expiration
     });
 
-    // userId — NOT httpOnly (the client reads it for UI state)
-    cookieStore.set("userId", String(id), {
+    // SECURITY FIX: Replaced the `userId` cookie with a simple `loggedIn` flag.
+    cookieStore.set("loggedIn", "true", {
       path: "/",
       httpOnly: false,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
+      maxAge: 90 * 24 * 60 * 60, // 90 days
     });
 
     return NextResponse.json(

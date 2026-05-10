@@ -2,6 +2,49 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+/**
+ * SECURITY FIX: Fetch the current user's profile using the JWT-derived
+ * identity on the backend. Previously, the frontend sent the userId from
+ * a non-httpOnly cookie which could be tampered with in DevTools.
+ */
+export async function GET() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  if (!accessToken) {
+    return NextResponse.json({ authenticated: false }, { status: 401 });
+  }
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/users/me`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        cache: "no-store",
+      },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return NextResponse.json({ authenticated: false }, { status: 401 });
+    }
+
+    return NextResponse.json({ authenticated: true, user: data });
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        authenticated: false,
+        message: error?.message || "Something went wrong",
+      },
+      { status: error?.status || 500 },
+    );
+  }
+}
 export async function DELETE() {
   const cookieStore = cookies();
   try {
@@ -37,7 +80,7 @@ export async function DELETE() {
     // Success! Now clear session cookies
     const store = await cookieStore;
     store.delete("accessToken");
-    store.delete("userId");
+    store.delete("loggedIn");
     store.delete("refreshToken");
 
     return NextResponse.json({

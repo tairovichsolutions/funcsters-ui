@@ -40,26 +40,36 @@ export async function POST() {
       );
     }
 
-    // Re-persist the refresh token (backend may have rotated it).
-    cookieStore.set("refreshToken", String(refreshToken), {
-      path: "/",
-      httpOnly: true,
-      sameSite: "lax",
-      secure: true,
-    });
+    const cookiesFormApi = res.headers.getSetCookie();
+    const refreshTokenMatch = cookiesFormApi.find((c) => c.includes("refreshToken="))?.match(/refreshToken=([^;]+)/);
+    const newRefreshToken = refreshTokenMatch ? refreshTokenMatch[1] : refreshToken;
+
+    // Re-persist the refresh token (backend rotated it).
+    if (newRefreshToken) {
+      cookieStore.set("refreshToken", String(newRefreshToken), {
+        path: "/",
+        httpOnly: true,
+        sameSite: "lax",
+        secure: true,
+        maxAge: 90 * 24 * 60 * 60, // 90 days
+      });
+    }
 
     cookieStore.set("accessToken", data.accessToken, {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
+      maxAge: 3600, // 1 hour — matches JWT expiration
     });
 
-    cookieStore.set("userId", String(data.id), {
+    // SECURITY FIX: Replaced the `userId` cookie with a simple `loggedIn` flag.
+    cookieStore.set("loggedIn", "true", {
       path: "/",
       httpOnly: false,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
+      maxAge: 90 * 24 * 60 * 60, // 90 days
     });
 
     return NextResponse.json(data, { status: res.status });

@@ -1,28 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import * as api from "../api/pairApi";
 import type { LobbyFilter } from "../api/pairApi";
 import type { CreatePairRequestDto } from "../types";
-
-/**
- * Quick sync check: does the browser have a userId cookie? If not, the user
- * is logged out and none of the pair-programming endpoints will accept the
- * request. We gate all auth-required queries on this so a logged-out visit
- * to /challenges or /landing doesn't spam 401s in the console.
- */
-function useHasUserCookie(): boolean {
-  const [present, setPresent] = useState(false);
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-    const check = () => setPresent(/(?:^|;\s*)userId=/.test(document.cookie));
-    check();
-    // Re-check periodically; login/logout on the same tab will flip this.
-    const id = window.setInterval(check, 5_000);
-    return () => window.clearInterval(id);
-  }, []);
-  return present;
-}
+import { useIsLoggedIn } from "@/hooks/useIsLoggedIn";
 
 /**
  * With the introduction of global STOMP event subscriptions in PairSessionProvider,
@@ -52,7 +32,7 @@ export const pairKeys = {
 // ---------- read ----------
 
 export function useLobbyCount() {
-  const authed = useHasUserCookie();
+  const authed = useIsLoggedIn();
   const pollMs = usePollInterval();
   return useQuery({
     queryKey: pairKeys.lobbyCount(),
@@ -71,7 +51,7 @@ export function useLobbyCount() {
 }
 
 export function useLobby(filter: LobbyFilter) {
-  const authed = useHasUserCookie();
+  const authed = useIsLoggedIn();
   const pollMs = usePollInterval();
   return useQuery({
     queryKey: pairKeys.lobby(filter),
@@ -88,7 +68,7 @@ export function useLobby(filter: LobbyFilter) {
 }
 
 export function useMyActiveRequest() {
-  const authed = useHasUserCookie();
+  const authed = useIsLoggedIn();
   const pollMs = usePollInterval();
   return useQuery({
     queryKey: pairKeys.myRequest(),
@@ -104,7 +84,7 @@ export function useMyActiveRequest() {
 }
 
 export function useMyActiveJoin() {
-  const authed = useHasUserCookie();
+  const authed = useIsLoggedIn();
   const pollMs = usePollInterval();
   return useQuery({
     queryKey: pairKeys.myJoin(),
@@ -120,7 +100,7 @@ export function useMyActiveJoin() {
 }
 
 export function useMyActiveSession() {
-  const authed = useHasUserCookie();
+  const authed = useIsLoggedIn();
   const pollMs = usePollInterval();
   return useQuery({
     queryKey: pairKeys.mySession(),
@@ -152,7 +132,7 @@ export function useSession(sessionId: number | undefined) {
 }
 
 export function useIceServers(enabled = true) {
-  const authed = useHasUserCookie();
+  const authed = useIsLoggedIn();
   return useQuery({
     queryKey: pairKeys.iceServers(),
     queryFn: api.fetchIceServers,
