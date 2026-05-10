@@ -101,7 +101,9 @@ export const SelectBox = React.forwardRef<
                 placeholder={
                   <span className="text-muted-foreground ">{placeholder}</span>
                 }
-              ></Select.Value>
+              >
+                {selected ? selected.label : undefined}
+              </Select.Value>
 
               {selected?.endIcon && (
                 <span className="shrink-0">{selected?.endIcon}</span>
