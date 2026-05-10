@@ -42,15 +42,13 @@ export const PersonalInformation = () => {
     return countryList()
       .getData()
       .map((country) => ({
-        label: (
-          <div className="flex items-center gap-2">
-            <img
-              src={`https://flagcdn.com/24x18/${country.value.toLowerCase()}.png`}
-              alt={country.label}
-              className="w-5 h-5 rounded-sm object-cover"
-            />
-            <span>{country.label}</span>
-          </div>
+        label: country.label,
+        startIcon: (
+          <img
+            src={`https://flagcdn.com/24x18/${country.value.toLowerCase()}.png`}
+            alt={country.label}
+            className="w-5 h-5 rounded-sm object-cover"
+          />
         ),
         value: country.label,
         code: country.value,
