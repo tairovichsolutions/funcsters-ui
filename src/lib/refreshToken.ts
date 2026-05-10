@@ -59,16 +59,21 @@ export const refreshAccessToken = async (): Promise<string> => {
   isRefreshing = true;
 
   try {
-    const { data } = await refreshHttp.post("/api/auth/refresh-token", {});
-    const token = data.accessToken;
-    if (!token) {
-      // Backend returned a response but without a valid token (e.g. 200 with
-      // empty body on an already-invalidated refresh token).
+    const { data, status } = await refreshHttp.post("/api/auth/refresh-token", {});
+
+    // The server route updates the httpOnly accessToken cookie.
+    // We no longer receive the raw token in the response body (stripped
+    // for XSS safety). The interceptor's retry works because Next.js API
+    // routes read the updated cookie — not the Authorization header.
+    if (status !== 200 || data?.message) {
       processQueue("");
-      throw new Error("No accessToken in refresh response");
+      throw new Error(data?.message || "Refresh failed");
     }
-    processQueue(token);
-    return token;
+
+    // Return a truthy sentinel so the interceptor knows to retry.
+    // The actual auth is handled by the httpOnly cookie.
+    processQueue("refreshed");
+    return "refreshed";
   } catch (error) {
     processQueue("");
     throw error;

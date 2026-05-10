@@ -37,11 +37,10 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const newToken = await refreshAccessToken();
-        if (!newToken) {
-          return Promise.reject(error);
-        }
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        await refreshAccessToken();
+        // The httpOnly accessToken cookie has been updated by the server
+        // route. Next.js API routes read from the cookie store, not from
+        // the Authorization header, so simply retrying is sufficient.
         return apiClient(originalRequest);
       } catch {
         // Refresh failed — do NOT call logout() from here. The

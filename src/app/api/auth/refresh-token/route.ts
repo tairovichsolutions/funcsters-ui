@@ -72,7 +72,13 @@ export async function POST() {
       maxAge: 90 * 24 * 60 * 60, // 90 days
     });
 
-    return NextResponse.json(data, { status: res.status });
+    // SECURITY: Strip the accessToken from the response body before
+    // returning to the client. The token is already set as an httpOnly
+    // cookie — exposing it in the JSON body would allow XSS to steal it.
+    // This matches the pattern used by /api/auth/login and /api/auth/register.
+    const { accessToken: _strip, ...safeData } = data;
+
+    return NextResponse.json(safeData, { status: res.status });
   } catch (err: any) {
     return NextResponse.json(
       { message: err?.message || "Something went wrong in refreshToken" },

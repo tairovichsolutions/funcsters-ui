@@ -41,6 +41,25 @@ export async function POST(request: Request) {
       maxAge: 90 * 24 * 60 * 60, // 90 days
     });
 
+    // FIX: Forward the refreshToken into the Next.js cookie jar.
+    // The backend's CustomOAuth2SuccessHandler sets a refreshToken cookie
+    // on the redirect response (domain=funcsters.io). The browser stores it
+    // and sends it with this POST request. We re-set it here with consistent
+    // settings (sameSite=lax) matching the login/register routes so that
+    // the refresh-token rotation works correctly after the 1-hour access
+    // token expires. Without this, OAuth2 users would be silently logged
+    // out when the access token expired.
+    const refreshToken = cookieStore.get("refreshToken")?.value;
+    if (refreshToken) {
+      cookieStore.set("refreshToken", refreshToken, {
+        path: "/",
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 90 * 24 * 60 * 60, // 90 days — matches login/register
+      });
+    }
+
     return NextResponse.json(
       { message: "OAuth2 login successful." },
       { status: 200 },
