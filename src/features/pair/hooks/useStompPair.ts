@@ -2,6 +2,7 @@
 
 import { Client, type IMessage, type StompSubscription } from "@stomp/stompjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { apiClient } from "@/lib/axiosClient";
 
 /**
  * STOMP-over-WebSocket client hook. Cookies carry the JWT on the /ws upgrade
@@ -61,9 +62,15 @@ export function useStompPair(opts: UseStompPairOptions = {}): StompPairClient {
       },
       onStompError: (frame) => {
         onError?.(new Error(frame.headers.message ?? "STOMP error"));
+        // Force Axios to intercept the failure and either refresh the token
+        // or log the user out, breaking the infinite WS retry loop.
+        apiClient.get("/api/users/me").catch(() => {});
       },
       onWebSocketError: (evt) => {
         onError?.(evt);
+        // Force Axios to intercept the failure and either refresh the token
+        // or log the user out, breaking the infinite WS retry loop.
+        apiClient.get("/api/users/me").catch(() => {});
       },
     });
 

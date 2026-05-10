@@ -2,6 +2,7 @@
 import { getCookie } from "cookies-next";
 import { refreshAccessToken, isMarkedLoggedOut } from "./refreshToken";
 import { apiClient } from "./axiosClient";
+import { logout } from "./logout";
 
 apiClient.interceptors.request.use((config) => {
   // If a logout is in progress, skip attaching the token entirely so
@@ -43,10 +44,14 @@ apiClient.interceptors.response.use(
         // the Authorization header, so simply retrying is sufficient.
         return apiClient(originalRequest);
       } catch {
-        // Refresh failed — do NOT call logout() from here. The
-        // refresh failure during logout is expected and calling
-        // logout again would create an infinite loop. Simply reject
-        // so the caller (React Query, mutation, etc.) handles it.
+        // Refresh failed — the refresh token is invalid or expired.
+        // We must do a hard logout here to clear the frontend state
+        // (the loggedIn cookie) so that we don't leave the UI in a
+        // permanently "authenticated but unauthorized" state, which
+        // would cause infinite background retries (e.g. STOMP WebSockets).
+        if (!isMarkedLoggedOut()) {
+          logout().catch(() => {});
+        }
         return Promise.reject(error);
       }
     }
