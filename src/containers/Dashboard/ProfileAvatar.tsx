@@ -29,7 +29,7 @@ export const ProfileAvatar = ({ userData }: any) => {
         <div className="flex gap-3 items-center">
           <DisplayAvatar
             FallbackName={firstLetter}
-            src={userData?.avatarUrl ? getAvatarUrl(userData.avatarUrl) : null}
+            src={userData?.avatarUrl ? getAvatarUrl(userData.avatarUrl) : undefined}
           />
           <div className=" text-start md:block  hidden">
             <h4 className="text-sm font-semibold max-w-28 truncate text-nowrap text-mid-slate">
@@ -51,7 +51,7 @@ export const ProfileAvatar = ({ userData }: any) => {
         >
           <DisplayAvatar
             FallbackName={firstLetter}
-            src={userData?.avatarUrl ? getAvatarUrl(userData.avatarUrl) : null}
+            src={userData?.avatarUrl ? getAvatarUrl(userData.avatarUrl) : undefined}
           />
           <div className=" text-start ">
             <h4 className="text-sm font-semibold w-28 truncate text-nowrap text-mid-slate">
