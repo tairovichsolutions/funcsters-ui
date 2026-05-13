@@ -55,7 +55,7 @@ export const ResetPasswordFormModal: React.FC = () => {
       const res = await forgotPasswordFc({ email: resetEmail });
       if (res?.status === 200) {
         setFieldValue("otp", "");
-        toast.success("OTP resent successfully");
+        toast.success("If applicable, a new code has been sent.");
       } else {
         toast.error("Failed to resend OTP");
       }
@@ -88,6 +88,9 @@ export const ResetPasswordFormModal: React.FC = () => {
                 <span onClick={() => openModal("forgotPassword")} className="underline text-primary font-semibold cursor-pointer">
                   Change.
                 </span>
+              </p>
+              <p className="font-normal text-[11px] text-medium-gray italic mt-1">
+                If an account with this email exists and supports password login, you'll receive a reset code shortly.
               </p>
             </div>
 
