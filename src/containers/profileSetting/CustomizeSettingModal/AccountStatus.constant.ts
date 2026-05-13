@@ -3,6 +3,7 @@ export interface ConnectionItem {
   name: string;
   Icon: string;
   connected: boolean;
+  identifier?: string;
 }
 
 export const initialConnections: ConnectionItem[] = [
