@@ -4,7 +4,9 @@ import { ReactNode, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Assets } from "@/constants/assets";
 import { SocialLoginButtons } from "@/containers/AuthModals/SocialLoginButtons";
+import { useAuthModal } from "@/providers/AuthModalsProvider";
 import { usePathname } from "next/navigation";
+import { SvgColor } from "@/components";
 
 interface RegistrationLayoutType {
   image?: string;
@@ -20,10 +22,10 @@ export const RegistrationLayout = ({
   className,
 }: RegistrationLayoutType) => {
   const pathname = usePathname();
+  const { authError } = useAuthModal();
 
   useEffect(() => {
     if (!pathname) return;
-
     localStorage.setItem("redirectUrl", pathname);
   }, [pathname]);
 
@@ -65,8 +67,22 @@ export const RegistrationLayout = ({
         <div className="flex flex-col gap-5 mt-5 items-center">
           <h2 className="font-semibold text-sm">Continue with </h2>
           <SocialLoginButtons />
+
+          {authError && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 rounded-xl border border-destructive/20 bg-destructive/5 flex items-start gap-3 w-full"
+            >
+
+              <p className="text-destructive font-medium text-[12px] leading-relaxed">
+                {authError}
+              </p>
+            </motion.div>
+          )}
         </div>
       </motion.div>
     </div>
   );
 };
+

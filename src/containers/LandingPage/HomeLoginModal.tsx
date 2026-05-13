@@ -30,7 +30,6 @@ const HomeLoginModal = ({ open, onClose }: any) => {
       const res = await loginfc(values);
       if (res?.status === 200 && res?.data?.user) {
         openModal("loginSuccessfully");
-        toast.success("Login Successfully");
         router.refresh();
       } else {
         console.error("Unexpected response:", res);
