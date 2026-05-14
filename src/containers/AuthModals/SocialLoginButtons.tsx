@@ -64,7 +64,10 @@ export const SocialLoginButtons: React.FC = () => {
       // Listener for popup results
       const messageListener = async (event: MessageEvent) => {
         // SECURITY: Only accept messages from our backend origin
-        if (event.origin !== OAUTH2_BASE_URL) return;
+        // Use URL constructor to normalize origins (removes trailing slashes)
+        const expectedOrigin = new URL(OAUTH2_BASE_URL).origin;
+        if (event.origin !== expectedOrigin) return;
+
         if (event.data?.type === "PORTAL_AUTH_RESULT") {
           window.removeEventListener("message", messageListener);
           const { status, message } = event.data;

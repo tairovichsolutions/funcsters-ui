@@ -73,7 +73,8 @@ export const CustomizeSettingModal = () => {
 
       const listener = (event: MessageEvent) => {
         // SECURITY: Only accept messages from our backend origin
-        if (event.origin !== OAUTH2_BASE_URL) return;
+        const expectedOrigin = new URL(OAUTH2_BASE_URL).origin;
+        if (event.origin !== expectedOrigin) return;
         if (event.data?.type === "PORTAL_AUTH_RESULT") {
           window.removeEventListener("message", listener);
           if (event.data.status === "success") {
