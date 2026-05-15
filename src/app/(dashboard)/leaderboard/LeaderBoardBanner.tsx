@@ -7,7 +7,7 @@ import LightningIcon from '../../../../public/svgs/leaderBoard/LightningIcon';
 import AnimatedProgressBar from './AnimatedProgressBar';
 import SecondaryContainer from '@/components/shared/container/SecondaryContainer';
 import { LeaderboardBannerSkeleton } from '@/skeletons/LeaderboardBannerSkeleton';
-import type { CurrentUserRank } from '@/types/leaderboard-types';
+import type { CurrentUserRank, LeaderboardPeriod } from '@/types/leaderboard-types';
 import { useIsLoggedIn } from '@/hooks/useIsLoggedIn';
 import { useAuthModal } from '@/providers/AuthModalsProvider';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ interface StatItem {
 interface LeaderboardBannerProps {
   currentUserRank: CurrentUserRank | undefined;
   isLoading: boolean;
+  selectedPeriod: LeaderboardPeriod;
 }
 
 function getRankMessage(rank: number): string {
@@ -34,7 +35,25 @@ function getRankMessage(rank: number): string {
   return "Keep solving to climb up!";
 }
 
-export default function LeaderboardBanner({ currentUserRank, isLoading }: LeaderboardBannerProps) {
+function getXpMessage(xp: number, period: LeaderboardPeriod): string {
+  if (xp > 0) {
+    switch (period) {
+      case "weekly": return `+ ${xp.toLocaleString()} XP earned this week!`;
+      case "monthly": return `+ ${xp.toLocaleString()} XP earned this month!`;
+      case "all_time": return `${xp.toLocaleString()} XP earned since you registered!`;
+      default: return `+ ${xp.toLocaleString()} XP earned`;
+    }
+  }
+  
+  switch (period) {
+    case "weekly": return "No XP earned this week yet.";
+    case "monthly": return "No XP earned this month.";
+    case "all_time": return "Time to make your mark! Start a challenge! 🚀";
+    default: return "No XP earned for this period.";
+  }
+}
+
+export default function LeaderboardBanner({ currentUserRank, isLoading, selectedPeriod }: LeaderboardBannerProps) {
   const loggedIn = useIsLoggedIn();
   const { openModal } = useAuthModal();
 
@@ -114,12 +133,14 @@ export default function LeaderboardBanner({ currentUserRank, isLoading }: Leader
     },
     {
       id: 'total_xp',
-      value: totalXp,
-      label: 'Total XP',
+      value: selectedPeriod === 'all_time' ? totalXp : xpEarnedPeriod,
+      label: selectedPeriod === 'weekly' ? 'Weekly XP' : selectedPeriod === 'monthly' ? 'Monthly XP' : 'Total XP',
       icon: <LightningIcon />,
       color: "#FEEAD4",
     },
   ];
+
+    const hasXp = selectedPeriod === "all_time" ? totalXp > 0 : xpEarnedPeriod > 0;
 
   return (
     <SecondaryContainer>
@@ -148,7 +169,7 @@ export default function LeaderboardBanner({ currentUserRank, isLoading }: Leader
                 </defs>
               </svg>
               <span className="relative z-10 text-[28px] font-extrabold text-[#FF480F] mt-1 tracking-tighter">
-                #{rank}
+                {hasXp ? `#${rank}` : "—"}
               </span>
             </div>
 
@@ -156,10 +177,10 @@ export default function LeaderboardBanner({ currentUserRank, isLoading }: Leader
             <div className="flex flex-col">
               <span className="text-white/70 text-sm font-medium mb-0.5">Your Rank</span>
               <h2 className="text-white text-xl md:text-2xl  font-semibold py-1 tracking-tight mb-0.5">
-                {getRankMessage(rank)}
+                {hasXp ? getRankMessage(rank) : "Ready to rank up?"}
               </h2>
               <span className="text-white/80 text-sm font-medium">
-                + {xpEarnedPeriod.toLocaleString()} XP earned
+                {getXpMessage(xpEarnedPeriod, selectedPeriod)}
               </span>
             </div>
           </div>
@@ -193,9 +214,10 @@ export default function LeaderboardBanner({ currentUserRank, isLoading }: Leader
 
         {/* Replaced with the Client Component */}
         <AnimatedProgressBar
-          nextRank={rank > 1 ? rank + 1 : 1}
+          nextRank={rank > 1 ? rank - 1 : 1}
           xpNeeded={xpNeededForNextRank}
           progressPercentage={progressPercentage}
+          label={!hasXp ? "Progress to Leaderboard" : undefined}
         />
 
       </div>

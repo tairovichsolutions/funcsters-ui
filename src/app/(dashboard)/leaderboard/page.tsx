@@ -7,7 +7,7 @@ import LeaderboardBanner from "./LeaderBoardBanner";
 import Leaderboard from "./Leaderboard";
 
 const LeaderboardPage = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState<LeaderboardPeriod>("all_time");
+  const [selectedPeriod, setSelectedPeriod] = useState<LeaderboardPeriod>("weekly");
   const [selectedCountry, setSelectedCountry] = useState("All Countries");
 
   // Convert "All Countries" to empty string for the API
@@ -19,6 +19,7 @@ const LeaderboardPage = () => {
       <LeaderboardBanner
         currentUserRank={leaderboardData?.currentUserRank}
         isLoading={isLoading}
+        selectedPeriod={selectedPeriod}
       />
       <Leaderboard
         leaderboard={leaderboardData?.leaderboard ?? []}
@@ -28,6 +29,7 @@ const LeaderboardPage = () => {
         onPeriodChange={setSelectedPeriod}
         selectedCountry={selectedCountry}
         onCountryChange={setSelectedCountry}
+        availableCountries={leaderboardData?.availableCountries ?? []}
       />
     </>
   );

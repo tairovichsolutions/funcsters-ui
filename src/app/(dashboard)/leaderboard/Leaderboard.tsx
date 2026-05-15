@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { Tooltip } from "react-tooltip";
+import { formatDistanceToNowStrict, format } from "date-fns";
 import SecondaryContainer from "@/components/shared/container/SecondaryContainer";
 import { useRef } from "react";
 import FlameIconV2 from "../../../../public/svgs/leaderBoard/FlameIconV2";
@@ -30,6 +32,7 @@ interface LeaderboardProps {
     onPeriodChange: (period: LeaderboardPeriod) => void;
     selectedCountry: string;
     onCountryChange: (country: string) => void;
+    availableCountries: string[];
 }
 
 export default function Leaderboard({
@@ -40,6 +43,7 @@ export default function Leaderboard({
     onPeriodChange,
     selectedCountry,
     onCountryChange,
+    availableCountries,
 }: LeaderboardProps) {
     const currentUserRef = useRef<HTMLTableRowElement>(null);
 
@@ -57,29 +61,18 @@ export default function Leaderboard({
         }
     };
 
-    const getTimePeriodLabel = (): string => {
-        switch (selectedPeriod) {
-            case "weekly":
-                return "this wk";
-            case "monthly":
-                return "this mo";
-            case "all_time":
-                return "all time";
-        }
-    };
+
 
     return (
         <SecondaryContainer>
             <div className=" bg-dashboard-background  text-[0F172A] relative py-10">
-                <div className=" mx-auto    overflow-hidden ">
+                <div className=" mx-auto ">
 
 
 
                     <div className="p-6  bg-white rounded-2xl  ">
-                        <span className="text-sm font-semibold text-[#0F172A] ">Time Period</span>
-                        <div className=" mt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
-
-
+                        {/* <span className="text-sm font-semibold text-[#0F172A] ">Time Period</span> */}
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
 
                             <div className="flex  gap-2  w-full sm:w-max">
                                 <div className="flex  justify-between  w-full sm:w-max gap-2 md:gap-3  rounded-lg">
@@ -97,7 +90,11 @@ export default function Leaderboard({
                                     ))}
                                 </div>
                             </div>
-<CountryDropdown value={selectedCountry} onChange={onCountryChange}/>
+                            <CountryDropdown 
+                                value={selectedCountry} 
+                                onChange={onCountryChange} 
+                                availableCountries={availableCountries} 
+                            />
 
                             <div className="relative hidden w-full sm:w-max    sm:mt-0">
                             </div>
@@ -114,7 +111,9 @@ export default function Leaderboard({
                                     <th className="py-4 px-6 w-48 min-w-[250px]">Languages</th>
                                     <th className="py-4 px-6 w-48">Streak</th>
                                     <th className="py-4 px-6 w-48">Country</th>
-                                    <th className="py-4 px-6 text-right w-32">XP</th>
+                                    <th className="py-4 px-6 text-right w-32">
+                                        {selectedPeriod === "weekly" ? "Weekly XP" : selectedPeriod === "monthly" ? "Monthly XP" : "Total XP"}
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#EFF0F3]">
@@ -163,7 +162,7 @@ export default function Leaderboard({
 
 
                                             <td className="py-4 px-6">
-                                                <div className="flex gap-1.5">
+                                                <div className="flex gap-2.5">
                                                     {user.languages.map((lang, index) => (
                                                         <LanguageBadge key={index} name={lang} className="w-6 h-6 rounded  transition-transform" />
                                                     ))}
@@ -194,7 +193,7 @@ export default function Leaderboard({
                                                     )}
                                                     <div className="flex flex-col">
                                                         <span className="text-base text-black   ">
-                                                           {user.country || "—"}
+                                                            {user.country || "—"}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -204,11 +203,14 @@ export default function Leaderboard({
                                             <td className="py-4 px-6 text-right">
                                                 <div className="flex flex-col items-end">
                                                     <span className="font-bold text-[#2563EB] text-base">
-                                                        {user.totalXp.toLocaleString()}
+                                                        {(selectedPeriod === "all_time" ? user.totalXp : user.periodXp).toLocaleString()} XP
                                                     </span>
-                                                    <span className="text-xs text-[#16A34A] font-medium">
-                                                        +{user.periodXp}{" "}
-                                                        {getTimePeriodLabel()}
+                                                    <span 
+                                                        className="text-[10px] text-[#94A3B8] font-normal leading-none mt-1 cursor-help border-b border-dotted border-[#94A3B8]/40 hover:text-blue-base transition-colors"
+                                                        data-tooltip-id="xp-timestamp-tooltip"
+                                                        data-tooltip-content={`Exact time: ${format(new Date(user.xpSince), 'PPPpp')}`}
+                                                    >
+                                                        {formatDistanceToNowStrict(new Date(user.xpSince), { addSuffix: true })}
                                                     </span>
                                                 </div>
                                             </td>
@@ -226,7 +228,7 @@ export default function Leaderboard({
 
 
 
-                {!isLoading && currentUserRank && (
+                {!isLoading && currentUserRank && (selectedPeriod === "all_time" ? currentUserRank.totalXp > 0 : currentUserRank.xpEarnedPeriod > 0) && (
                     <button
                         onClick={scrollToUser}
                         className="fixed -bottom-16  md:bottom-1  right-8 md:right-[calc((100vw-768px)/2+20px)] lg:right-[calc((100vw-1024px)/2+90px)] xl:right-[calc((100vw-1280px)/2+100px)] 2xl:right-[calc((100vw-1536px)/2+230px)] z-50 group hover:scale-110 transition-transform duration-300 drop-shadow-[0_8px_16px_rgba(59,130,246,0.4)] cursor-pointer"
@@ -253,6 +255,8 @@ export default function Leaderboard({
         }
       `}} />
             </div>
+            <Tooltip id="xp-timestamp-tooltip" className="z-[100] !rounded-lg !px-3 !py-2 !text-xs !bg-[#0F172A] !opacity-100 shadow-xl" />
+            <Tooltip id="lang-tooltip" place="top" className="z-[100] !rounded-lg !px-3 !py-2 !text-xs !bg-[#0F172A] !opacity-100 shadow-xl" />
         </SecondaryContainer>
     );
 }

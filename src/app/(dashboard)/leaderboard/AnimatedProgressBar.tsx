@@ -6,9 +6,10 @@ interface AnimatedProgressBarProps {
   nextRank: number;
   xpNeeded: number;
   progressPercentage: number;
+  label?: string;
 }
 
-export default function AnimatedProgressBar({ nextRank, xpNeeded, progressPercentage }: AnimatedProgressBarProps) {
+export default function AnimatedProgressBar({ nextRank, xpNeeded, progressPercentage, label }: AnimatedProgressBarProps) {
   const [progress, setProgress] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -42,7 +43,7 @@ export default function AnimatedProgressBar({ nextRank, xpNeeded, progressPercen
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center text-white text-xs font-medium">
-        <span>Progress to Rank #{nextRank}</span>
+        <span>{label || `Progress to Rank #${nextRank}`}</span>
         <span>{xpNeeded} XP needed</span>
       </div>
 

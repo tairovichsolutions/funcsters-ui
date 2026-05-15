@@ -34,12 +34,10 @@ export interface CurrentUserRank {
   totalChallengesSolved: number;
   totalXp: number;
   currentStreak: number;
-  longestStreak: number;
-}
-
 export interface LeaderboardResponse {
   currentUserRank: CurrentUserRank;
   leaderboard: LeaderboardUser[];
+  availableCountries: string[];
   totalItems: number;
   totalPages: number;
   currentPage: number;
