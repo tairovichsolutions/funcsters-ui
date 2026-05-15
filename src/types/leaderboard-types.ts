@@ -34,6 +34,9 @@ export interface CurrentUserRank {
   totalChallengesSolved: number;
   totalXp: number;
   currentStreak: number;
+  longestStreak: number;
+}
+
 export interface LeaderboardResponse {
   currentUserRank: CurrentUserRank;
   leaderboard: LeaderboardUser[];
