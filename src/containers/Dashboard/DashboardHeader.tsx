@@ -14,6 +14,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ProfileAvatarSkeleton } from "@/skeletons/ProfileAvatarSkeleton";
 import { LobbyNavLink } from "@/features/pair/components/LobbyNavLink";
 import { useIsLoggedIn } from "@/hooks/useIsLoggedIn";
+import PrimaryContainer from "@/components/shared/container/PrimaryContainer";
 
 export const DashboardHeader = () => {
   const router = useRouter();
@@ -42,44 +43,46 @@ export const DashboardHeader = () => {
   const showSkeleton = (loggedIn && isLoading) || (loggedIn && !userData);
 
   return (
-    <header className="py-3.5 h-[60px] w-full px-4 lg:px-12 dashboard-headers-class flex justify-between items-center">
-      <div className="flex gap-7 items-center">
-        <Logo />
-        <div className="flex gap-5 items-center">
-          {NavItems?.map((tab) => {
-            const isActive = pathname === tab?.href;
-            return (
-              <NavigationLinks tab={tab} isActive={isActive} key={tab?.id} />
-            );
-          })}
-          {isAuthenticated && <LobbyNavLink />}
+    <PrimaryContainer>
+      <header className="py-3.5 h-[60px] w-full  dashboard-headers-class flex justify-between items-center">
+        <div className="flex gap-7 items-center">
+          <Logo />
+          <div className="flex gap-5 items-center">
+            {NavItems?.map((tab) => {
+              const isActive = pathname === tab?.href;
+              return (
+                <NavigationLinks tab={tab} isActive={isActive} key={tab?.id} />
+              );
+            })}
+            {isAuthenticated && <LobbyNavLink />}
+          </div>
         </div>
-      </div>
 
-      <div className="flex gap-5">
-        <ThemeButton />
-        <Button
-          size={"icon"}
-          variant={"ghost"}
-          className="size-9! p-2.5"
-          aria-label="Notifications"
-        >
-          <SvgColor src={Assets.Svgs.NotificationIcon} />
-        </Button>
+        <div className="flex gap-5">
+          <ThemeButton />
+          <Button
+            size={"icon"}
+            variant={"ghost"}
+            className="size-9! p-2.5"
+            aria-label="Notifications"
+          >
+            <SvgColor src={Assets.Svgs.NotificationIcon} />
+          </Button>
 
-        {showSkeleton ? (
-          <ProfileAvatarSkeleton />
-        ) : isAuthenticated ? (
-          <ProfileAvatar userData={userData?.data?.user} />
-        ) : (
-          <>
-            <Button onClick={() => openModal("signUp")}>Sign Up</Button>
-            <Button onClick={() => openModal("login")} variant={"outline"}>
-              Login
-            </Button>
-          </>
-        )}
-      </div>
-    </header>
+          {showSkeleton ? (
+            <ProfileAvatarSkeleton />
+          ) : isAuthenticated ? (
+            <ProfileAvatar userData={userData?.data?.user} />
+          ) : (
+            <>
+              <Button onClick={() => openModal("signUp")}>Sign Up</Button>
+              <Button onClick={() => openModal("login")} variant={"outline"}>
+                Login
+              </Button>
+            </>
+          )}
+        </div>
+      </header>
+    </PrimaryContainer>
   );
 };

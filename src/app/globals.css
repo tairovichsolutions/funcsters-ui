@@ -711,9 +711,12 @@ button:not([disabled]),
   .challenges-card-class {
     @apply border border-card-border rounded-[12px] p-3 lg:p-5;
   }
-
-  .dashboard-headers-class {
+/* original dashboard class */
+  /* .dashboard-headers-class {
     @apply shadow-[0.97px_0px_1.93px_0px_#10182814] border-b border-[#F0F0F0] dark:border-[#FFFFFF4D];
+  } */
+  .dashboard-headers-class {
+    @apply  border-b border-b-[#F0F0F0] dark:border-[#FFFFFF4D];
   }
 
   .section-container-class {
