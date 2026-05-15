@@ -84,7 +84,7 @@ export function Modal({
           {showClose && (
             <Dialog.Close
               className={cn(
-                "inline-flex absolute z-50 right-2 top-2 h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer",
+                "inline-flex absolute z-50 right-2 top-2 h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer focus:outline-none",
                 ClossBtnClass,
               )}
               aria-label="Close"

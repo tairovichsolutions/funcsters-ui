@@ -68,9 +68,10 @@ export const SelectBox = React.forwardRef<
     ref
   ) => {
     const selectOptions = useSafeArray(options);
-    const selected = selectOptions?.find((o) => o.value === value);
+    const activeValue = value !== undefined ? value : defaultValue;
+    const selected = selectOptions?.find((o) => o.value === activeValue);
 
-    const rootValueProps = value !== undefined ? { value } : { defaultValue };
+    const rootValueProps = value !== undefined ? { value } : (defaultValue !== undefined ? { defaultValue } : {});
     return (
       <div>
         {label && (
@@ -80,7 +81,13 @@ export const SelectBox = React.forwardRef<
         )}
         <Select.Root
           {...rootValueProps}
-          onValueChange={onValueChange}
+          onValueChange={(newValue) => {
+            // Guard: Radix fires onValueChange("") when the controlled value
+            // doesn't match any mounted Select.Item (e.g. portal not opened yet).
+            // This would wipe out a valid pre-selected value from the API.
+            if (newValue === "" && value) return;
+            onValueChange?.(newValue);
+          }}
           {...props}
         >
           <Select.Trigger
@@ -92,21 +99,23 @@ export const SelectBox = React.forwardRef<
               className
             )}
           >
-            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-              {selected?.startIcon && (
-                <span className="shrink-0">{selected?.startIcon}</span>
-              )}
-
-              <Select.Value
-                placeholder={
-                  <span className="text-muted-foreground ">{placeholder}</span>
-                }
-              ></Select.Value>
-
-              {selected?.endIcon && (
-                <span className="shrink-0">{selected?.endIcon}</span>
-              )}
-            </div>
+            <Select.Value
+              placeholder={
+                <span className="text-muted-foreground ">{placeholder}</span>
+              }
+            >
+              {selected ? (
+                <span className="flex items-center gap-2">
+                  {selected.startIcon && (
+                    <span className="shrink-0">{selected.startIcon}</span>
+                  )}
+                  <span className="truncate">{selected.label}</span>
+                  {selected.endIcon && (
+                    <span className="shrink-0">{selected.endIcon}</span>
+                  )}
+                </span>
+              ) : undefined}
+            </Select.Value>
 
             <Select.Icon asChild>
               <ChevronDown className="ml-2 size-4 opacity-70" />

@@ -119,7 +119,6 @@ export const ChallengesScreenV2: React.FC = () => {
 
       <DashboardFooter />
 
-
     </div>
   );
 };

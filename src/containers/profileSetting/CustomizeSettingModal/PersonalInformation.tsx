@@ -71,7 +71,7 @@ export const PersonalInformation = () => {
 
     const selectedCountry = options.find((c) => c.value === values.country);
     const countryCode = selectedCountry?.code?.toLowerCase();
-    const flagUrl = `https://flagcdn.com/24x18/${countryCode}.png`;
+    const flagUrl = countryCode ? `https://flagcdn.com/24x18/${countryCode}.png` : "";
 
     try {
       await updateProfilefc({
