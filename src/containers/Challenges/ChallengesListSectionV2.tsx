@@ -2,11 +2,8 @@
 
 import * as React from "react";
 import type { ChallengesTypes } from "@/types";
-import { useInView } from "react-intersection-observer";
-
 import { ChallengeCardView } from "@/containers/Challenges";
 import { ChallengeCardSkeleton } from "@/skeletons/ChallengeCardSkeleton";
-import { ChallengeTableView } from "@/containers/Challenges/ChallengeTableView";
 import { DataNotAvailable } from "@/components/ui/data-not-available";
 import { SyncLoader } from "react-spinners";
 import { ChallengeTableViewV2 } from "./ChallengeTableViewV2";
@@ -32,21 +29,14 @@ export const ChallengesListSectionV2 = React.memo(
     hasNextPage,
     isFetchingNextPage,
   }: ChallengesListSectionProps) => {
-    const { ref, inView } = useInView({
-      root: null,
-      threshold: 0,
-      rootMargin: "500px",
-    });
-
-    React.useEffect(() => {
-      if (!inView) return;
-      if (!hasNextPage) return;
-      if (isLoading || isFetchingNextPage) return;
-
-      fetchNextPage();
-    }, [inView, hasNextPage, isLoading, isFetchingNextPage, fetchNextPage]);
 
     const totalItems = allChallenges.length;
+
+    const handleLoadMore = () => {
+      if (!isFetchingNextPage && hasNextPage) {
+        fetchNextPage();
+      }
+    };
 
     return (
       <div className="flex flex-col gap-4">
@@ -71,12 +61,21 @@ export const ChallengesListSectionV2 = React.memo(
             )}
 
             {isFetchingNextPage && (
-              <div className="flex justify-center items-center py-10">
+              <div className="flex justify-center items-center py-6 w-full">
                 <SyncLoader speedMultiplier={0.8} size={10} color="#018CFF" />
               </div>
             )}
 
-            <div ref={ref} />
+            {hasNextPage && !isFetchingNextPage && (
+              <div className="flex justify-center w-full">
+                <button
+                  onClick={handleLoadMore}
+                  className="w-full py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer text-[#333] bg-[#F4F5F8] border border-[#DFE0E7] hover:bg-[#e8eaf0] dark:bg-slate-800 dark:border-slate-700 dark:text-gray-200 dark:hover:bg-slate-700"
+                >
+                  Load More
+                </button>
+              </div>
+            )}
           </>
         )}
 

@@ -4,9 +4,9 @@ import { ActivityCalendarCardV2 } from "@/containers/Challenges/ActivityCalendar
 import { ChallengeProgressCardV2 } from "@/containers/Challenges/ChallengeProgressCardV2";
 import { ChallengesFiltersBarV2 } from "@/containers/Challenges/ChallengesFiltersBarV2";
 import { ChallengesListSectionV2 } from "@/containers/Challenges/ChallengesListSectionV2";
-import { MatricsAndActivityChart } from "@/containers/Challenges/MatricsAndActivityChart";
 import { StreakStatsCardV2 } from "@/containers/Challenges/StreakStatsCardV2";
 import { XpPointsCardV2 } from "@/containers/Challenges/XpPointsCardV2";
+import { DashboardFooter } from "@/containers/Dashboard";
 import { useChallengesFilters } from "@/hooks/useChallengesFilters";
 import { useInfiniteChallenges } from "@/queries/useAllChallenges";
 import { useGetUserProfile } from "@/queries/useGetUserProfile";
@@ -39,7 +39,7 @@ export const ChallengesScreenV2: React.FC = () => {
     isFetchingNextPage,
   } = useInfiniteChallenges(queryParams);
 
-  const { data: userData, isLoading: profileLoading } = useGetUserProfile();
+  const { data: userData } = useGetUserProfile();
   const isAuthenticated = Boolean(userData?.data?.authenticated);
 
   const currentView = React.useMemo(() => {
@@ -51,51 +51,10 @@ export const ChallengesScreenV2: React.FC = () => {
     return pages.flatMap((p) => p.challenges) as ChallengesTypes[];
   }, [data]);
 
-
-
-
-   const { data: metricsData } = useMetrics();
-  // const metricsData = {
-  //   completedChallenges: {
-  //     easy: 25,
-  //     expert: 25,
-  //     hard: 25,
-  //     medium: 25,
-  //     total: 100
-  //   },
-  //   streak: {
-  //     currentStreak: {
-  //       count: 12,
-  //       startDate: "2024-03-01",
-  //       endDate: "2024-03-12",
-  //     },
-  //     longestStreak: {
-  //       count: 24,
-  //       startDate: "2024-01-05",
-  //       endDate: "2024-01-29",
-  //     },
-  //   },
-
-  // }
-
+  const { data: metricsData } = useMetrics();
 
   return (
     <div className=" flex flex-col gap-5">
-      {/* <GreetingArea
-        profileLoading={profileLoading}
-        isAuthenticated={isAuthenticated}
-        username={userData?.data?.user?.username}
-      /> */}
-
-
-
-        {/* <MatricsAndActivityChart
-          profileLoading={profileLoading}
-          isAuthenticated={isAuthenticated}
-        /> */}
-
-      
-
 
       <div className="grid gap-4 grid-cols-1 bg-dashboard-background lg:grid-cols-12 
      xl:grid-cols-[minmax(0,2.4fr)_minmax(0,6.98fr)_minmax(0,2.62fr)] 
@@ -139,8 +98,7 @@ export const ChallengesScreenV2: React.FC = () => {
           <ChallengesListSectionV2
             isLoading={isLoading}
             currentView={currentView}
-            // allChallenges={[...allChallenges,...allChallenges,...allChallenges,...allChallenges,]}
-            allChallenges={[...allChallenges,]}
+            allChallenges={allChallenges}
             fetchNextPage={fetchNextPage}
             hasNextPage={Boolean(hasNextPage)}
             isFetchingNextPage={isFetchingNextPage}
@@ -159,63 +117,7 @@ export const ChallengesScreenV2: React.FC = () => {
 
       </div>
 
-
-      {/* TODO:delet after dashboard done */}
-      {/*   <div className="hidden grid-cols-1 lg:grid-cols-12 gap-6 mt-3 container mx-auto ">
-
-      
-        <aside className="hidden lg:block lg:col-span-3">
-          <div className="flex flex-col gap-5 sticky top-5">
-            <ProgressCard />
-            <ActivityCalendar />
-          </div>
-        </aside>
-
-        
-        <main className="col-span-1 lg:col-span-6 flex flex-col gap-5">
-
-
-          <div className=" top-5  z-10 flex flex-col gap-5">
-
-
-            <ChallengesFiltersBarV2
-              remove={remove}
-              setTags={setTags}
-              filters={filters}
-              clearAll={clearAll}
-              setSearch={setSearch}
-              setStatus={setStatus}
-              isFetching={isFetching}
-              currentView={currentView}
-              setDifficulty={setDifficulty}
-              isAuthenticated={isAuthenticated}
-            />
-          </div>
-
-          
-
-          <ChallengesListSectionV2
-            isLoading={isLoading}
-            currentView={currentView}
-            allChallenges={[...allChallenges,]}
-            fetchNextPage={fetchNextPage}
-            hasNextPage={Boolean(hasNextPage)}
-            isFetchingNextPage={isFetchingNextPage}
-          />
-
-        </main>
-
-      RIGHT SIDEBAR: Increased width (Takes 3 out of 12 columns)
-        <aside className="hidden lg:block lg:col-span-3 ">
-          <div className="flex flex-col gap-5 sticky top-5 ">
-            <StreakCard />
-            <LeaderboardCard />
-          </div>
-        </aside>
-
-      </div> */}
-
-
+      <DashboardFooter />
 
 
     </div>
