@@ -18,6 +18,7 @@ export const NavItems: NavItemProps[] = [
     name: "Leaderboard",
     href: Navigation.Leaderboard,
   },
+  
 ];
 
 export const ChallengesItems: NavItemProps[] = [

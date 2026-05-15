@@ -6,7 +6,7 @@ import { Suspense } from "react";
 export default function Page() {
   return (
     <Suspense fallback={<CustomLoading />}>
-              <PrimaryContainer>
+              <PrimaryContainer className="xl:px-0">
                   <ChallengesScreenV2 />          
               </PrimaryContainer>
       {/* <ChallengesScreen /> */}

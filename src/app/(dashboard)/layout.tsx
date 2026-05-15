@@ -32,7 +32,7 @@ const Layout = ({ children }: LayoutProps) => {
        <div className="bg-white dark:bg-transparent"><DashboardHeader /></div>
      </div>
     
-      <main className="flex-1 custom-scrollbar outline-none!  overflow-hidden w-full overflow-y-auto bg-dashboard-background">
+      <main className="flex-1 custom-scrollbar  outline-none!  overflow-hidden w-full overflow-y-auto bg-dashboard-background">
          {/* <GlobalPairAlertBanner /> */}
          <GlobalJoinRequestAlert/>
         {children}
