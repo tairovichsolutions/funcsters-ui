@@ -30,7 +30,7 @@ export function LobbyNavLink({ className = "" }: { className?: string }) {
         active ? "text-blue-600 dark:text-blue-400" : "text-medium-gray hover:text-foreground"
       } ${className}`}
     >
-      <span> Lobby</span>
+      <span className="dark:text-white"> Lobby</span>
 
       <div className="flex -space-x-4 items-center">
         {users.slice(0, 3).map((user, index) => (

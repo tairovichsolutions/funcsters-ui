@@ -24,7 +24,7 @@ export const NavigationLinks = ({
     <Link
       href={href}
       className={cn(
-        "relative text-[15px]  font-medium text-medium-gray px-1 text-nowrap transition-colors duration-500",
+        "relative text-[15px]  font-medium text-medium-gray dark:text-white px-1 text-nowrap transition-colors duration-500",
         isActive ? "text-primary" : "hover:text-primary/80",
         className
       )}

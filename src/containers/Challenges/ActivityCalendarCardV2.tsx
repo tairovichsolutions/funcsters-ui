@@ -227,7 +227,7 @@ export const ActivityCalendarCardV2: React.FC = () => {
     const GRID_GAP_Y = "gap-y-[6px]";
 
     return (
-        <div className="flex flex-col border bg-white dark:bg-slate-900 dark:border-slate-800 text-slate-900 dark:text-slate-100 rounded-xl 2xl:p-3.5 p-1 w-full mx-auto">
+        <div className="flex flex-col border bg-white dark:bg-[#181A1D] dark:border-slate-800 text-slate-900 dark:text-slate-100 rounded-xl 2xl:p-3.5 p-1 w-full mx-auto">
 
 
             <div className="relative w-full flex flex-1  flex-col z-10 mt-3">

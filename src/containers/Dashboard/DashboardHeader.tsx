@@ -42,15 +42,15 @@ export const DashboardHeader = () => {
   // or (2) the useIsLoggedIn hook hasn't resolved yet (first render).
   const showSkeleton = (loggedIn && isLoading) || (loggedIn && !userData);
 
-  const lobbyLink = {
-    id: "lobby0",
-    name: "Lobby",
-    href: '/pair/lobby',
-  }
+  // const lobbyLink = {
+  //   id: "lobby0",
+  //   name: "Lobby",
+  //   href: '/pair/lobby',
+  // }
   return (
     <>
-      <div>
-        <PrimaryContainer as="header" className="py-3.5   h-[60px]    flex justify-between items-center">
+      <div className="w-full dark:bg-[#232629]">
+        <PrimaryContainer as="header" className="py-3.5 dark:bg-[#232629]   h-[60px]    flex justify-between items-center">
           <div className="flex xl:gap-7  items-center">
             <div className="xl:-ms-3 ">
               <Logo />
@@ -62,8 +62,8 @@ export const DashboardHeader = () => {
                   <NavigationLinks tab={tab} isActive={isActive} key={tab?.id} />
                 );
               })}
-              {isAuthenticated && <NavigationLinks tab={lobbyLink} isActive={pathname === lobbyLink?.href} key={lobbyLink?.id} />}
-              {/* {isAuthenticated && <LobbyNavLink />} */}
+              {/* {isAuthenticated && <NavigationLinks tab={lobbyLink} isActive={pathname === lobbyLink?.href} key={lobbyLink?.id} />} */}
+              {isAuthenticated && <LobbyNavLink />}
             </div>
           </div>
 
@@ -72,7 +72,7 @@ export const DashboardHeader = () => {
             <Button
               size={"icon"}
               variant={"ghost"}
-              className="size-9! p-2.5"
+              className="size-9! p-2.5 "
               aria-label="Notifications"
             >
               <SvgColor src={Assets.Svgs.NotificationIcon} />
