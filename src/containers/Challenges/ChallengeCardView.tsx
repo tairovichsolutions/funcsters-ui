@@ -28,17 +28,17 @@ export const ChallengeCardView = ({
   return (
     <div
       onClick={handleCardClick}
-      className="challenges-card-class cursor-pointer! px-4 py-5 bg-white dark:bg-[#FFFFFF0D]! dark:hover:bg-gray-700/15 hover:scale-[1.02] hover:shadow-xs  transition-all duration-300 h-40 w-full  gap-2 flex flex-col justify-between"
+      className="challenges-card-class dark:bg-[#2F313633] dark:border-[#44464A4D] cursor-pointer! px-4 py-5 bg-white  dark:hover:bg-gray-700/15 hover:scale-[1.02] hover:shadow-xs  transition-all duration-300 h-40 w-full  gap-2 flex flex-col justify-between"
     >
       <div className=" space-y-2">
         <div className=" flex gap-1  justify-between items-center">
-          <h1 className="text-[#0F172A] dark:text-current font-semibold text-xs lg:text-[13px] line-clamp-1">
+          <h1 className="text-[#0F172A] dark:text-white font-semibold text-xs lg:text-[13px] line-clamp-1">
             {title}
           </h1>
           <DifficultyChip className="text-[10px] px-4 py-[5px] mb-1" level={difficulty} />
         </div>
 
-        <p className="text-[13px] 2xl:text-sm font-light line-clamp-2 dark:text-current text-[#797981] ">
+        <p className="text-[13px] 2xl:text-sm font-light line-clamp-2 dark:text-[#AFAFAF] text-[#797981] ">
           {summary}
         </p>
       </div>

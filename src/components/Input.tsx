@@ -108,7 +108,7 @@ export const Input = React.memo(
             autoComplete="off"
             placeholder={placeholder}
             className={cn(
-              "w-full text-sm 2xl:text-sm outline-none font-normal px-1 text-secondary dark:text-white font-inter placeholder:font-normal placeholder:text-medium-gray bg-transparent appearance-none!",
+              "w-full text-sm placeholder:text-[#AFAFAF]! 2xl:text-sm outline-none font-normal px-1 text-secondary dark:text-white font-inter placeholder:font-normal  bg-transparent appearance-none!",
               innerInputClass,
               disabled && "pointer-events-none"
             )}

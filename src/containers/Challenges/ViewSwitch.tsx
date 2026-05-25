@@ -28,7 +28,7 @@ export const ViewSwitch = React.memo(
         tabIndex={0}
         onKeyDown={onKeyDown}
         className={cn(
-          "relative h-9 w-24 inline-flex items-center rounded-md border  overflow-hidden border-searchInputBorder bg-transparent",
+          "relative h-9 w-24 inline-flex items-center rounded-md border  overflow-hidden dark:border-[#2F3136] border-searchInputBorder bg-transparent",
           " focus:outline-none focus:ring-2 focus:ring-blue-500/30",
           className
         )}
@@ -55,10 +55,10 @@ export const ViewSwitch = React.memo(
         >
           <LayoutGrid
             size={18}
-            fill={value === "card" ? "#008CFF" : "#008CFF"}
+            fill={value === "card" ? "#fff" : "#008CFF"}
             color={value === "card" ? "#ffffff" : "#008CFF"}
             className={cn(
-              "transition-colors",
+        
               value === "card" ? "text-white" : "text-black dark:text-white"
             )}
           />

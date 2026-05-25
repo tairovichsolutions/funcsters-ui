@@ -70,7 +70,7 @@ export const ChallengesListSectionV2 = React.memo(
               <div className="flex justify-center w-full">
                 <button
                   onClick={handleLoadMore}
-                  className="w-full py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer text-[#333] bg-[#F4F5F8] border border-[#DFE0E7] hover:bg-[#e8eaf0] dark:bg-slate-800 dark:border-slate-700 dark:text-gray-200 dark:hover:bg-slate-700"
+                  className="w-full py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer text-[#0D1A26] bg-[#F4F5F8] border border-[#DFE0E7] hover:bg-[#e8eaf0] dark:bg-[#232629] dark:border-[#282B2E] dark:text-white " 
                 >
                   Load More
                 </button>
