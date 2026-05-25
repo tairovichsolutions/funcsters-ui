@@ -51,7 +51,7 @@ export const StreakStatsCardV2 = React.memo(({ streakData }: StreakDataType) => 
             </div>
 
             {/* Main Circular Chart Section */}
-            <div className="relative w-[120px] h-[120px] rounded-full border-[1.5px] border-[#FFD9C7] bg-[#F759000D] dark:bg-[#F75900]/60 flex flex-col items-center justify-center">
+         <div className="relative w-[120px] h-[120px] rounded-full border-[1.5px] border-[#FFD9C7] bg-[#F759000D] dark:rounded-[124px] dark:border dark:border-[#F75900]/60 dark:bg-[#F75900]/30 dark:[box-shadow:inset_0_4px_31px_0_rgba(255,255,255,0.25)] dark:[backdrop-filter:blur(2.607142925262451px)] flex flex-col items-center justify-center">
 
                 {/* Counter Section (Number + Floating Fire + "Days") */}
                 <div className="flex items-baseline mt-2">
@@ -83,7 +83,7 @@ export const StreakStatsCardV2 = React.memo(({ streakData }: StreakDataType) => 
                     </div>
                 )}
             </div>
-           <div className="h-[1px] w-full bg-[#EDEDF2] dark:bg-[#9494aa] my-4" />
+           <div className="h-[1px] w-full bg-[#EDEDF2] dark:bg-[#282B2E] my-4" />
         </div>
     );
 });

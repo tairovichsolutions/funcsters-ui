@@ -107,7 +107,7 @@ export const ChallengesScreenV2: React.FC = () => {
 
         {/* RIGHT SIDEBAR */}
         {/* lg: 3 cols | xl: 3rd fraction (2.5) | 2xl: 2 cols */}
-        <aside className=" bg-white dark:bg-[#1C1F22] rounded-2xl  h-max  border lg:block lg:col-span-3 xl:col-span-1 2xl:col-span-1">
+        <aside className=" bg-white dark:border-[#282B2E] dark:bg-[#1C1F22] rounded-2xl  h-max  border lg:block lg:col-span-3 xl:col-span-1 2xl:col-span-1">
           <div className="flex flex-col lg:sticky p-2 2xl:p-4 top-0">
             <StreakStatsCardV2 streakData={metricsData?.streak} />
             <XpPointsCardV2 xpData={metricsData?.xpPoints} />
