@@ -49,7 +49,7 @@ const CustomLegend = ({ data }: { data: ChartSlice[] }) => (
     {data.map((item) => (
       <div
         key={item.key}
-        className="flex items-center justify-between bg-[#e9ebee] dark:bg-slate-800 p-1  2xl:px-2 rounded-full whitespace-nowrap gap-1.5"
+        className="flex items-center justify-between bg-[#e9ebee] dark:bg-[#2F3136] p-1  2xl:px-2 rounded-full whitespace-nowrap gap-1.5"
       >
         <span className="text-[#070707] dark:text-slate-200 text-[11px] font-medium leading-none">
           {item.name}
@@ -99,7 +99,7 @@ export const ChallengeProgressCardV2: React.FC<ChallengeProgressCardProps> =
             Progress
           </h2>
 
-          <div className="flex w-full flex-row items-center justify-around lg:justify-between border border-[#E5E7EB] dark:border-slate-700 rounded-xl p-1 2xl:p-3.5 bg-[#fbfbfc] dark:bg-[#192631]  gap-1">
+          <div className="flex w-full flex-row items-center justify-around lg:justify-between border border-[#E5E7EB] dark:border-slate-700 rounded-xl p-1 2xl:p-3.5 bg-[#fbfbfc] dark:bg-[#41434733]  gap-1">
             
             <div className="">
               <CustomLegend data={slices} />
