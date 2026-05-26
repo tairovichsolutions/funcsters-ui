@@ -36,10 +36,10 @@ export function IncomingJoinsSidebar({ open, onClose, pairRequestId, onAccept }:
     <div className="fixed inset-0 z-40 flex" onClick={onClose}>
       <div className="flex-1" />
       <aside
-        className="relative flex h-full w-full max-w-sm flex-col bg-card shadow-xl"
+        className="relative flex h-full w-full max-w-sm flex-col bg-card dark:bg-[#232629] shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-border p-4">
+        <div className="flex items-center  justify-between border-b dark:border-[#282B2E] border-border p-4">
           <div className="flex items-center gap-2">
             <span className="relative inline-flex h-2.5 w-2.5">
               <span className="absolute inset-0 animate-ping rounded-full bg-orange-400 opacity-75" />
@@ -98,25 +98,26 @@ export function IncomingJoinsSidebar({ open, onClose, pairRequestId, onAccept }:
 
 
         <div className="overflow-y-auto ">
-          <div className="mb-4 text-sm  bg-[#FBFCFC] text-muted-foreground">
+          <div className="mb-4 text-sm  bg-[#FBFCFC] dark:bg-[#232629]! text-muted-foreground">
+              <p className="p-4 bg-[#FBFCFC]! text-xs dark:bg-[#181A1D]! border-b-[1px]! dark:border-[#282B2E]">{joins.length} developer{joins.length > 1 ? "s" : ""} want to pair with you on this challenge.</p>
             {joins.length === 0
               ? isLoading
                 ? "Loading…"
-                : <div className="w-full max-w-[400px] bg-white   shadow-sm flex flex-col font-sans mx-auto">
+                : <div className="w-full max-w-[400px] bg-white dark:bg-[#181A1D]!  shadow-sm flex flex-col font-sans mx-auto">
                   {/* Top Banner */}
-                  <p className="p-4 bg-[#FBFCFC]!  border-b-[1px]">{joins.length} developer want to pair with you on this challenge.</p>
+                  {/* <p className="p-4 bg-[#FBFCFC]!  dark:bg-[#181A1D]! border-b-[1px]! dark:border-[#282B2E]">{joins.length} developer want to pair with you on this challenge.</p> */}
 
 
                   {/* Main Content */}
-                  <div className="flex-1 flex flex-col items-center px-8 pt-12 pb-8  text-center relative overflow-hidden">
+                  <div className="flex-1 dark:bg-[#232629] flex flex-col items-center px-8 pt-12 pb-8  text-center relative overflow-hidden">
 
                     {/* Wave Animation Wrapper */}
                     <div className="relative flex items-center justify-center w-40 h-40 mb-6">
-                      <div className="absolute inset-0 bg-blue-100 rounded-full animate-wave delay-0s opacity-0"></div>
-                      <div className="absolute inset-0 bg-blue-100 rounded-full animate-wave delay-1s opacity-0"></div>
-                      <div className="absolute inset-0 bg-blue-100 rounded-full animate-wave delay-2s opacity-0"></div>
+                      <div className="absolute inset-0 bg-blue-100 dark:bg-[#008CFF33]! rounded-full animate-wave delay-0s opacity-0"></div>
+                      <div className="absolute inset-0 bg-blue-100 dark:bg-[#008CFF33]! rounded-full animate-wave delay-1s opacity-0"></div>
+                      <div className="absolute inset-0 bg-blue-100 dark:bg-[#008CFF33]! rounded-full animate-wave delay-2s opacity-0"></div>
 
-                      <div className="relative border-2 border-[#008CFF33] flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+                      <div className="relative border-2 border-[#008CFF33] flex items-center justify-center w-20 h-20 bg-white dark:bg-[#008CFF33] rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
 
                         <svg
                           width="38"
@@ -164,18 +165,18 @@ export function IncomingJoinsSidebar({ open, onClose, pairRequestId, onAccept }:
                       </div>
                     </div>
 
-                    <h2 className="text-xl font-bold text-gray-900 mb-3 tracking-tight">Broadcasting...</h2>
-                    <p className="text-sm text-gray-500 leading-relaxed mb-8 max-w-[280px]">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">Broadcasting...</h2>
+                    <p className="text-sm text-gray-500 dark:text-[#AFAFAF] leading-relaxed mb-8 max-w-[280px]">
                       Your request is live in the Lobby! Hang tight while we find the perfect partner for your challenge.
                     </p>
 
                     {/* Timer Card with Morphing Spinner */}
-                    <div className="w-full flex items-center justify-between bg-[#00000005] rounded-xl p-4 mb-10">
+                    <div className="w-full flex items-center justify-between bg-[#00000005] dark:bg-[#FFFFFF05] rounded-xl p-4 mb-10">
                       <div className="flex items-center gap-3">
                         <Clock className="w-5 h-5 text-blue-500" strokeWidth={2.5} />
                         <div className="flex flex-col text-left">
-                          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Expires In</span>
-                          <span className="text-lg font-bold text-gray-900 tabular-nums leading-tight mt-0.5">      {formatCountdown(remaining)}</span>
+                          <span className="text-[11px] font-bold text-gray-400 dark:text-[#AFAFAF] uppercase tracking-wider">Expires In</span>
+                          <span className="text-lg font-bold text-gray-900  dark:text-white tabular-nums leading-tight mt-0.5">      {formatCountdown(remaining)}</span>
                         </div>
                       </div>
 
@@ -185,7 +186,7 @@ export function IncomingJoinsSidebar({ open, onClose, pairRequestId, onAccept }:
                         <svg className="w-full h-full animate-spin-slow" viewBox="0 0 36 36">
                           {/* Background track */}
                           <path
-                            className="text-gray-200"
+                            className="text-gray-200 dark:text-[#008CFF29]"
                             strokeWidth="3.5"
                             stroke="currentColor"
                             fill="none"
@@ -204,12 +205,13 @@ export function IncomingJoinsSidebar({ open, onClose, pairRequestId, onAccept }:
                       </div>
                     </div>
 
-                    <p className="text-[13px] text-gray-400 max-w-[250px] leading-relaxed">
+                    <p className="text-[13px] text-gray-400 dark:text-[#AFAFAF] max-w-[250px] leading-relaxed">
                       You can browse other pages; we&#39;ll alert you if someone wants to join.
                     </p>
                   </div>
                 </div>
-              : <span className="p-4 bg-[#FBFCFC]!  border-b-[1px]">{joins.length} developer {joins.length === 1 ? "" : "s"} want to pair with you on this challenge.</span>}
+              : <span className="p-4 hidden bg-[#FBFCFC]!  dark:bg-[#181A1D]!  dark:border-[#282B2E] border-b-[1px]">
+              </span>}
           </div>
           {/* <div>{JSON.stringify(joins)}</div> */}
           <div className="space-y-3 p-4">
@@ -242,7 +244,7 @@ function JoinRequestCard({
   };
 
   return (
-    <div className="rounded-xl border p-4  border-border bg-background ">
+    <div className="rounded-xl border p-4 dark:border-0  border-border bg-background dark:bg-[#282A2E]! ">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
           <div className="relative h-8 w-8 shrink-0 rounded-full bg-muted">
@@ -252,12 +254,12 @@ function JoinRequestCard({
             </span>
           </div>
           <div>
-            <div className="text-sm text-[#0F172A] font-semibold">{jr.joinerUsername}</div>
-            <div className="text-xs text-[#64748B]">{jr?.joinerOccupation || "Developer"}</div>
+            <div className="text-sm text-[#0F172A] dark:text-white font-semibold">{jr.joinerUsername}</div>
+            <div className="text-xs text-[#64748B] dark:text-[#AFAFAF]">{jr?.joinerOccupation || "Developer"}</div>
           </div>
         </div>
         <div className="flex flex-col justify-end gap-1">
-          <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs text-center py-0.5 rounded-md">{jr?.joinerXp ?? jr?.xp ?? 0} xp</span>
+          <span className="text-[#FFA539] bg-[#fff1df] dark:bg-transparent px-1 text-xs text-center py-0.5 rounded-md">{jr?.joinerXp ?? jr?.xp ?? 0} xp</span>
           {jr.joinerCountry && (
             <div className="flex gap-1 items-center justify-end">
               {jr.joinedCountryFlag && !jr.joinedCountryFlag.includes('undefined') && (
@@ -296,7 +298,7 @@ function JoinRequestCard({
         <button
           onClick={() => rejectMutation.mutate(jr.id)}
           disabled={rejectMutation.isPending}
-          className="rounded-md min-h-10 bg-white dark:bg-transparent border border-border px-3 py-2 text-sm font-medium text-[#64748B] hover:bg-muted"
+          className="rounded-md min-h-10 dark:text-white dark:border-[#FFFFFF1A] bg-white dark:bg-transparent border border-border px-3 py-2 text-sm font-medium text-[#64748B] hover:bg-muted"
           aria-label="Reject"
         >
           Reject

@@ -67,7 +67,7 @@ export function PairProgramButton({
         <div className="flex items-center gap-3">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-[#038CFF0F] py-1.5 pl-3 pr-1.5 text-sm font-semibold text-[#008CFF] transition-colors hover:bg-blue-100"
+            className="inline-flex items-center gap-2 rounded-full border border-blue-100 dark:border-[#038CFF33]  bg-[#038CFF0F] py-1.5 pl-3 pr-1.5 text-sm font-semibold text-[#008CFF] transition-colors "
           >
             {/* Pulsing Blue Dot */}
             <span className="relative inline-flex h-2 w-2">
