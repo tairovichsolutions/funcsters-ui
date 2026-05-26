@@ -56,7 +56,7 @@ export const COUNTRIES1 = [
 ];
 export function LobbyFilters({ value, onChange, languageOptions }: LobbyFiltersProps) {
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-3">
+    <div className="flex flex-wrap dark:bg-[#232629] items-center gap-3 rounded-xl border border-border bg-card p-3">
       {/* <CountryDropdownV2
   value={value.country || ""}
   options={COUNTRIES1.map((c) => ({

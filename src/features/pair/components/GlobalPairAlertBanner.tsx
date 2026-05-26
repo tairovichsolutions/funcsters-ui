@@ -139,13 +139,13 @@ function PermissionGrantedBanner({
   const pair = usePairSession();
   return (
     <PrimaryContainer >
-      <div className="relative overflow-hidden flex items-center gap-4 rounded-lg border-2 border-[#F372111A] bg-[#F372111A] p-4 pl-5 dark:border-blue-900/50 dark:bg-orange-950/30">
-        <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#F27313]" />
+      <div className="relative overflow-hidden flex items-center gap-4 rounded-lg border-2 border-[#F372111A] bg-[#F372111A] p-4 pl-5 dark:border-[#F37211] dark:bg-[#4A2408]">
+        <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#F27313] dark:bg-[#F37211]" />
         <div className="relative h-12 w-12 shrink-0">
           <img
             src={resolveAvatarUrl(currentUser?.avatarUrl, currentUser?.username)}
             alt="Profile"
-            className="h-full w-full rounded-full border-2 border-[#F37211] object-cover"
+            className="h-full w-full rounded-full border-2 border-[#F37211] dark:border-[#F37211] object-cover"
           />
           <div className="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-white  border-[#EBF5F3]">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16" fill="none">
@@ -157,20 +157,20 @@ function PermissionGrantedBanner({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 text-sm">
-            <span className="font-semibold text-[#F27313] dark:text-orange-300">PERMISSION GRANTED!</span>
-            <span className="inline-flex items-center gap-1 rounded-[4px] border border-[#64748B] bg-white/50 px-2 py-0.5 text-[10px] font-medium text-black">
-              <Clock className="h-3 w-3" />
+            <span className="font-semibold text-[#F27313] dark:text-[#F37211] ">PERMISSION GRANTED!</span>
+            <span className="inline-flex items-center gap-1 rounded-[4px] border border-[#64748B] dark:bg-transparent dark:text-white dark:border-[#afafaf]! bg-white/50 px-2 py-0.5 text-[10px] font-medium text-black">
+              <Clock className="h-3 w-3 dark:text-[#AFAFAF]" />
               <span className="font-bold">{formatCountdown(remaining)}</span>
             </span>
           </div>
-          <div className="mt-0.5 text-base font-bold text-slate-900">
+          <div className="mt-0.5 text-base font-bold text-slate-900 dark:text-white">
             Requested to Help @{hostUsername}
           </div>
           <Link
             href={href}
           >
-            <div className="text-xs text-[#64748B]">
-              Challenge: <span className="font-semibold underline decoration-slate-400 decoration-1 underline-offset-2 text-slate-700">
+            <div className="text-xs text-[#64748B] dark:text-[#afafaf]">
+              Challenge: <span className="font-semibold underline decoration-slate-400 decoration-1 underline-offset-2 text-slate-700 dark:text-white">
                 &ldquo;{sessionChallengeTitle}&ldquo;
               </span>
             </div></Link>
@@ -178,13 +178,13 @@ function PermissionGrantedBanner({
         <button
           onClick={() => pair.leave()}
           // disabled={cancel.isPending}
-          className="text-sm font-medium text-[#808080] hover:text-orange-900  disabled:opacity-50"
+          className="text-sm font-medium text-[#808080] dark:text-[#B4B4B4] hover:text-orange-900  disabled:opacity-50"
         >
           Cancel Request
         </button>
         <Link
           href={href}
-          className="inline-flex items-center gap-1.5 rounded-full bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-[#F27313]"
+          className="inline-flex items-center gap-1.5 rounded-full bg-orange-600 dark:bg-[#F27313] dark:hover:bg-[#F27313] px-4 py-2 text-sm font-medium text-white hover:bg-[#F27313]"
         >
           <Users className="h-4 w-4" />
           Join Session Now
@@ -209,7 +209,7 @@ function JoinPendingBanner({ currentUser, data, pairRequestId, joinId, expiresAt
   return (
     <PrimaryContainer >
       <div
-        className="relative overflow-hidden flex items-center gap-4 p-4 pl-6"
+        className="relative overflow-hidden dark:bg-[#2D4939]! dark:border-[#00C749]!  flex items-center gap-4 p-4 pl-6"
         style={{
           borderRadius: '12px',
           borderTop: '1px solid #BEE9D0',
@@ -221,7 +221,7 @@ function JoinPendingBanner({ currentUser, data, pairRequestId, joinId, expiresAt
       >
 
         {/* Left Accent Bar */}
-        <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#00C749]" />
+        <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#00C749] " />
         <div className="relative h-12 w-12 shrink-0">
           <img
             src={resolveAvatarUrl(currentUser?.avatarUrl, challengeCardData?.hostUsername)}
@@ -243,32 +243,32 @@ function JoinPendingBanner({ currentUser, data, pairRequestId, joinId, expiresAt
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-slate-800">REQUEST SENT:</span>
-            <span className="inline-flex items-center gap-1 rounded-[4px] border border-[#64748B] bg-white/50 px-2 py-0.5 text-[10px] font-medium text-black">
-              <Clock className="h-3 w-3" />
-              <span className="font-bold">{formatCountdown(remaining)}</span>
+            <span className="text-sm font-bold text-slate-800 dark:text-white">REQUEST SENT:</span>
+            <span className="inline-flex items-center gap-1 rounded-[4px] border border-[#64748B] bg-white/50 dark:bg-transparent dark:border-[#AFAFAF] px-2 py-0.5 text-[10px] font-medium text-black">
+              <Clock className="h-3 w-3 dark:text-[#AFAFAF]" />
+              <span className="font-bold dark:text-white">{formatCountdown(remaining)}</span>
             </span>
           </div>
 
-          <div className="mt-0.5 text-base font-bold text-slate-900">
-            Requested to Help <span className="text-neutral-01"> @{challengeCardData?.hostUsername}</span>
+          <div className="mt-0.5 text-base font-bold text-slate-900  dark:text-white">
+            Requested to Help <span className="text-neutral-01 dark:text-white"> @{challengeCardData?.hostUsername}</span>
           </div>
 
           <Link href={`/challenges/${challengeCardData?.challengeSlug}/detail`}>
-            <div className="text-xs text-[#64748B]">
-              Challenge: <span className="font-semibold underline decoration-slate-400 decoration-1 underline-offset-2 text-slate-700">{challengeCardData?.challengeTitle}</span>
+            <div className="text-xs text-[#64748B] dark:text-[#afafaf]">
+              Challenge: <span className="font-semibold underline decoration-slate-400 decoration-1 underline-offset-2 text-slate-700 dark:text-white">{challengeCardData?.challengeTitle}</span>
             </div></Link>
         </div>
 
         <button
           onClick={() => cancel.mutate(joinId)}
           disabled={cancel.isPending}
-          className="text-sm font-medium text-[#808080] hover:text-emerald-900 disabled:opacity-50"
+          className="text-sm font-medium text-[#808080] dark:text-[#B4B4B4] hover:text-emerald-900 disabled:opacity-50"
         >
           Cancel Request
         </button>
 
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-800">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 dark:bg-transparent dark:border dark:border-[#00C74933]! dark:text-[#00C749] px-3 py-1 text-xs font-medium text-emerald-800">
           <span className="relative inline-flex h-2 w-2">
             <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
@@ -301,7 +301,7 @@ function BroadcastingBanner({
 
   return (
     <PrimaryContainer >
-      <div className="relative overflow-hidden flex items-center gap-4 rounded-lg border border-blue-200 bg-blue-50 p-4 py-6 pl-5 dark:border-blue-900/50 dark:bg-blue-950/30">
+      <div className={`relative overflow-hidden flex items-center gap-4 rounded-lg border border-blue-200 bg-blue-50 p-4 py-6 pl-5 dark:border-[#8ECCFF]  ${joins.length>0 ? "dark:bg-[#003460]" :"dark:bg-[#2E3F51]"} `}>
         <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[#008CFF]" />
 
 
@@ -323,17 +323,17 @@ function BroadcastingBanner({
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 text-sm">
-            <span className="font-bold text-neutral-01 dark:text-blue-300">Active Broadcast:</span>
+            <span className="font-bold text-neutral-01 dark:text-white ">Active Broadcast:</span>
             <Link href={challengeHref} className="font-medium text-[#008CFF] underline-offset-2 hover:underline">
               &quot;{challengeTitle}&quot;
             </Link>
-            <span className="inline-flex items-center gap-1 rounded-[4px] border border-[#64748B] bg-[#f4f4ff] px-2 py-0.5 text-[10px] font-medium text-black">
-              <Clock className="h-3 w-3 text-[#64748B]" />
-              <span className="font-bold text-black">{formatCountdown(remaining)}</span>
+            <span className="inline-flex items-center gap-1 rounded-[4px] border border-[#64748B] bg-[#f4f4ff] dark:bg-transparent dark:border-[#afafaf] px-2 py-0.5 text-[10px] font-medium text-black">
+              <Clock className="h-3 w-3 text-[#64748B] dark:text-[#afafaf]" />
+              <span className="font-bold dark:text-white text-black">{formatCountdown(remaining)}</span>
             </span>
           </div>
 
-          <div className="mt-1 truncate text-sm text-[#64748B]  dark:text-blue-100">
+          <div className="mt-1 truncate text-sm  text-[#64748B] dark:text-[#afafaf]  ">
              {joins.length>0 ? `🎉 Good news! ${joins.length} developer wants to solve this with you.`:"  your request is currently in the lobby. someone will join you soon!"} 
           
           </div>
@@ -343,15 +343,15 @@ function BroadcastingBanner({
         <Link
           href={challengeHref}
           className={`text-sm flex gap-1 items-center justify-center font-medium  
-             ${joins.length>0 ? `text-white bg-[#FF6800]`:" border border-[#008CFF33] bg-[#008CFF0F] text-[#008CFF] dark:text-blue-300 dark:hover:text-blue-100 "}  py-2 px-4 rounded-full   disabled:opacity-50  `}
+             ${joins.length>0 ? `text-white bg-[#FF6800]`:" border border-[#008CFF33] bg-[#008CFF0F] text-[#008CFF] dark:text-[#008CFF] dark:border-[#008CFF0F] dark:hover:text-blue-100 "}  py-2 px-4 rounded-full   disabled:opacity-50  `}
         >
           {joins.length > 0 ? `View ${joins.length} Requests` : "View Request Status"}
         </Link>
         <button
           onClick={() => cancel.mutate(requestId)}
           disabled={cancel.isPending}
-          className={`text-sm flex gap-1 items-center justify-center font-medium border border-[#DB122B33] bg-[#DB122B0F] py-2 px-4 rounded-full     
-            text-[#DB122B]  disabled:opacity-50 dark:text-blue-300 dark:hover:text-blue-100`} >
+          className={`text-sm flex gap-1 items-center justify-center font-medium border border-[#DB122B33] bg-[#DB122B0F] ${joins.length>0 ? "dark:bg-[#DB122B33] dark:border-[#DB122B66]" :"dark:bg-[#DB122B0F] dark:border-[#DB122B33]"}  py-2 px-4 rounded-full     
+            text-[#DB122B]  disabled:opacity-50 dark:text-[#DB122B] `} >
 
 
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

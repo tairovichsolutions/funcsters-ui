@@ -42,7 +42,7 @@ export default function CountryDropdownV2({
   const selectedOption = options.find((opt) => opt.value === value) || options[0];
 
   return (
-    <div className="relative flex flex-col gap-1.5 w-full sm:w-max" ref={dropdownRef}>
+    <div className="relative    flex flex-col gap-1.5 w-full sm:w-max" ref={dropdownRef}>
       {/* Optional Label */}
       {label && (
         <label className="text-sm font-medium text-gray-700">
@@ -54,7 +54,7 @@ export default function CountryDropdownV2({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full h-[46px] sm:w-max px-4 py-2.5 items-center justify-between gap-3 bg-[#F8F9FB]  dark:bg-background hover:bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 min-w-[200px]"
+        className="flex w-full h-[46px] sm:w-max px-4 py-2.5 items-center justify-between gap-3 bg-[#F8F9FB]  dark:bg-[#282A2E]! dark:border-0  hover:bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 min-w-[200px]"
       >
         <div className="flex items-center gap-2 truncate">
           {/* Optional: Render image/icon if passed in the option object */}
@@ -71,13 +71,13 @@ export default function CountryDropdownV2({
         </div>
         <ChevronDown 
           size={18} 
-          className={`text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} 
+          className={`text-gray-400 dark:text-[#AFAFAF] transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} 
         />
       </button>
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-[calc(100%+4px)] left-0 mt-1 w-full min-w-[200px] bg-background border border-gray-100 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto py-1">
+        <div className="absolute top-[calc(100%+4px)] left-0 mt-1 w-full min-w-[200px] bg-background border border-gray-100 dark:border-[#2A2C30] dark:bg-[#232629] rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto py-1">
           {options.map((option, index) => {
             const isSelected = value === option.value;
             
@@ -93,8 +93,8 @@ export default function CountryDropdownV2({
                 }}
                 className={`w-full flex items-center justify-between px-4 py-2 text-sm transition-colors ${
                   isSelected
-                    ? "bg-blue-50 text-blue-700 font-medium"
-                    : "text-gray-700 hover:bg-gray-50"
+                    ? "bg-blue-50 dark:bg-transparent dark:text-white text-blue-700 font-medium"
+                    : "text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-transparent"
                 }`}
               >
                 <div className="flex items-center gap-2 truncate">
@@ -113,8 +113,8 @@ export default function CountryDropdownV2({
                 <div 
                   className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-[3px] border transition-colors ${
                     isSelected 
-                      ? "border-blue-600 bg-blue-600" 
-                      : "border-gray-300 bg-white"
+                      ? "border-blue-600 bg-blue-600  " 
+                      : "border-gray-300 bg-white dark:border-[#DDDDDF] dark:bg-transparent "
                   }`}
                 >
                   {isSelected && (

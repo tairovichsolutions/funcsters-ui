@@ -28,22 +28,22 @@ export function Select({ label, value, options, onChange }: SelectProps) {
   const selectedLabel = options.find((opt) => opt.value === value)?.label || label;
 
   return (
-    <div className="relative inline-block w-full   sm:w-50" ref={dropdownRef}>
+    <div className="relative  inline-block w-full   sm:w-50" ref={dropdownRef}>
       {/* Trigger Button (Matches your old select's look) */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full h-[46px] bg-[#F8F9FB] dark:bg-background items-center justify-between rounded-lg border border-border  py-2 pl-3 pr-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+        className="flex w-full h-[46px] bg-[#F8F9FB] dark:bg-[#282A2E] dark:border-[#2A2C30]  items-center justify-between rounded-lg border border-border  py-2 pl-3 pr-2 text-sm "
       >
         <span className="truncate text-[15px] ">{selectedLabel}</span>
         <ChevronDown
-          className={`h-4 w-4 text-neutral-05   transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`h-4 w-4 text-neutral-05 dark:text-[#AFAFAF]   transition-transform ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
       {/* New Dropdown Menu with Checkboxes */}
       {isOpen && (
-        <div className="absolute left-0 top-[calc(100%+8px)] z-50 w-full min-w-[200px] rounded-xl border border-gray-200 bg-white shadow-lg">
+        <div className="absolute left-0 top-[calc(100%+8px)] z-50 w-full min-w-[200px] rounded-xl border dark:border-0 border-gray-200 bg-white dark:bg-[#232629] shadow-lg">
           <div className="py-3.5 max-h-64 overflow-y-auto">
             {options.map((opt) => {
               const isSelected = value === opt.value;
@@ -56,7 +56,7 @@ export function Select({ label, value, options, onChange }: SelectProps) {
                     onChange(opt.value);
                     setIsOpen(false); // Close dropdown after selection
                   }}
-                  className="flex w-full items-center justify-between px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                  className="flex w-full items-center justify-between px-4 py-2.5 text-sm text-gray-700 dark:text-white transition-colors hover:bg-gray-50 dark:hover:bg-transparent"
                 >
                   <span className="text-xs ">{opt.label}</span>
 
@@ -64,7 +64,7 @@ export function Select({ label, value, options, onChange }: SelectProps) {
                   <div
                     className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${isSelected
                       ? "border-blue-600 bg-blue-600"
-                      : "border-gray-300 bg-white"
+                      : "border-gray-300 bg-white dark:bg-transparent  dark:border-[#DDDDDF]"
                       }`}
                   >
                     {isSelected && (
