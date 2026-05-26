@@ -55,7 +55,7 @@ export const Navbar = () => {
           mode === "top" && "mt-0 px-0 translate-y-0 opacity-100",
           mode === "floating" &&
           "mt-3 px-4 md:px-24 2xl:px-32 translate-y-0 opacity-100"
-        )}
+        )}  
       >
         <nav
           className={cn(

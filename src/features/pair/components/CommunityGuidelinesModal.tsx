@@ -44,7 +44,7 @@ export function CommunityGuidelinesModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/50 p-4">
-      <div className="relative w-full max-h-[95vh] max-w-139 overflow-y-auto rounded-[12px] bg-white px-5 py-6 shadow-xl">
+      <div className="relative w-full max-h-[95vh] max-w-139 overflow-y-auto rounded-[12px] bg-white dark:bg-[#232629] px-5 py-6 shadow-xl">
 
         {/* Gradient Top Bar */}
         <div
@@ -70,8 +70,8 @@ export function CommunityGuidelinesModal({
 
           </div>
           <div>
-            <h2 className="text-xl font-bold text-neutral-01">Community Guidelines</h2>
-            <p className="mt-0.5 text-sm text-neutral-05">
+            <h2 className="text-xl font-bold text-neutral-01 dark:text-white">Community Guidelines</h2>
+            <p className="mt-0.5 text-sm text-neutral-05 dark:text-[#afafaf] ">
               Please agree to our rules before joining the session
             </p>
           </div>
@@ -80,29 +80,29 @@ export function CommunityGuidelinesModal({
         {/* Guidelines Cards */}
         <div className="mt-6 space-y-3">
           {/* Guideline 1 */}
-          <div className="flex items-start gap-4 rounded-xl border border-[#E4E4E4] bg-[#FAFAFA] p-4">
+          <div className="flex items-start gap-4 rounded-xl border border-[#E4E4E4] bg-[#FAFAFA] dark:bg-[#1C1F22] dark:border-0 p-4">
             <UserCheck className="mt-0.5 h-6 w-6 shrink-0 text-emerald-500" />
             <div>
-              <h3 className="font-semibold text-neutral-01">Be Respectful & Collaboration</h3>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-05">
+              <h3 className="font-semibold text-neutral-01 dark:text-white">Be Respectful & Collaboration</h3>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-05 dark:text-[#afafaf] ">
                 Treat your partner with patience. Everyone learns at a different pace. Zero tolerance for harassment, offensive language, or hostility.
               </p>
             </div>
           </div>
 
           {/* Guideline 2 */}
-          <div className="flex items-start gap-4 rounded-xl border border-[#E4E4E4] bg-[#FAFAFA] p-4">
+          <div className="flex items-start gap-4 rounded-xl border border-[#E4E4E4] bg-[#FAFAFA] dark:bg-[#1C1F22] dark:border-0 p-4">
             <AlertTriangle className="mt-0.5 h-6 w-6 shrink-0 text-orange-500" />
             <div>
-              <h3 className="font-semibold text-neutral-01">Protect Personal Information</h3>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-05">
+              <h3 className="font-semibold text-neutral-01 dark:text-white">Protect Personal Information</h3>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-05 dark:text-[#afafaf] ">
                 Never share sensitive passwords, API keys, real addresses, or personal identifiable information inside the chat or audio channels.
               </p>
             </div>
           </div>
 
           {/* Guideline 3 */}
-          <div className="flex items-start gap-4 rounded-xl border border-[#E4E4E4] bg-[#FAFAFA] p-4">
+          <div className="flex items-start gap-4 rounded-xl border border-[#E4E4E4] bg-[#FAFAFA] dark:bg-[#1C1F22] dark:border-0 p-4">
     <svg className="w-fit" width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path
     d="M7.5 12L10.5 15L16.5 9M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
@@ -113,8 +113,8 @@ export function CommunityGuidelinesModal({
   />
 </svg>
             <div>
-              <h3 className="font-semibold text-neutral-01">Stay On Topic</h3>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-05">
+              <h3 className="font-semibold text-neutral-01 dark:text-white">Stay On Topic</h3>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-05 dark:text-[#afafaf] ">
                 Focus on solving the coding challenge and discussing technical concepts. Keep the environment professional and constructive.
               </p>
             </div>
@@ -122,14 +122,14 @@ export function CommunityGuidelinesModal({
         </div>
 
         {/* Agreement Checkbox */}
-        <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-xl border border-[#E4E4E4] bg-[#FAFAFA] p-4 transition-colors hover:bg-slate-50">
+        <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-xl border border-[#E4E4E4] bg-[#FAFAFA] dark:bg-[#1C1F22] dark:border-0 p-4 transition-colors hover:bg-slate-50">
           <input
             type="checkbox"
             checked={agreed}
             onChange={(e) => setAgreed(e.target.checked)}
             className="h-[18px] w-[18px] rounded border-slate-300 accent-blue-500"
           />
-          <span className="text-[14px] font-semibold text-neutral-01">
+          <span className="text-[14px] font-semibold text-neutral-01 dark:text-white">
             I have read and agree to follow the Community Guidelines.
           </span>
         </label>
@@ -142,14 +142,14 @@ export function CommunityGuidelinesModal({
         )}
 
         {/* Divider */}
-        <hr className="my-6 border-slate-100" />
+        <hr className="my-6 border-slate-100 dark:border-[#282B2E]" />
 
         {/* Centered Action Buttons */}
         <div className="flex items-center justify-end gap-4">
           {onDecline && (
             <button
               onClick={onDecline}
-              className="rounded-xl border border-[#90C8FF] bg-white px-6 py-2.5 text-[15px] font-semibold text-[#008CFE] transition-colors hover:bg-blue-50"
+              className="rounded-xl border border-[#90C8FF] dark:bg-transparent dark:border-[#008CFF99] bg-white px-6 py-2.5 text-[15px] font-semibold text-[#008CFE] transition-colors "
             >
               Cancel & Leave
             </button>
@@ -157,7 +157,7 @@ export function CommunityGuidelinesModal({
           <button
             onClick={handleAgree}
             disabled={!agreed || acceptMutation?.isPending}
-            className="rounded-xl bg-[#008CFF] px-6 py-2.5 text-[15px] font-semibold text-white transition-colors hover:bg-[#6ab3ff] disabled:opacity-50"
+            className={`rounded-xl bg-[#008CFF] px-6 py-2.5 text-[15px] font-semibold text-white transition-colors  ${!agreed && "opacity-50"} disabled:opacity-50`}
           >
             {acceptMutation?.isPending ? "Starting…" : "I Agree, Join Session"}
           </button>
