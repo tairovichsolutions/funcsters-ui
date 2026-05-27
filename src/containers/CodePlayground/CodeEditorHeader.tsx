@@ -27,16 +27,16 @@ export const CodeEditorHeader = React.memo(
 
 
     return (
-      <div className="h-full w-full flex justify-between items-center">
+      <div className="h-full w-full flex justify-between items-center ">
         <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
           <LanguageSelector
             className={
-              "bg-[#0050920D]! dark:bg-[#FFFFFF0D]! border leading-none! cursor-pointer! min-w-32! text-xs! border-[#00509280]! dark:border-[#FFFFFF80]! text-[#005092]! dark:text-[#FFFFFF80]!"
+              "bg-[#0050920D]!  dark:bg-[#FFFFFF0D]! border leading-none! cursor-pointer! min-w-32! text-xs! border-[#00509280]! dark:border-[#00509280]! text-[#005092]! dark:text-[#FFFFFF80]!"
             }
           />
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 ">
           <Button
             size="icon"
             type="button"

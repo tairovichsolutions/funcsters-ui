@@ -262,10 +262,10 @@ export const CodePlaygroundScreen = memo(() => {
     settings.themeMode === "system" ? websiteTheme : settings.theme;
 
   return (
-    <div className="h-full w-full shrink-0">
+    <div className="h-full w-full shrink-0 dark:bg-[#1C1F22]">
       <PanelGroup direction="vertical" className="w-full h-full gap-1.5">
         <Panel minSize={40} defaultSize={65}>
-          <div className="border border-border-soft rounded-xl overflow-hidden h-full w-full flex flex-col bg-background">
+          <div className="border border-border-soft rounded-xl overflow-hidden h-full w-full flex flex-col bg-background dark:bg-[#1C1F22]">
             <div className="px-4 flex items-center justify-between border-b border-border-soft h-16 overflow-hidden">
               <CodeEditorHeader
                 code={code}
@@ -296,7 +296,7 @@ export const CodePlaygroundScreen = memo(() => {
               />
             </div>
 
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 ">
               {/* Two editor modes:
                   - Solo: `value={code}` (controlled) — React state owns content.
                   - Pair-session: `defaultValue={code}` (uncontrolled) — Yjs

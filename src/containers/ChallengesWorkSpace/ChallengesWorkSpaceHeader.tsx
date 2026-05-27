@@ -33,7 +33,7 @@ export const ChallengesWorkSpaceHeader = () => {
 
   const challengesDetailData = data?.data ?? data;
   return (
-    <header className="dashboard-headers-class px-12 py-3.5 h-[60px] flex justify-between items-center">
+    <header className="dashboard-headers-class dark:bg-[#232629] px-12 py-3.5 h-[60px] flex justify-between items-center">
       <div className=" flex items-center gap-5">
         <Link href={Navigation.Challenges}>
           <Button
