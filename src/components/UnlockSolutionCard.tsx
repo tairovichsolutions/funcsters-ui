@@ -23,7 +23,7 @@ export const UnlockSolutionCard = ({
 
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center h-full w-full bg-white/10 dark:bg-black/30 backdrop-blur-xs">
-      <div className="relative flex flex-col items-center bg-white dark:bg-[#00010F] shadow-[0px_4px_30px_0px_#0000001A] p-5 rounded-xl w-[450px]">
+      <div className="relative flex flex-col items-center bg-white dark:bg-[#181A1D] shadow-[0px_4px_30px_0px_#0000001A] p-5 rounded-xl w-[450px]">
         <img
           src={
             dark
@@ -39,7 +39,7 @@ export const UnlockSolutionCard = ({
             Unlock Solution?
           </h2>
 
-          <p className="text-sm">
+          <p className="text-sm dark:text-[#AFAFAF]">
             Struggling is part of the journey! Unlock
             <FocusText className="font-semibold"> {language} </FocusText>{" "}
             solutions to see how others think —
