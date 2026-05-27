@@ -352,7 +352,7 @@ const _damiComents: CommentType[] = [
         onChange={setMarkdownContent} 
         onSubmit={handleComentSubmit}
         placeholder="Type your message here..."
-      />   
+      />       
           {/* <textarea
             value={commentInput}
             onChange={(e) => setCommentInput(e.target.value)}
@@ -382,10 +382,10 @@ const _damiComents: CommentType[] = [
       {/* Header and Filter */}
       <div className="flex items-center justify-between mt-6">
         <div className="flex items-center gap-2">
-            <h3 className="text-[15px] font-bold text-[#1D2939] dark:text-gray-100">
+            <h3 className="text-[15px] font-bold text-[#1D2939]  dark:text-gray-100">
             Comments
             </h3>
-            <span className="text-xs font-semibold px-1.5 py-0.5 bg-[#0050921A] dark:bg-[#FFFFFF1A] text-[#005092] dark:text-gray-200 rounded-full">
+            <span className="text-xs font-semibold px-1.5 py-0.5 bg-[#0050921A] dark:bg-[#008CFF1A] dark:text-[#008CFF] text-[#005092]  min-w-4! w-4  rounded-full">
             {commentsResponse?.totalElements ?? rootComments.length}
             </span>
         </div>
@@ -394,7 +394,7 @@ const _damiComents: CommentType[] = [
           multiple={false}
           tags={FILTER_OPTIONS}
           label={selectedLabel}
-          className={"text-[13px]! bg-transparent! border border-[#E5E7EB] dark:border-[#FFFFFF33] shadow-none! h-8!"}
+          className={"text-[13px]! bg-transparent! dark:bg-[#FFFFFF0D]! w-max dark:border-0 border border-[#E5E7EB] dark:border-[#FFFFFF33] shadow-none! h-8!"}
           value={[selectedFilter]}
           onChange={(selected) => {
             const next = (selected?.[0] as string) ?? "newest";
@@ -412,7 +412,7 @@ const _damiComents: CommentType[] = [
         ) : (
           rootComments.map((comment) => (
             <CommentItem key={comment.id} comment={comment} />
-          ))
+          ))     
         )}
       </div>
 
