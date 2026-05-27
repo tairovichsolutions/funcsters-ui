@@ -45,14 +45,15 @@ export const SolutionSubmittedModal = ({
   return (
     <Modal
       ClossBtnIconClass="size-4!"
-      ClossBtnClass="bg-[#2A2B31] mr-2 hover:bg-[#36373F]  text-[#008CFF] top-4 right-4! size-8 flex items-center justify-center rounded-full transition-colors"
+      ClossBtnClass="bg-white border border-[#F0F0F0] dark:border-0 hover:bg-white dark:hover:bg-[#2A2B31] dark:bg-[#2A2B31] mr-2 text-[#008CFF] top-4 right-4! size-8 flex items-center justify-center rounded-full transition-colors"
       open={open}
       onClose={onClose}
       contentClass={'px-0 py-0'}
+      className="max-w-[430px]"
       
     >
       {/* Main Dark Theme Container */}
-      <div className="relative bg-[#181A1D]  rounded-2xl w-full  mx-auto overflow-hidden p-2 ">
+      <div className="relative dark:bg-[#181A1D]    rounded-2xl w-full  mx-auto overflow-hidden p-2 ">
         
         {/* Subtle Green Top Glow Behind Graphic */}
     
@@ -63,11 +64,16 @@ export const SolutionSubmittedModal = ({
             <img
               src={'https://i.ibb.co.com/fzs7TFBz/Frame-2147226405.png'}
               alt="Solution Submitted"
-              className="w-full h-auto object-fill"
+              className="w-full dark:block hidden h-auto object-fill"
+            />
+            <img
+              src={'https://i.ibb.co.com/4nfKPCGw/Frame-2147226405-1.png'}
+              alt="Solution Submitted"
+              className="w-full h-auto dark:hidden object-fill"
             />
           </div>
 
-          <h4 className="text-[28px] leading-none font-bold text-white text-center mb-4">
+          <h4 className="text-[28px] leading-none font-bold text-neutral-01 dark:text-white text-center mb-4">
             Solution Submitted!
           </h4>
 

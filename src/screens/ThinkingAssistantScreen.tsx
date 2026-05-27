@@ -87,7 +87,7 @@ export const ThinkingAssistantScreen = () => {
   const isChatActive = messages.length > 0;
 
   return (
-    <div className="flex flex-col h-full bg-background relative overflow-hidden">
+    <div className="flex flex-col h-full bg-background dark:bg-[#1C1F22] relative overflow-hidden">
       {/* Header / Intro Section - Only show when chat is NOT active */}
       {!isChatActive && (
         <div className="flex-1 overflow-y-auto px-4 py-14 flex flex-col items-center justify-center">
@@ -752,7 +752,7 @@ export const ThinkingAssistantScreen = () => {
 
       {/* Input Area - Only show when Chat IS Active (since intro has its own input) */}
       {isChatActive && (
-        <div className="p-4 bg-background border-t border-border mt-auto">
+        <div className="p-4 bg-background dark:bg-[#1C1F22] border-t border-border mt-auto">
           {isLimitReached ? (
             <div className="flex flex-col items-center justify-center py-4 space-y-2 text-center bg-muted/30 rounded-2xl border border-dashed border-border">
               <div className="text-2xl">💤</div>

@@ -77,7 +77,7 @@ export default function GPTLikeInput({ onSend, maxHeight = 180 }: Props) {
   return (
     <div className="flex flex-col w-full gap-2">
       <div
-        className="relative w-full border dark:bg-[#0C1C31] dark:border-[#55606F] border-[#B3B3B3] bg-white pl-4 pr-12 py-2.5 focus-within:border-black/30"
+        className="relative w-full border dark:bg-[#1C1F22] dark:border-[#55606F] border-[#B3B3B3] bg-white pl-4 pr-12 py-2.5 focus-within:border-black/30"
         style={{
           borderRadius: `${radius}px`,
           transition: "border-radius 320ms cubic-bezier(.2,.8,.2,1), border-color 200ms ease",
@@ -105,7 +105,7 @@ export default function GPTLikeInput({ onSend, maxHeight = 180 }: Props) {
             isTall ? "bottom-3" : "top-1/2 -translate-y-1/2"
           )}
         >
-          <ArrowUp size={19} />
+          <ArrowUp  size={19} />
         </button>
       </div>
 
