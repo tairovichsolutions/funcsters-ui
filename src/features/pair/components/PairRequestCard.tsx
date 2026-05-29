@@ -41,7 +41,7 @@ export function PairRequestCard({ card }: { card: PairRequestCardDto }) {
   const disabled = lockedReason != null || createJoin.isPending;
 
   return (
-    <div className="flex h-full flex-col rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-sm">
+    <div className="flex h-full flex-col rounded-xl border border-border bg-card dark:bg-[#1C1F22] p-4 transition-shadow hover:shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="relative h-9 w-9 shrink-0 rounded-full bg-muted">
@@ -49,17 +49,17 @@ export function PairRequestCard({ card }: { card: PairRequestCardDto }) {
           </span>
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold">{card.hostUsername}</div>
-            <div className="truncate text-xs text-muted-foreground">{card?.occupation || "Developer"}</div>
+            <div className="truncate text-xs dark:text-[#AFAFAF] text-muted-foreground">{card?.occupation || "Developer"}</div>
           </div>
         </div>
         <div className="shrink-0 text-right text-xs">
           <div className="text-muted-foreground">
             <div className="flex flex-col justify-end gap-1">
-              <span className="text-[#FFA539] bg-[#fff1df] px-1 text-xs text-center py-0.5 rounded-md">{card?.xp ?? 0} xp</span>
+              <span className="text-[#FFA539] dark:bg-transparent bg-[#fff1df] px-1 text-xs text-center py-0.5 rounded-md">{card?.xp ?? 0} xp</span>
               {card.hostCountry && (
                 <div className="flex gap-1 items-center justify-end">
                   {card.hostCountryFlag && <img src={card.hostCountryFlag} className="w-3 h-3" alt="country flag" />}
-                  <span className="text-[10px]">{card.hostCountry}</span>
+                  <span className="text-[10px] ">{card.hostCountry}</span>
                 </div>
               )}
             </div>
@@ -85,7 +85,7 @@ export function PairRequestCard({ card }: { card: PairRequestCardDto }) {
         )}
       </div>
 
-      <p className="mt-3 line-clamp-2 text-sm italic text-[#5A5D65]">
+      <p className="mt-3 line-clamp-2 text-sm italic text-[#5A5D65] dark:text-[#AFAFAF] ">
         {card?.description ? (
           <>{card.description}</>
         ) : (
@@ -93,7 +93,7 @@ export function PairRequestCard({ card }: { card: PairRequestCardDto }) {
         )}
       </p>
 
-      <div className="my-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+      <div className="my-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs dark:text-[#AFAFAF] text-muted-foreground">
         <span className="inline-flex items-center gap-1">
           <div className="flex w-min">
             <span className="rotate-180">{braketSign}</span>

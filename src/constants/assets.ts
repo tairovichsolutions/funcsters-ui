@@ -66,6 +66,7 @@ export const Assets = {
     StreakStatsImage: "/images/StreakStatsImage.png",
     ForgotPasswordImage: "/images/Forgotpassword.png",
     InboxCleanupDark: "/images/Inbox-cleanup-dark.png",
+    InboxCleanupDarkV2: "/images/Inbox cleanup-cuate 1.png",
     ResetPasswordDarkImage: "/images/otpDarkImage.png",
     ThinkingAssistant: "/images/ThinkingAssistant.png",
     SolutionSubmitted: "/images/solution-submitted.png",

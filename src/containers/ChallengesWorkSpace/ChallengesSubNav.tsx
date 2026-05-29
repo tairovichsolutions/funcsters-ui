@@ -51,7 +51,7 @@ export const ChallengesSubNav = () => {
             type="button"
             onClick={(e) => handleClick(e, href, item.name)}
             className={cn(
-              "relative text-[#737B83] dark:text-[#91989D] px-2 w-full justify-center flex items-center gap-2 cursor-pointer text-xs py-2 rounded-[7.99px]! transition-colors duration-200",
+              "relative text-[#737B83] dark:text-[#91989D] dark:bg-[#333538] px-2 w-full justify-center flex items-center gap-2 cursor-pointer text-xs py-2 rounded-[7.99px]! transition-colors duration-200",
               isActive
                 ? "text-white! font-semibold"
                 : "hover:bg-[#008CFF]/10 font-medium",

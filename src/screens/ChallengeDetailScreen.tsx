@@ -70,7 +70,7 @@ export const ChallengesDetailScreen = () => {
         : `Complete this challenge to earn ${xpCount} XP.`;
   return (
     <div>
-      <div className="flex w-full  items-center justify-between gap-2 ">
+      <div className="flex w-full  items-center justify-between gap-2  ">
         <div className="flex-1 min-w-0">
           <TitleWithTooltipIfTruncated title={challengesDetailData?.title} />
         </div>

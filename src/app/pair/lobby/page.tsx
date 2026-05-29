@@ -24,15 +24,15 @@ export default function PairLobbyPage() {
 
   console.log({data});
   return (
-    <section className="">
+    <section className="dark:bg-[#181A1D] min-h-screen">
       <PrimaryContainer as="div">
-        <div className="  w-full  space-y-6  py-6">
+        <div className="   w-full  space-y-6  py-6">
           <header>
             <h1 className="flex items-center gap-2 text-2xl md:text-[1.8rem] text-neutral-01 dark:text-white font-bold">
               <Users className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
               Pair Programming Lobby
             </h1>
-            <p className="mt-1 text-sm  text-muted-foreground ">
+            <p className="mt-1 text-sm dark:text-[#AFAFAF]  text-muted-foreground ">
               Connect with other developers, share knowledge, and solve challenges together in real-time.
             </p>
           </header>
@@ -46,7 +46,7 @@ export default function PairLobbyPage() {
             </div>
           )}
           {data && data.content.length === 0 && !isLoading && (
-            <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+            <div className="rounded-xl border dark:bg-[#232629] border-border bg-card p-8 text-center text-sm text-muted-foreground">
               No active pair requests match these filters. Try widening them, or create your own request from any challenge page.
             </div>
           )}

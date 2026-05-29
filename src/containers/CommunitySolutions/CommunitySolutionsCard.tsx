@@ -49,6 +49,7 @@ export const CommunitySolutionsCard = React.memo(
   ({ data, mySolution, isNestedView, onViewAllComments }: CommunitySolutionsCardProps) => {
     const { theme } = useTheme();
     const isDarkMode = theme === "dark";
+  
 
     const { author, solutionInfo } = data || {};
     const firstLetter = author?.name?.charAt(0)?.toUpperCase();
@@ -115,7 +116,7 @@ export const CommunitySolutionsCard = React.memo(
       : undefined;
 
     return (
-      <div className="border mt-1 border-[#00509233] dark:border-[#FFFFFF33] rounded-[12px] py-2 px-2.5">
+      <div className="border mt-1 border-[#00509233] dark:bg-[#232629] dark:border-[#FFFFFF33] rounded-[12px] py-2 px-2.5">
         <div className="flex justify-between items-center">
           <div className="flex gap-3 py-1">
             <DisplayAvatar
@@ -125,6 +126,7 @@ export const CommunitySolutionsCard = React.memo(
             <div className="space-y-1">
               <div className="flex gap-2 items-center">
                 <h3 className="text-sm font-bold">{author?.name}</h3>
+                <span className="text-[#FFA539] text-[13px]">{author?.xp} xp</span>
                 {mySolution && (
                   <span className="rounded-[20px] text-[10px] py-1 leading-none text-white px-2 bg-primary font-normal">
                     Your Solution
@@ -201,7 +203,7 @@ export const CommunitySolutionsCard = React.memo(
           )}
         </div>
 
-        <div className="mt-3 w-full max-h-[430px] overflow-y-auto custom-scrollbar border border-[#E5E7EB] rounded-md bg-[#0050920D] dark:border-none dark:bg-[#FFFFFF0D] p-3 font-mono text-xs text-gray-800">
+        <div className="mt-3 w-full max-h-[430px] overflow-y-auto custom-scrollbar border border-[#E5E7EB] rounded-md bg-[#0050920D] dark:border-none dark:bg-[#282A2E] p-3 font-mono text-xs text-gray-800">
           <SyntaxHighlighter
             language="javascript"
             style={isDarkMode ? a11yDark : a11yLight}
@@ -218,7 +220,7 @@ export const CommunitySolutionsCard = React.memo(
           </SyntaxHighlighter>
         </div>
 
-        <div className="mt-3  px-1 flex items-center justify-between">
+        <div className="mt-3  px-1  flex items-center justify-between">
           <CommunitySolutionsVote
             mySolution={mySolution}
             languageId={Number(languageId)}
@@ -228,7 +230,7 @@ export const CommunitySolutionsCard = React.memo(
             commentsCount={data?.solutionInfo?.commentsCount ?? 0}
             isCommentsExpanded={isCommentsExpanded}
             onToggleComments={() => setIsCommentsExpanded(p => !p)}
-          />
+          />     
 
           {deleteModalOpen && (
             <DeleteModal

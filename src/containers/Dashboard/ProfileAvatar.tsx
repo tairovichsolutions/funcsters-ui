@@ -32,10 +32,10 @@ export const ProfileAvatar = ({ userData }: any) => {
             src={userData?.avatarUrl ? getAvatarUrl(userData.avatarUrl) : undefined}
           />
           <div className=" text-start md:block  hidden">
-            <h4 className="text-sm font-semibold max-w-28 truncate text-nowrap text-mid-slate">
+            <h4 className="text-sm dark:text-white font-semibold max-w-28 truncate text-nowrap text-mid-slate">
               {userData?.username}
             </h4>
-            <h6 className="text-xs font-normal max-w-36 truncate  text-nowrap text-medium-gray">
+            <h6 className="text-xs dark:text-[#AFAFAF] font-normal max-w-36 truncate  text-nowrap text-medium-gray">
               {userData?.email}
             </h6>
           </div>

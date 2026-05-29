@@ -1,16 +1,22 @@
 import { useTheme } from "next-themes";
 import MDEditor from "@uiw/react-md-editor";
 
+
 export const MDMarkdown = ({ source }: { source: string }) => {
   const { resolvedTheme } = useTheme();
+
+
+  const isDark = resolvedTheme === "dark";
+
   return (
-    <div
-      data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
-      className="no-copy"
-    >
+    <div data-color-mode={isDark ? "dark" : "light"} className="no-copy">
       <MDEditor.Markdown
         source={source}
-        className="m-0! p-0! min-h-0! bg-transparent! text-sm text-md-editor-text
+
+        style={{
+          "--color-canvas-subtle": isDark ? "#232629" : undefined
+        } as React.CSSProperties}
+        className="m-0! p-0! min-h-0! bg-transparent!  text-sm text-md-editor-text
           [&_ol]:list-decimal [&_ol]:pl-0! [&_ol]:ml-4! [&_ol]:my-2
           [&_ul]:list-disc [&_ul]:pl-0! [&_ul]:ml-4! [&_ul]:my-2
           [&_li]:my-0.5 [&_li]:pl-1
@@ -25,3 +31,9 @@ export const MDMarkdown = ({ source }: { source: string }) => {
     </div>
   );
 };
+
+
+
+
+
+

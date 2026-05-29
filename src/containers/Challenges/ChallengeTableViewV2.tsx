@@ -35,7 +35,7 @@ export const ChallengeTableViewV2: React.FC<ChallengeTableViewProps> = ({
           <TableRow
             className="border-b-0! 
             hover:bg-transparent
-            [&_th]:bg-white [&_th]:dark:bg-[#FFFFFF0D]
+            [&_th]:bg-white [&_th]:dark:bg-[#282A2E]
             [&_th:first-child]:rounded-l-lg 
             [&_th:last-child]:rounded-r-lg " 
           >
@@ -68,7 +68,7 @@ export const ChallengeTableViewV2: React.FC<ChallengeTableViewProps> = ({
                   <TableCell className="font-medium align-top py-3 pr-4 overflow-visible">
                     <div className="flex flex-col gap-2 relative">
                       <Link
-                        className="hover:underline block w-full truncate"
+                        className="hover:underline block dark:text-white w-full truncate"
                         href={Navigation.ChallengesDetail(String(item?.slug))}
                         title={item?.title}
                       >
@@ -77,7 +77,7 @@ export const ChallengeTableViewV2: React.FC<ChallengeTableViewProps> = ({
 
                       <div className="flex gap-2 items-center w-max relative z-10">
                         {tags?.slice(0, 5).map((tag: string) => (
-                          <TagChip className="rounded-full! text-[10px]! px-2! py-1! text-[#005092]" key={tag}>{tag}</TagChip>
+                          <TagChip className="rounded-full! dark:bg-[#0050924D] text-[10px]! px-2! py-1! text-[#005092]" key={tag}>{tag}</TagChip>
                         ))}
 
                         {tags?.length > 5 && (
@@ -93,7 +93,7 @@ export const ChallengeTableViewV2: React.FC<ChallengeTableViewProps> = ({
                   </TableCell>
 
                   {/* Summary Cell */}
-                  <TableCell className="text-muted-foreground align-top py-3 pe-10 3xl:pe-20">
+                  <TableCell className="text-muted-foreground dark:text-[#AFAFAF]! align-top py-3 pe-10 3xl:pe-20">
                     <Link
                       href={Navigation.ChallengesDetail(String(item?.slug))}
                       className="block w-full max-w-[400px] 2xl:max-w-[500px] truncate hover:underline"

@@ -32,7 +32,7 @@ export default function PrimaryContainer({
       aria-labelledby={ariaLabelledBy ?? rawLabelledBy}
       aria-label={ariaLabelledBy || rawLabelledBy ? undefined : ariaLabel}
       role={role}
-      className={`container mx-auto! px-2 small:px-3  ${className ?? ""}`}
+      className={`container  mx-auto! px-2 small:px-3  ${className ?? ""}`}
       {...rest}   
     >
       {children}

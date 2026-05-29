@@ -28,11 +28,11 @@ export const metadata = {
 const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="flex h-screen flex-col">
-     <div className="pb-7 bg-dashboard-background dark:bg-transparent">
-       <div className="bg-white dark:bg-transparent"><DashboardHeader /></div>
+     <div className="pb-7 bg-dashboard-background dark:bg-[#181A1D]">
+       <div className="bg-white dark:bg-[#181A1D]"><DashboardHeader /></div>
      </div>
     
-      <main className="flex-1 custom-scrollbar outline-none!  overflow-hidden w-full overflow-y-auto bg-dashboard-background">
+      <main className="flex-1 custom-scrollbar  outline-none!  overflow-hidden w-full overflow-y-auto bg-dashboard-background dark:bg-[#181A1D]">
          {/* <GlobalPairAlertBanner /> */}
          <GlobalJoinRequestAlert/>
         {children}

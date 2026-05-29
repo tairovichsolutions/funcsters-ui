@@ -227,7 +227,7 @@ export const ActivityCalendarCardV2: React.FC = () => {
     const GRID_GAP_Y = "gap-y-[6px]";
 
     return (
-        <div className="flex flex-col border bg-white dark:bg-slate-900 dark:border-slate-800 text-slate-900 dark:text-slate-100 rounded-xl 2xl:p-3.5 p-1 w-full mx-auto">
+        <div className="flex flex-col border bg-white dark:bg-[#41434733] dark:border-[#44464A33] text-slate-900 dark:text-slate-100 rounded-xl 2xl:p-3.5 p-1 w-full mx-auto">
 
 
             <div className="relative w-full flex flex-1  flex-col z-10 mt-3">
@@ -243,11 +243,11 @@ export const ActivityCalendarCardV2: React.FC = () => {
                             type="button"
                             onClick={() => changeMonth(-1)}
                             disabled={!canGoPrev}
-                            className="flex size-6 cursor-pointer items-center justify-center rounded-md text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            className="flex size-6 cursor-pointer items-center justify-center rounded-md text-slate-400 dark:text-slate-500   transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                         >
-                            <ChevronLeft className="size-[18px]" strokeWidth={2.5} />
+                            <ChevronLeft className="size-[18px] text-[#008CFF]" strokeWidth={2.5} />
                         </button>
-                        <span className="font-bold text-xs text-[#878A8C] dark:text-slate-400 tracking-tight">
+                        <span className=" text-xs text-[#878A8C] dark:text-[#AFAFAF] tracking-tight">
                             {monthLabel}
                         </span>
                         <button
@@ -256,14 +256,14 @@ export const ActivityCalendarCardV2: React.FC = () => {
                             disabled={!canGoNext}
                             className="flex size-6 cursor-pointer items-center justify-center rounded-md text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                         >
-                            <ChevronRight className="size-[18px]" strokeWidth={2.5} />
+                            <ChevronRight className="size-[18px] text-[#AFAFAF]" strokeWidth={2.5} />
                         </button>
                     </div>
                 </div>
 
-                <div className="bg-[#F0F1F6] dark:bg-slate-800/50 rounded-sm border dark:border-slate-800 px-2">
+                <div className="bg-[#F0F1F6] dark:bg-[#2F313666] rounded-sm border dark:border-slate-800 px-2">
                     {/* Week days */}
-                    <div className="mb-4 mt-3 grid grid-cols-7  justify-items-center text-center text-xs  font-bold tracking-wider text-[#0D1A26] dark:text-slate-300 uppercase">
+                    <div className="mb-4 mt-3 grid grid-cols-7  justify-items-center text-center text-xs  tracking-wider text-[#0D1A26] dark:text-white uppercase">
                         {weekDayLabels.map((label) => (
                             <span key={label}>
                                 {label === "SAT"
@@ -348,8 +348,8 @@ export const ActivityCalendarCardV2: React.FC = () => {
                                             ) : (
                                                 <span
                                                     className={cn(
-                                                        "relative z-1 text-[14px] font-semibold",
-                                                        isCur ? "text-slate-900 dark:text-slate-200" : "text-neutral-04/40 dark:text-slate-600",
+                                                        "relative z-1 text-[14px] ",
+                                                        isCur ? "text-slate-900 dark:text-white" : "text-neutral-04/40 dark:text-[#AFAFAF]/40",
                                                     )}
                                                 >
                                                     {dayNumber}

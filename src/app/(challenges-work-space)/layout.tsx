@@ -101,7 +101,7 @@ const Layout = ({ children }: LayoutProps) => {
   }, [list, setLanguages]);
 
   return (
-    <div className="flex h-screen flex-col bg-background text-foreground">
+    <div className="flex h-screen flex-col bg-background dark:bg-[#181A1D] text-foreground">
       <ChallengesWorkSpaceHeader />
 
       <div className="flex-1 overflow-hidden py-4 px-12">
@@ -112,7 +112,7 @@ const Layout = ({ children }: LayoutProps) => {
                 <ChallengesSubNav />
               </div>
               <main
-                className="flex-1 overflow-y-auto px-4 py-4 overflow-hidden custom-scrollbar"
+                className="flex-1 dark:bg-[#1C1F22] overflow-y-auto px-4 py-4 overflow-hidden custom-scrollbar"
                 data-scroll-restoration-id="main"
               >
           

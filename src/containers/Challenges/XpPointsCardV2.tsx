@@ -19,7 +19,7 @@ export const XpPointsCardV2 = React.memo(({ xpData }: { xpData: number }) => {
                         {/* Simple Star SVG */}
                        <StarIcon/>
                     </div>
-                    <span className="text-sm font-semibold dark:text-white text-[#0F172A]">XP Points</span>
+                    <span className="text-sm  dark:text-white text-[#0F172A]">XP Points</span>
                 </div>
 
                 {/* Right Side: Value */}
@@ -27,7 +27,7 @@ export const XpPointsCardV2 = React.memo(({ xpData }: { xpData: number }) => {
             </div>
 
             {/* Bottom Border/Divider */}
-           <div className="h-[1px] w-full bg-[#EDEDF2] dark:bg-[#9494aa] my-4" />
+           <div className="h-[1px] w-full bg-[#EDEDF2] dark:bg-[#282B2E] my-4" />
         </div>
     );
 });

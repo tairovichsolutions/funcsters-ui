@@ -12,7 +12,7 @@ import {
   ChevronDown,
   ChevronUp, CircleChevronDown, CircleChevronUp, MessageCircle, MoreHorizontal
 } from 'lucide-react';
-import { useEffect, useRef, useState } from "react";
+import { SVGProps, useEffect, useRef, useState } from "react";
 
 export interface CommentType {
   id: number;
@@ -153,10 +153,10 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
       <div className="flex-1 space-y-1 overflow-hidden">
         <div className="flex justify-between items-center relative group">
           <div className="flex  items-center gap-2  mt-[6.5px]">
-            <span className="text-sm font-bold text-neutral-01 dark:text-gray-100">
+            <span className="text-sm font-bold text-neutral-01 dark:text-white">
               {comment.user?.name || "Unknown User"}
             </span>
-            <span className="text-[12px] text-neutral-4.8">
+            <span className="text-[12px] text-[#afafaf]">
               {comment.createdAgo}
             </span>
           </div>
@@ -220,7 +220,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
             <p
               ref={contentRef}
               className={cn(
-                "text-[13px] text-neutral-01  dark:text-gray-300 break-words",
+                "text-[13px] text-neutral-01  dark:text-white break-words",
                 !isExpanded && "line-clamp-6"
               )}
             >
@@ -243,28 +243,43 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
               onClick={() => handleVote("UPVOTE")}
               disabled={isOwner}
               className={cn(
-                "text-neutral-4.5 transition-colors",
+                "text-neutral-4.5 dark:text-[#AFAFAF] transition-colors",
                 !isOwner && "hover:text-[#005092]",
                 comment?.currentUserVote === "UPVOTE" && "text-[#005092]",
                 isOwner && "cursor-not-allowed opacity-50"
               )}
             >
-              <CircleChevronUp className={cn("size-5", comment.currentUserVote === "UPVOTE" && "fill-[#005092] text-white ")} />
+                 <CustomVoteDownIcon
+                className={cn(
+                  "text-[#AFAFAF] rotate-180 mb-1",
+                  comment.currentUserVote === "DOWNVOTE" && "fill-[#EE3939] text-[#EE3939]"
+                )}
+              />
             </button>
-            <span className="text-xs font-bold min-w-[12px] text-neutral-4.5 text-center">
+            <span className="text-xs font-bold min-w-[12px] text-neutral-4.5 dark:text-[#AFAFAF] text-center">
               {comment.upvotesCount - comment.downvotesCount}
             </span>
             <button
               onClick={() => handleVote("DOWNVOTE")}
               disabled={isOwner}
               className={cn(
-                "text-neutral-4.5 transition-colors",
+                "text-neutral-4.5 dark:text-[#AFAFAF] transition-colors",
                 !isOwner && "hover:text-[#EE3939]",
                 comment.currentUserVote === "DOWNVOTE" && "text-[#EE3939]",
                 isOwner && "cursor-not-allowed opacity-50"
               )}
             >
-              <CircleChevronDown className={cn("size-5 ", comment.currentUserVote === "DOWNVOTE" && "fill-[#EE3939] text-white")} />
+
+
+
+
+
+              <CustomVoteDownIcon
+                className={cn(
+                  "text-[#AFAFAF]",
+                  comment.currentUserVote === "DOWNVOTE" && "fill-[#EE3939] text-[#EE3939]"
+                )}
+              />
             </button>
           </div>
 
@@ -272,7 +287,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
             onClick={toggleReply}
             className={cn(
               "flex items-center gap-1 text-xs font-medium transition-colors",
-              isReplying ? "text-[#005092]" : "text-neutral-4.5 hover:text-[#005092]"
+              isReplying ? "text-[#005092]" : "text-neutral-4.5 dark:text-[#AFAFAF] hover:text-[#005092]"
             )}
           ><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
               <g clipPath="url(#clip0_9207_6094)">
@@ -293,7 +308,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
             >
               <MessageCircle
                 className={cn(
-                  "size-[12px] transition-colors fill-current text-neutral-4.5 dark:text-gray-100",
+                  "size-[12px] transition-colors fill-current text-neutral-4.5 dark:text-[#AFAFAF] dark:text-gray-100",
 
                 )}
               />
@@ -306,7 +321,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center gap-1 text-xs text-neutral-4.5 hover:text-[#005092] font-medium"
+                className="flex items-center gap-1 text-xs text-neutral-4.5 dark:text-[#AFAFAF] hover:text-[#005092] font-medium"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
                   <path d="M7.22534 1.95546L0.787878 8.4002C0.755461 8.43273 0.732359 8.47338 0.720979 8.51789L0.00742295 11.3849C-0.00307164 11.4274 -0.0024285 11.472 0.00929026 11.5142C0.021009 11.5564 0.0434074 11.5949 0.0743218 11.6259C0.121806 11.6733 0.186098 11.6999 0.253138 11.7C0.27382 11.7 0.294421 11.6974 0.314478 11.6924L3.17846 10.978C3.223 10.9668 3.26365 10.9437 3.29606 10.9111L9.73412 4.46683L7.22534 1.95546ZM11.329 1.07673L10.6124 0.359401C10.1334 -0.120038 9.29869 -0.119562 8.8203 0.359401L7.94251 1.23813L10.4512 3.74941L11.329 2.8707C11.5682 2.63131 11.7 2.31266 11.7 1.97377C11.7 1.63488 11.5682 1.31623 11.329 1.07673Z" fill="#4D4D4D" />
@@ -314,7 +329,7 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
               </button>
               <button
                 onClick={handleDelete}
-                className="flex items-center gap-1 text-xs text-neutral-4.5 hover:text-red-600 font-medium"
+                className="flex items-center gap-1 text-xs text-neutral-4.5 dark:text-[#AFAFAF] hover:text-red-600 font-medium"
               >
 
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
@@ -395,3 +410,38 @@ export const CommentItem = ({ comment, isReply = false }: CommentItemProps) => {
     </div>
   );
 };
+
+
+interface CustomVoteDownIconProps extends SVGProps<SVGSVGElement> {
+  className?: string;
+}
+
+const CustomVoteDownIcon: React.FC<CustomVoteDownIconProps> = ({ className, ...props }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      className={cn("size-5", className)}
+      {...props} // Spreads any extra props like onClick smoothly
+    >
+      <g clipPath="url(#clip0_63856_50029)">
+        <path
+          d="M6.53398 12.3306C6.3473 12.3306 6.25396 12.3306 6.18265 12.2942C6.11993 12.2623 6.06894 12.2113 6.03698 12.1486C6.00065 12.0773 6.00065 11.9839 6.00065 11.7972V4.99723H3.33398L8.00065 0.330566L12.6673 4.99723H10.0007V11.7972C10.0007 11.9839 10.0007 12.0773 9.96432 12.1486C9.93236 12.2113 9.88137 12.2623 9.81865 12.2942C9.74734 12.3306 9.654 12.3306 9.46732 12.3306H6.53398Z"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_63856_50029">
+          <rect width="16" height="16" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+export default CustomVoteDownIcon;

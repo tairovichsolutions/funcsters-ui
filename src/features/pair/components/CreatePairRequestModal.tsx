@@ -91,14 +91,14 @@ export function CreatePairRequestModal({
 
   console.log({ description });
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center  bg-black/40 p-4" onClick={onClose}>
       <div
-        className="max-h-[95vh] w-full max-w-xl overflow-y-auto rounded-xl bg-card p-6 shadow-xl"
+        className="max-h-[95vh] w-full max-w-xl overflow-y-auto rounded-xl bg-card dark:bg-[#232629]! p-6 shadow-xl"   
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl text-neutral-01 font-semibold">Request Pair Programming</h2>
+            <h2 className="text-xl text-neutral-01 dark:text-white font-semibold">Request Pair Programming</h2>
 
           </div>
           <button onClick={onClose} className="rounded-md p-1 hover:bg-muted" aria-label="Close">
@@ -107,26 +107,27 @@ export function CreatePairRequestModal({
             </svg>
           </button>
         </div>
-        <hr className="my-4 border-t w-full border border-[#F0F0F0]"></hr>
-        <p className="mt-1 text-sm text-[#4D4D4D]">
+        <hr className="my-4 border-t w-full border dark:border-[#282B2E] border-[#F0F0F0]"></hr>
+        <p className="mt-1 text-sm text-[#4D4D4D] dark:text-[#afafaf]">
           Fill in the details below to find a programming partner for{" "}
           <span className="font-semibold text-[#008CFF]">&ldquo;{challengeTitle}&rdquo;</span>.
         </p>
         <div className="mt-4 space-y-5">
           <div>
-            <label className="block text-sm text-neutral-01 font-medium">What do you need help with?</label>
+            <label className="block text-sm text-neutral-01 dark:text-white font-medium">What do you need help with?</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe what you're stuck on (optional)"
-              className="mt-1 w-full rounded-md border border-border bg-[#FAFAFA] px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+              className="mt-1 w-full rounded-md border border-border dark:border-[#282B2E]!  bg-[#FAFAFA] dark:bg-[#1C1F22]! px-3 py-3 text-sm focus:outline-none "
             />
           </div>
 
           <PillGroup
             label="Or select focuses"
             multi
+            
             options={FOCUS_AREAS.map((f) => ({ value: f.value, label: f.label }))}
             selected={selectedFocus as Set<string>}
             onToggle={(v) => {
@@ -164,9 +165,9 @@ export function CreatePairRequestModal({
               setSelectedSpoken(next);
             }}
           />
-        <hr className="my-4 border-t w-full border border-[#F0F0F0]"/>
+        <hr className="my-4 border-t w-full border dark:border-[#282B2E] border-[#F0F0F0]"/>
 
-          <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-[#038CFF33] bg-[#f0f8ff] p-4 text-sm">
+          <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-[#038CFF33] bg-[#f0f8ff] dark:border-0 dark:bg-[#038CFF0D] p-4 text-sm">
             <input
               type="checkbox"
               checked={agreed}
@@ -174,9 +175,9 @@ export function CreatePairRequestModal({
               className="mt-0.5 h-4 w-4 rounded border-border accent-blue-600"
             />
             <span className="">
-              <span className="font-semibold text-neutral-01   ">I agree to be respectful &amp; collaborative.</span>
+              <span className="font-semibold text-neutral-01 dark:text-white  ">I agree to be respectful &amp; collaborative.</span>
               <br />
-              <span className="text-xs text-[#808080] ">
+              <span className="text-xs text-[#808080] dark:text-[#AFAFAF] ">
                 I understand that I am joining a community and that my behavior must be respectful and collaborative.
               </span>
             </span>
@@ -220,7 +221,7 @@ interface PillGroupProps {
 function PillGroup({ label, multi, options, selected, onToggle }: PillGroupProps) {
   return (
     <div>
-      <div className="mb-2 text-neutral-01 text-sm font-medium">
+      <div className="mb-2 text-neutral-01 dark:text-white text-sm font-medium">
         {label}
         {multi && <span className="ml-1 ">(multi-select):</span>}
       </div>
@@ -234,7 +235,7 @@ function PillGroup({ label, multi, options, selected, onToggle }: PillGroupProps
               onClick={() => onToggle(opt.value)}
               className={`rounded-full border px-4 py-1.5 text-xs font-medium transition-colors ${on
                 ? "border-[#038CFF] bg-[#038CFF] text-white"
-                : "border-border bg-[#FAFAFA] text-foreground hover:bg-muted"
+                : "border-border bg-[#FAFAFA] dark:text-[#808080]! dark:bg-[#1C1F22] dark:border-[#282B2E] text-foreground hover:bg-muted"
                 }`}
             >
               {opt.label}
