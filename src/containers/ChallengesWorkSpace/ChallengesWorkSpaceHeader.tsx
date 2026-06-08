@@ -55,26 +55,26 @@ export const ChallengesWorkSpaceHeader = () => {
       {/* Pair-programming session widget — renders null when there's no
           active session, otherwise shows avatars + timer + mic + leave. */}
 
-  
+
       <div className=" flex gap-3">
-        
-     
-        
+
+
+
         <PairSessionWidget />
-     
-       {isAuthenticated && challengesDetailData?.id && (
-        <PairProgramButton
-          challengeId={Number(challengesDetailData.id)}
-          challengeTitle={challengesDetailData.title ?? ""}
-          languageOptions={
-            (challengesDetailData?.languageImplementations ?? []).map((l: any) => ({
-              id: Number(l.languageId),
-              name: l.languageName ?? l.language ?? `Language ${l.languageId}`,
-            }))
-          }
-        />
-      )}
-        <ThemeButton iconClass="size-4!" />
+
+        {isAuthenticated && challengesDetailData?.id && (
+          <PairProgramButton
+            challengeId={Number(challengesDetailData.id)}
+            challengeTitle={challengesDetailData.title ?? ""}
+            languageOptions={
+              (challengesDetailData?.languageImplementations ?? []).map((l: any) => ({
+                id: Number(l.languageId),
+                name: l.languageName ?? l.language ?? `Language ${l.languageId}`,
+              }))
+            }
+          />
+        )}
+        {/* <ThemeButton iconClass="size-4!" /> */}
 
         <Timer
           className="ml-2"
@@ -98,7 +98,7 @@ export const ChallengesWorkSpaceHeader = () => {
           </PopoverContent>
         </Popover>
       </div>
-      
+
     </header>
   );
 };
