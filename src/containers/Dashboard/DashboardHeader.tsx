@@ -68,7 +68,7 @@ export const DashboardHeader = () => {
           </div>
 
           <div className="flex gap-5">
-            <ThemeButton />
+            {/* <ThemeButton /> */}
             <Button
               size={"icon"}
               variant={"ghost"}
