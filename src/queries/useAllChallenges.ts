@@ -5,7 +5,7 @@ import { QueryKey } from "@/constants/queryKey";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type { ChallengeQueryParams } from "@/hooks/useChallengesFilters";
 
-const PAGE_SIZE = 16;
+const PAGE_SIZE = 18;
 
 export const useInfiniteChallenges = (params: ChallengeQueryParams = {}) => {
   const fetchPage = async ({ pageParam = 0 }: { pageParam?: number }) => {
